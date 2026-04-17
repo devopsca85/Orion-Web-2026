@@ -2,7 +2,7 @@
 
 Production-ready Next.js 15 website for [orionesolutions.com](https://www.orionesolutions.com).
 
-**Stack:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Prisma · MySQL · Resend · Vercel
+**Stack:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Prisma · MySQL · Resend · Linode (Akamai Cloud)
 
 ---
 
@@ -110,10 +110,10 @@ This project uses **Prisma ORM** with **MySQL**.
 
 | Provider | Free tier | Notes |
 |----------|-----------|-------|
-| [PlanetScale](https://planetscale.com) | Yes | Serverless MySQL, great for Vercel |
-| [Railway](https://railway.app) | Yes | Simple setup, good for dev |
-| [Neon](https://neon.tech) | Yes | Postgres-compatible alternative |
-| AWS RDS / Azure MySQL | Paid | For production enterprise deployments |
+| Linode MySQL (same server) | — | Run MySQL on the same Linode — simplest setup |
+| [Railway](https://railway.app) | Yes | Simple managed MySQL, good for dev |
+| [PlanetScale](https://planetscale.com) | Yes | Serverless MySQL |
+| AWS RDS / Azure MySQL | Paid | For multi-server production setups |
 
 ### Connection string format
 
@@ -216,14 +216,236 @@ npm run start    # Start the production server
 
 ---
 
-## Deploying to Vercel (Recommended)
+## Deploying to Linode
 
-1. Push code to GitHub (already done)
-2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import `Orion-Web-2026`
-3. Add all environment variables from `.env.local` in the Vercel dashboard
-4. Click **Deploy**
+Recommended setup: **Linode Nanode or Shared CPU** running Ubuntu 22.04 LTS, with Nginx as a reverse proxy and PM2 as the process manager.
 
-Vercel auto-deploys on every push to `main`.
+---
+
+### Step 1 — Create the Linode
+
+1. Log in to [cloud.linode.com](https://cloud.linode.com)
+2. Click **Create → Linode**
+3. Choose:
+   - **Image:** Ubuntu 22.04 LTS
+   - **Region:** closest to your users
+   - **Plan:** Nanode 1GB (minimum) or Shared CPU 2GB (recommended for production)
+4. Set a strong root password, then click **Create Linode**
+
+---
+
+### Step 2 — Initial server setup
+
+SSH into your new server:
+
+```bash
+ssh root@YOUR_LINODE_IP
+```
+
+Create a deploy user and install dependencies:
+
+```bash
+# Create a non-root user
+adduser deploy
+usermod -aG sudo deploy
+
+# Switch to deploy user
+su - deploy
+
+# Install Node.js 20 LTS
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PM2 (process manager)
+sudo npm install -g pm2
+
+# Install Nginx
+sudo apt-get install -y nginx
+
+# Install MySQL
+sudo apt-get install -y mysql-server
+sudo mysql_secure_installation
+```
+
+---
+
+### Step 3 — Create MySQL database
+
+```bash
+sudo mysql -u root -p
+```
+
+```sql
+CREATE DATABASE orion_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'orion'@'localhost' IDENTIFIED BY 'STRONG_PASSWORD_HERE';
+GRANT ALL PRIVILEGES ON orion_db.* TO 'orion'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+---
+
+### Step 4 — Clone and build the app
+
+```bash
+cd /var/www
+sudo git clone https://github.com/devopsca85/Orion-Web-2026.git orion-web
+sudo chown -R deploy:deploy /var/www/orion-web
+cd /var/www/orion-web
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env.local
+nano .env.local   # fill in all values (see Environment Variables section)
+
+# Set up the database
+npm run db:push
+npm run db:generate
+npm run db:seed   # optional
+
+# Build the app
+npm run build
+```
+
+---
+
+### Step 5 — Run with PM2
+
+```bash
+# Start the app
+pm2 start npm --name "orion-web" -- start
+
+# Save PM2 config so it restarts on reboot
+pm2 save
+pm2 startup   # follow the printed command to enable auto-start
+```
+
+Check it's running:
+
+```bash
+pm2 status
+pm2 logs orion-web
+```
+
+The app is now running on port **3000**.
+
+---
+
+### Step 6 — Configure Nginx reverse proxy
+
+```bash
+sudo nano /etc/nginx/sites-available/orion-web
+```
+
+Paste this config (replace `www.orionesolutions.com` with your domain):
+
+```nginx
+server {
+    listen 80;
+    server_name www.orionesolutions.com orionesolutions.com;
+
+    # Security
+    add_header X-Frame-Options "DENY";
+    add_header X-Content-Type-Options "nosniff";
+
+    # Gzip
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml;
+
+    # Static assets — long cache
+    location /_next/static/ {
+        proxy_pass http://localhost:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location /assets/ {
+        root /var/www/orion-web/public;
+        add_header Cache-Control "public, max-age=31536000";
+    }
+
+    # Everything else to Next.js
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Enable and test:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/orion-web /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+### Step 7 — SSL certificate (HTTPS)
+
+```bash
+sudo apt-get install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d www.orionesolutions.com -d orionesolutions.com
+```
+
+Certbot auto-renews. Verify renewal works:
+
+```bash
+sudo certbot renew --dry-run
+```
+
+---
+
+### Step 8 — Point your domain to Linode
+
+In your DNS provider (or Linode DNS Manager), set:
+
+| Type | Name | Value |
+|------|------|-------|
+| A | `@` | `YOUR_LINODE_IP` |
+| A | `www` | `YOUR_LINODE_IP` |
+
+Wait for DNS to propagate (up to 30 min), then visit `https://www.orionesolutions.com`.
+
+---
+
+### Deploying updates
+
+```bash
+cd /var/www/orion-web
+git pull origin main
+npm install
+npm run build
+pm2 restart orion-web
+```
+
+Or set up a simple deploy script:
+
+```bash
+# /var/www/orion-web/deploy.sh
+#!/bin/bash
+set -e
+cd /var/www/orion-web
+git pull origin main
+npm install --production=false
+npm run build
+pm2 restart orion-web
+echo "Deploy complete"
+```
+
+```bash
+chmod +x deploy.sh
+./deploy.sh   # run this whenever you push changes
+```
 
 ---
 
