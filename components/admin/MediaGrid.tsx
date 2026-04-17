@@ -14,8 +14,6 @@ interface MediaGridProps {
   files: MediaFile[]
 }
 
-const imageExts = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif'])
-
 export function MediaGrid({ files }: MediaGridProps) {
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -25,12 +23,13 @@ export function MediaGrid({ files }: MediaGridProps) {
     setTimeout(() => setCopied(null), 2000)
   }
 
-  // Group by folder
   const folders = Array.from(new Set(files.map((f) => f.folder))).sort()
 
   if (files.length === 0) {
     return (
-      <p className="text-slate-400 text-center py-12">No image files found in public/assets/images.</p>
+      <p className="text-slate-400 text-center py-12">
+        No image files found in public/assets/images.
+      </p>
     )
   }
 
@@ -43,64 +42,57 @@ export function MediaGrid({ files }: MediaGridProps) {
             <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
               <span className="text-slate-400">/</span>
               {folder || 'root'}
-              <span className="text-xs font-normal normal-case text-slate-400">({folderFiles.length})</span>
+              <span className="text-xs font-normal normal-case text-slate-400">
+                ({folderFiles.length})
+              </span>
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-              {folderFiles.map((file) => {
-                const isImage = imageExts.has(file.ext.toLowerCase())
-                const isCopied = copied === file.path
 
-                return (
-                  <div
-                    key={file.path}
-                    className="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-indigo-300 hover:shadow-sm transition-all"
-                  >
-                    {/* Preview */}
-                    <div className="aspect-square bg-slate-50 flex items-center justify-center overflow-hidden">
-                      {isImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={file.path}
-                          alt={file.name}
-                          className="w-full h-full object-contain p-1"
-                          loading="lazy"
-                          onError={(e) => {
-                            const target = e.currentTarget
-                            target.style.display = 'none'
-                            target.nextElementSibling?.classList.remove('hidden')
-                          }}
-                        />
-                      ) : null}
-                      <div className={`text-slate-400 text-2xl ${isImage ? 'hidden' : ''}`}>
-                        {file.ext.toUpperCase().replace('.', '')}
-                      </div>
-                    </div>
-
-                    {/* Info + Copy */}
-                    <div className="p-2.5">
-                      <p className="text-xs text-slate-700 font-medium truncate mb-1.5" title={file.name}>
-                        {file.name}
-                      </p>
-                      <button
-                        onClick={() => copyPath(file.path)}
-                        className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-indigo-600 transition-colors w-full"
-                      >
-                        {isCopied ? (
-                          <>
-                            <Check size={12} className="text-green-500 shrink-0" />
-                            <span className="text-green-600 truncate">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy size={12} className="shrink-0" />
-                            <span className="truncate">Copy path</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                    <th className="text-left px-4 py-2.5 font-medium">File</th>
+                    <th className="text-left px-4 py-2.5 font-medium">Type</th>
+                    <th className="text-left px-4 py-2.5 font-medium">Public Path</th>
+                    <th className="px-4 py-2.5 font-medium">Copy</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {folderFiles.map((file) => {
+                    const isCopied = copied === file.path
+                    return (
+                      <tr key={file.path} className="hover:bg-slate-50">
+                        <td className="px-4 py-2.5 font-medium text-slate-800 max-w-xs">
+                          <span className="truncate block" title={file.name}>
+                            {file.name}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-400 uppercase text-xs font-mono">
+                          {file.ext.replace('.', '')}
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-500 font-mono text-xs max-w-sm">
+                          <span className="truncate block" title={file.path}>
+                            {file.path}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          <button
+                            onClick={() => copyPath(file.path)}
+                            title={isCopied ? 'Copied!' : 'Copy path'}
+                            className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors"
+                          >
+                            {isCopied ? (
+                              <Check size={13} className="text-green-500" />
+                            ) : (
+                              <Copy size={13} />
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )

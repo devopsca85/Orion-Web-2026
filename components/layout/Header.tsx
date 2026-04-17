@@ -29,7 +29,7 @@ export function Header({ branding }: HeaderProps = {}) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
-  const logoAlt = branding?.logoAlt || 'Orion Solutions';
+  const logoAlt = branding?.logoAlt || 'Orion eSolutions';
   const phone = branding?.phone || SITE_CONFIG.phone;
 
   useEffect(() => {
@@ -74,11 +74,12 @@ export function Header({ branding }: HeaderProps = {}) {
               width={140}
               height={36}
               priority
+              unoptimized={logoSrc.endsWith('.svg')}
               className={cn('h-9 w-auto transition-all', scrolled ? 'brightness-100' : 'brightness-0 invert')}
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
             <span className={cn('text-xl font-bold transition-colors hidden', scrolled ? 'text-primary-900' : 'text-white')} id="logo-fallback">
-              Orion <span className="text-secondary">Solutions</span>
+              Orion <span className="text-secondary">eSolutions</span>
             </span>
           </Link>
 

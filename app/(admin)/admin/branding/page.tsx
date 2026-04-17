@@ -69,7 +69,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
                     width={140}
                     height={48}
                     className="h-12 w-auto object-contain"
-                    onError={undefined}
+                    unoptimized={logoUrl.endsWith('.svg')}
                   />
                 </div>
               </div>

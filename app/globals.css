@@ -46,6 +46,11 @@
   }
 }
 
+/* Quill editor output alignment — used by public page renderer */
+.ql-align-center { text-align: center; }
+.ql-align-right  { text-align: right; }
+.ql-align-justify { text-align: justify; }
+
 @layer utilities {
   /* Line clamp utilities (Tailwind JIT included but leaving for Tailwind v3 compat) */
   .line-clamp-2 {

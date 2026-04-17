@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import { SITE_CONFIG } from '@/lib/constants';
 
 const subscribeSchema = z.object({
@@ -37,7 +37,7 @@ async function sendConfirmationEmail(email: string, token: string, name?: string
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #1e3a8a; padding: 24px; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 24px;">Orion Solutions</h1>
+          <h1 style="color: white; margin: 0; font-size: 24px;">${SITE_CONFIG.name}</h1>
         </div>
         <div style="padding: 32px; background: #f8fafc;">
           <h2 style="color: #1e3a8a;">Confirm Your Subscription</h2>
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const { email, name, source } = parsed.data;
 
   // Check if already subscribed
-  const existing = await db.newsletterSubscriber.findUnique({ where: { email } });
+  const existing = await prisma.newsletterSubscriber.findUnique({ where: { email } });
 
   if (existing) {
     if (existing.confirmed && !existing.unsubscribed) {
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     // Resend confirmation if not yet confirmed or previously unsubscribed
     const token = generateToken();
-    await db.newsletterSubscriber.update({
+    await prisma.newsletterSubscriber.update({
       where: { email },
       data: {
         confirmToken: token,
@@ -107,13 +107,14 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       console.error('[Newsletter] Email error:', err);
     }
+    syncToBrevo(email, name ?? existing.name ?? undefined).catch(() => null);
 
     return NextResponse.json({ message: 'Please check your email to confirm your subscription.' });
   }
 
   const token = generateToken();
 
-  await db.newsletterSubscriber.create({
+  await prisma.newsletterSubscriber.create({
     data: {
       email,
       name: name ?? null,
@@ -127,11 +128,28 @@ export async function POST(req: NextRequest) {
     await sendConfirmationEmail(email, token, name);
   } catch (err) {
     console.error('[Newsletter] Email error:', err);
-    // Don't return 500 — record is saved, user can re-trigger confirmation
   }
+  syncToBrevo(email, name).catch(() => null);
 
   return NextResponse.json(
     { message: 'Thanks! Please check your email to confirm your subscription.' },
     { status: 201 }
   );
+}
+
+async function syncToBrevo(email: string, name?: string): Promise<void> {
+  const apiKey = process.env.BREVO_API_KEY;
+  const listId = parseInt(process.env.BREVO_LIST_ID || '0');
+  if (!apiKey || !listId) return;
+
+  await fetch('https://api.brevo.com/v3/contacts', {
+    method: 'POST',
+    headers: { 'api-key': apiKey, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      attributes: name ? { FIRSTNAME: name } : {},
+      listIds: [listId],
+      updateEnabled: true,
+    }),
+  });
 }

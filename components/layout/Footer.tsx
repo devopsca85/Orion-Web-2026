@@ -55,9 +55,10 @@ export function Footer({ branding }: FooterProps = {}) {
                 width={140}
                 height={36}
                 className="h-9 w-auto brightness-0 invert"
+                unoptimized={logoSrc.endsWith('.svg')}
               />
               <span className="text-lg font-bold text-white hidden" id="footer-logo-fallback">
-                Orion <span className="text-secondary">Solutions</span>
+                Orion <span className="text-secondary">eSolutions</span>
               </span>
             </Link>
             <p className="mb-6 text-sm leading-relaxed text-gray-400">

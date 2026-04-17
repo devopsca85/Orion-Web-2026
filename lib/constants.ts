@@ -1,8 +1,8 @@
 export const SITE_CONFIG = {
-  name: 'Orion Solutions',
+  name: 'Orion eSolutions',
   tagline: 'Transforming Business Through Technology',
   description:
-    'Orion Solutions delivers innovative technology solutions — software development, cloud, IT consulting, and digital transformation — for businesses worldwide.',
+    'Orion eSolutions delivers innovative technology solutions — software development, cloud, IT consulting, and digital transformation — for businesses worldwide.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.orionesolutions.com',
   email: 'support@orionesolutions.com',
   phone: '+1 (800) 000-0000',
