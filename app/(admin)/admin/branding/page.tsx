@@ -4,6 +4,7 @@ import { ColorPicker } from '@/components/admin/ColorPicker'
 import { getSettings } from '@/lib/settings'
 import { saveBrandingSettings } from '@/lib/admin/settings-actions'
 import { CheckCircle } from 'lucide-react'
+import { LogoImg } from '@/components/ui/LogoImg'
 
 interface Props {
   searchParams: Promise<{ saved?: string }>
@@ -63,12 +64,10 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
                 <p className="text-xs text-slate-500 mb-2">Current Logo</p>
                 <div className="h-16 w-40 flex items-center justify-center border border-slate-200 rounded-lg p-2 bg-white">
                   {logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <LogoImg
                       src={logoUrl}
                       alt={settings['logo.alt'] || 'Logo'}
                       className="h-12 w-auto max-w-full object-contain"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                     />
                   ) : (
                     <span className="text-xs text-slate-400">No logo set</span>
