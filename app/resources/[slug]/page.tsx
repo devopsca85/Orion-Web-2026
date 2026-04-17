@@ -6,6 +6,7 @@ import { Container, Section } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
 import { CTA } from '@/components/sections/CTA';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
+import { ResourceDownloadForm } from '@/components/ui/ResourceDownloadForm';
 import { resources } from '@/lib/data/resources';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { formatDate } from '@/lib/utils';
@@ -105,15 +106,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                     </div>
                     <h3 className="mb-1 font-bold text-gray-900">Download Free</h3>
                     <p className="mb-4 text-sm text-gray-500">Enter your details to access this resource instantly.</p>
-                    <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
-                      <input required type="text" placeholder="Full Name" className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
-                      <input required type="email" placeholder="Work Email" className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
-                      <input type="text" placeholder="Company (optional)" className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
-                      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-lg bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary-600 transition-colors">
-                        <Download className="h-4 w-4" /> Download Now — Free
-                      </button>
-                    </form>
-                    <p className="mt-3 text-xs text-gray-400">No spam. Unsubscribe anytime. See our <Link href="/privacy-policy" className="underline">Privacy Policy</Link>.</p>
+                    <ResourceDownloadForm />
                   </>
                 ) : (
                   <>
