@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/admin/Sidebar'
-import { SessionProviderWrapper } from '@/components/admin/SessionProviderWrapper'
+import { signOutAction } from '@/lib/admin/auth-actions'
 
 export const metadata = {
   title: 'Admin — Orion Solutions CMS',
@@ -12,13 +12,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session) redirect('/admin/login')
 
   return (
-    <SessionProviderWrapper>
-      <div className="flex h-screen bg-slate-50 overflow-hidden">
-        <Sidebar user={session.user} />
-        <main className="flex-1 flex flex-col overflow-y-auto">
-          {children}
-        </main>
-      </div>
-    </SessionProviderWrapper>
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
+      <Sidebar user={session.user} signOutAction={signOutAction} />
+      <main className="flex-1 flex flex-col overflow-y-auto">
+        {children}
+      </main>
+    </div>
   )
 }

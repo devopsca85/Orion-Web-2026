@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
   FileText,
@@ -70,9 +69,10 @@ interface SidebarProps {
     email?: string | null
     role?: string
   }
+  signOutAction: () => Promise<void>
 }
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user, signOutAction }: SidebarProps) {
   const pathname = usePathname()
 
   function isActive(href: string) {
@@ -138,13 +138,15 @@ export function Sidebar({ user }: SidebarProps) {
             <p className="text-xs text-slate-500 truncate">{user.role?.replace('_', ' ')}</p>
           </div>
         </div>
-        <button
-          onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-        >
-          <LogOut size={15} />
-          Sign Out
-        </button>
+        <form action={signOutAction}>
+          <button
+            type="submit"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <LogOut size={15} />
+            Sign Out
+          </button>
+        </form>
       </div>
     </aside>
   )
