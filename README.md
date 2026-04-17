@@ -1,24 +1,22 @@
 # Orion Solutions — Website (2026 Rebuild)
 
-Production-ready Next.js 15 website for [orionesolutions.com](https://www.orionesolutions.com).
+Production-ready Next.js 15 website for [orionesolutions.com](https://www.orionesolutions.com), with a built-in CMS admin panel for daily content management.
 
-**Stack:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Prisma · MySQL · Resend · Linode (Akamai Cloud)
-
----
-
-### Prerequisites
-
-Install these before you begin:
-
-| Tool | Version | Download |
-|------|---------|----------|
-| Node.js | 20 LTS or higher | [nodejs.org](https://nodejs.org) |
-| Git | any | [git-scm.com](https://git-scm.com) |
-| MySQL | 8.0+ | Local, [PlanetScale](https://planetscale.com), [Railway](https://railway.app), or [AWS RDS](https://aws.amazon.com/rds/) |
+**Stack:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Prisma · MySQL · NextAuth v5 · Resend · Linode (Akamai Cloud)
 
 ---
 
-## Quick Start
+## Prerequisites
+
+| Tool | Version |
+|------|---------|
+| Node.js | 20 LTS or higher |
+| Git | any |
+| MySQL | 8.0+ |
+
+---
+
+## Quick Start (Local Development)
 
 ### 1. Clone the repo
 
@@ -39,19 +37,21 @@ npm install
 cp .env.example .env.local
 ```
 
-Open `.env.local` and fill in your values (see [Environment Variables](#environment-variables) below).
+Fill in `.env.local` — see [Environment Variables](#environment-variables) below.
+The minimum required for local dev:
+
+```env
+DATABASE_URL=mysql://orion:password@localhost:3306/orion_db
+AUTH_SECRET=any-random-string-at-least-32-chars
+AUTH_URL=http://localhost:3000
+```
 
 ### 4. Set up the database
 
 ```bash
-# Push the schema to your MySQL database
-npm run db:push
-
-# Generate the Prisma client
-npm run db:generate
-
-# (Optional) Seed with sample data
-npm run db:seed
+npx prisma db push       # Create tables from schema
+npx prisma generate      # Generate Prisma client types
+npx prisma db seed       # Seed sample data + create admin user
 ```
 
 ### 5. Run the development server
@@ -60,19 +60,63 @@ npm run db:seed
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — the site is running.
+- **Website:** [http://localhost:3000](http://localhost:3000)
+- **Admin panel:** [http://localhost:3000/admin](http://localhost:3000/admin)
+
+---
+
+## Admin CMS Panel
+
+The site includes a full content management system at `/admin`.
+
+### Default login credentials
+
+| Field | Value |
+|-------|-------|
+| URL | `/admin` |
+| Email | `admin@orionesolutions.com` |
+| Password | `Admin@2026!` |
+
+> **Change the default password immediately** after first login via Users → Edit.
+
+### Admin features
+
+| Section | What you can do |
+|---------|-----------------|
+| **Dashboard** | Live stats: total posts, portfolio items, new contacts, subscribers |
+| **Blog Posts** | Create, edit, delete posts · Draft / Published / Archived status · SEO fields |
+| **Portfolio** | Case studies with client, industry, metrics, technologies |
+| **Team** | Manage team member profiles, bio, LinkedIn, sort order |
+| **Services** | Edit service page content, features, benefits, technologies |
+| **Resources** | Whitepapers, guides, webinars — gated or open access |
+| **Contacts** | View form submissions, update status, add internal notes |
+| **Subscribers** | Newsletter subscriber list |
+| **Job Applications** | View all career applications with status tracking |
+| **Users** | Create/edit users, assign roles, activate/deactivate accounts |
+| **Media** | Browse all images in `/public/assets/images`, copy paths |
+
+### User roles
+
+| Role | Permissions |
+|------|-------------|
+| `SUPER_ADMIN` | Full access — manage everything including other admins |
+| `ADMIN` | Full content + user management |
+| `EDITOR` | All content CRUD, view contacts/subscribers, no user management |
+| `AUTHOR` | Create and edit own blog posts only |
 
 ---
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in each value:
+Copy `.env.example` to `.env.local` and fill in your values:
 
 ### Required
 
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | MySQL connection string — `mysql://user:password@host:3306/orion_db` |
+| `AUTH_SECRET` | Random secret for NextAuth JWT signing — generate with `openssl rand -base64 32` |
+| `AUTH_URL` | Your site's full URL — `https://www.orionesolutions.com` (or `http://localhost:3000` for dev) |
 
 ### Email (Resend)
 
@@ -83,9 +127,7 @@ Sign up free at [resend.com](https://resend.com). Required for contact form and 
 | `RESEND_API_KEY` | Your Resend API key — starts with `re_` |
 | `CONTACT_EMAIL` | Email address that receives contact form submissions |
 
-### reCAPTCHA (optional in dev)
-
-Sign up at [google.com/recaptcha](https://www.google.com/recaptcha). If not set, reCAPTCHA is skipped in development.
+### reCAPTCHA (optional)
 
 | Variable | Description |
 |----------|-------------|
@@ -98,178 +140,187 @@ Sign up at [google.com/recaptcha](https://www.google.com/recaptcha). If not set,
 |----------|-------------|
 | `NEXT_PUBLIC_SITE_URL` | Your production URL, e.g. `https://www.orionesolutions.com` |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4 measurement ID (`G-XXXXXXXXXX`) |
-| `ADMIN_IP_ALLOWLIST` | Comma-separated IPs allowed to access `/admin` routes. Leave blank to disable. |
-
----
-
-## Database Setup
-
-This project uses **Prisma ORM** with **MySQL**.
-
-### Hosted MySQL options (recommended)
-
-| Provider | Free tier | Notes |
-|----------|-----------|-------|
-| Linode MySQL (same server) | — | Run MySQL on the same Linode — simplest setup |
-| [Railway](https://railway.app) | Yes | Simple managed MySQL, good for dev |
-| [PlanetScale](https://planetscale.com) | Yes | Serverless MySQL |
-| AWS RDS / Azure MySQL | Paid | For multi-server production setups |
-
-### Connection string format
-
-```
-DATABASE_URL=mysql://USERNAME:PASSWORD@HOST:3306/DATABASE_NAME
-```
-
-For PlanetScale add `?sslaccept=strict` at the end.
-
-### Database commands
-
-```bash
-npm run db:push          # Create/update tables from schema (no migration files)
-npm run db:migrate       # Create a migration file and apply it
-npm run db:generate      # Regenerate Prisma client after schema changes
-npm run db:seed          # Populate database with sample data
-npm run db:studio        # Open Prisma Studio (visual DB browser)
-npm run db:reset         # Drop and recreate all tables (destructive!)
-```
 
 ---
 
 ## Project Structure
 
 ```
-├── app/                        # Next.js App Router pages
-│   ├── page.tsx                # Home page
-│   ├── about/                  # About, Culture, Certifications, CSR
-│   ├── services/               # Services index + [slug] detail pages
-│   ├── industries/             # Industries index + [slug] detail pages
-│   ├── portfolio/              # Portfolio index + [slug] case studies
-│   ├── blog/                   # Blog index + [slug] post pages
-│   ├── resources/              # Resources index + [slug] detail pages
-│   ├── contact/                # Contact page with form
-│   ├── careers/                # Careers page
-│   ├── partners/               # Partners & certifications
-│   ├── privacy-policy/         # Privacy policy
-│   ├── terms-of-service/       # Terms of service
-│   ├── cookie-policy/          # Cookie policy
-│   ├── sitemap-page/           # HTML sitemap
-│   └── api/
-│       ├── contact/            # Contact form submission endpoint
-│       └── newsletter/         # Subscribe / confirm / unsubscribe
+├── app/
+│   ├── (public)/                   # Public-facing website
+│   │   ├── layout.tsx              # Wraps Header + Footer
+│   │   ├── page.tsx                # Home page
+│   │   ├── about/                  # About, Culture, Certifications, CSR
+│   │   ├── services/               # Services index + [slug] detail pages
+│   │   ├── industries/             # Industries index + [slug] detail pages
+│   │   ├── portfolio/              # Portfolio index + [slug] case studies
+│   │   ├── blog/                   # Blog index + [slug] post pages
+│   │   ├── resources/              # Resources index + [slug] detail pages
+│   │   ├── contact/                # Contact page with form
+│   │   ├── careers/                # Careers page
+│   │   ├── partners/               # Partners & certifications
+│   │   └── (legal pages)           # Privacy, Terms, Cookie policy, Sitemap
+│   │
+│   ├── (admin)/
+│   │   ├── admin/
+│   │   │   ├── layout.tsx          # Admin shell (sidebar + auth guard)
+│   │   │   ├── page.tsx            # Dashboard
+│   │   │   ├── blog/               # Blog CRUD
+│   │   │   ├── portfolio/          # Portfolio CRUD
+│   │   │   ├── team/               # Team CRUD
+│   │   │   ├── services/           # Services CRUD
+│   │   │   ├── resources/          # Resources CRUD
+│   │   │   ├── contacts/           # Contact submissions viewer
+│   │   │   ├── subscribers/        # Newsletter subscribers
+│   │   │   ├── applications/       # Job applications viewer
+│   │   │   ├── users/              # User & role management
+│   │   │   └── media/              # Image browser
+│   │   └── (auth)/admin/login/     # Login page (no sidebar)
+│   │
+│   ├── api/
+│   │   ├── auth/[...nextauth]/     # NextAuth v5 handler
+│   │   ├── contact/                # Contact form submission
+│   │   └── newsletter/             # Subscribe / confirm / unsubscribe
+│   │
+│   ├── layout.tsx                  # Root layout (html/body shell only)
+│   └── globals.css
 │
 ├── components/
-│   ├── layout/                 # Header, Footer
-│   ├── sections/               # Hero, Stats, Features, CTA, etc.
-│   ├── ui/                     # Button, Card, Badge, Container, etc.
-│   ├── forms/                  # ContactForm
-│   └── seo/                    # JSON-LD structured data components
+│   ├── admin/                      # Sidebar, AdminTopBar, DeleteForm, MediaGrid
+│   ├── layout/                     # Header, Footer
+│   ├── sections/                   # Hero, Stats, Features, CTA, etc.
+│   ├── ui/                         # Button, Card, Badge, Container, etc.
+│   └── seo/                        # JSON-LD structured data
 │
 ├── lib/
-│   ├── data/                   # Static content (services, blog, portfolio, etc.)
-│   ├── constants.ts            # Site config, nav links, footer links
-│   ├── db.ts                   # Prisma client singleton
-│   ├── seo.ts                  # generateMetadata helper
-│   ├── utils.ts                # cn, formatDate, slugify, etc.
-│   └── validations.ts          # Zod schemas
+│   ├── admin/
+│   │   ├── actions.ts              # Server actions — all content CRUD
+│   │   └── auth-actions.ts         # Sign-in / sign-out server actions
+│   ├── data/                       # Static fallback content (services, blog, etc.)
+│   ├── auth.ts                     # NextAuth v5 config (JWT + credentials)
+│   ├── prisma.ts                   # Prisma client singleton
+│   ├── constants.ts                # Site config, nav/footer links
+│   ├── seo.ts                      # generateMetadata helper
+│   └── utils.ts                    # cn, formatDate, etc.
 │
 ├── prisma/
-│   ├── schema.prisma           # Database schema (MySQL)
-│   └── seed.ts                 # Database seed script
+│   ├── schema.prisma               # Full DB schema (MySQL)
+│   └── seed.ts                     # Seed script — imports static data + creates admin user
 │
 ├── public/
-│   └── assets/images/          # Static images (team, blog, portfolio, etc.)
+│   ├── assets/
+│   │   ├── images/                 # Organised images (team/, blog/, portfolio/, etc.)
+│   │   └── uploads/                # WordPress image dump (source for import script)
 │
-├── middleware.ts               # Admin IP allowlist + request ID header
-├── next.config.ts              # Security headers, image optimization
-├── tailwind.config.ts          # Brand colors, custom tokens
-└── .env.example                # Environment variable template
+├── scripts/
+│   └── import-wp-images.sh         # WordPress image migration script
+│
+├── middleware.ts                   # Auth-based route protection for /admin
+├── next-auth.d.ts                  # NextAuth type extensions (id, role on session)
+├── next.config.ts                  # Security headers, image optimisation
+├── tailwind.config.ts              # Brand colours, custom tokens
+└── .env.example                    # Environment variable template
 ```
 
 ---
 
-## Updating Content
+## Database Schema
 
-All site content lives in `lib/data/` as TypeScript files — no CMS required.
+The Prisma schema covers all content and transactional data:
 
-| File | What it controls |
-|------|-----------------|
-| `lib/constants.ts` | Site name, phone, address, social links, nav/footer links |
-| `lib/data/services.ts` | 6 service pages |
-| `lib/data/industries.ts` | 8 industry pages |
-| `lib/data/portfolio.ts` | Case studies / portfolio items |
-| `lib/data/blog.ts` | Blog posts |
-| `lib/data/team.ts` | Leadership team + site stats |
-| `lib/data/partners.ts` | Technology partners + certifications |
-| `lib/data/resources.ts` | Whitepapers, guides, webinars |
+| Model | Purpose |
+|-------|---------|
+| `User` | Admin panel users with roles |
+| `BlogPost` | Blog posts with author, status, tags, SEO |
+| `Author` | Blog post authors |
+| `PortfolioItem` | Case studies / portfolio |
+| `Service` | Service page content |
+| `TeamMember` | Leadership profiles |
+| `Resource` | Whitepapers, guides, webinars |
+| `ContactSubmission` | Contact form leads |
+| `NewsletterSubscriber` | Email subscribers |
+| `JobApplication` | Career applications |
+| `SiteStat` | Homepage statistics |
 
-Edit the relevant file, save, and the page updates instantly in dev (hot reload).
+### Database commands
+
+```bash
+npm run db:push          # Create/update tables (no migration files)
+npm run db:migrate       # Create migration file and apply
+npm run db:generate      # Regenerate Prisma client after schema changes
+npm run db:seed          # Seed sample data + default admin user
+npm run db:studio        # Open Prisma Studio (visual DB browser)
+npm run db:reset         # Drop and recreate all tables (destructive!)
+```
+
+---
+
+## WordPress Image Migration
+
+If migrating from WordPress, place the `wp-content/uploads` folder contents into:
+
+```
+public/assets/uploads/
+```
+
+Then run the import script (on the server):
+
+```bash
+bash scripts/import-wp-images.sh
+```
+
+**What the script does:**
+1. Creates all required subfolders under `public/assets/images/`
+2. Bulk-copies **all** images from `uploads/` → `images/` preserving folder structure
+3. Resolves specific filenames expected by the Next.js code (logo, team photos, blog images, etc.) by keyword-matching
+
+Any files the script can't match are reported as `✗ not found` — rename those files to include the expected keyword and re-run.
 
 ---
 
 ## Build for Production
 
 ```bash
-npm run build    # Build and generate sitemap
-npm run start    # Start the production server
+npm run build    # TypeScript check + build + generate sitemap
+npm run start    # Start the production server (port 3000)
 ```
 
 ---
 
 ## Deploying to Linode
 
-Recommended setup: **Linode Nanode or Shared CPU** running Ubuntu 22.04 LTS, with Nginx as a reverse proxy and PM2 as the process manager.
-
----
+Recommended setup: **Ubuntu 22.04 LTS** with Nginx (reverse proxy) and PM2 (process manager).
 
 ### Step 1 — Create the Linode
 
 1. Log in to [cloud.linode.com](https://cloud.linode.com)
-2. Click **Create → Linode**
-3. Choose:
-   - **Image:** Ubuntu 22.04 LTS
-   - **Region:** closest to your users
-   - **Plan:** Nanode 1GB (minimum) or Shared CPU 2GB (recommended for production)
-4. Set a strong root password, then click **Create Linode**
+2. **Create → Linode** → Ubuntu 22.04 LTS
+3. Plan: Nanode 1GB (minimum) or Shared CPU 2GB (recommended for production)
 
 ---
 
-### Step 2 — Initial server setup
-
-SSH into your new server:
+### Step 2 — Server setup
 
 ```bash
 ssh root@YOUR_LINODE_IP
-```
 
-Create a deploy user and install dependencies:
-
-```bash
-# Create a non-root user
-adduser deploy
-usermod -aG sudo deploy
-
-# Switch to deploy user
+# Create deploy user
+adduser deploy && usermod -aG sudo deploy
 su - deploy
 
-# Install Node.js 20 LTS
+# Node.js 20 LTS
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# Install PM2 (process manager)
+# PM2, Nginx, MySQL
 sudo npm install -g pm2
-
-# Install Nginx
-sudo apt-get install -y nginx
-
-# Install MySQL
-sudo apt-get install -y mysql-server
+sudo apt-get install -y nginx mysql-server
 sudo mysql_secure_installation
 ```
 
 ---
 
-### Step 3 — Create MySQL database
+### Step 3 — MySQL database
 
 ```bash
 sudo mysql -u root -p
@@ -285,7 +336,7 @@ EXIT;
 
 ---
 
-### Step 4 — Clone and build the app
+### Step 4 — Clone, configure and build
 
 ```bash
 cd /var/www
@@ -293,19 +344,31 @@ sudo git clone https://github.com/devopsca85/Orion-Web-2026.git orion-web
 sudo chown -R deploy:deploy /var/www/orion-web
 cd /var/www/orion-web
 
-# Install dependencies
 npm install
 
 # Create environment file
 cp .env.example .env.local
-nano .env.local   # fill in all values (see Environment Variables section)
+nano .env.local
+```
 
-# Set up the database
-npm run db:push
-npm run db:generate
-npm run db:seed   # optional
+Minimum required values in `.env.local`:
 
-# Build the app
+```env
+DATABASE_URL=mysql://orion:STRONG_PASSWORD_HERE@localhost:3306/orion_db
+AUTH_SECRET=<output of: openssl rand -base64 32>
+AUTH_URL=https://your-domain.com
+RESEND_API_KEY=re_xxxxxxxxxxxx
+CONTACT_EMAIL=support@orionesolutions.com
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
+
+```bash
+# Database setup
+npx prisma generate
+npx prisma db push
+npx prisma db seed       # Creates tables + default admin user
+
+# Build
 npm run build
 ```
 
@@ -314,47 +377,27 @@ npm run build
 ### Step 5 — Run with PM2
 
 ```bash
-# Start the app
 pm2 start npm --name "orion-web" -- start
-
-# Save PM2 config so it restarts on reboot
 pm2 save
-pm2 startup   # follow the printed command to enable auto-start
+pm2 startup              # Follow the printed command to enable auto-start on reboot
 ```
-
-Check it's running:
-
-```bash
-pm2 status
-pm2 logs orion-web
-```
-
-The app is now running on port **3000**.
 
 ---
 
-### Step 6 — Configure Nginx reverse proxy
+### Step 6 — Nginx reverse proxy
 
 ```bash
 sudo nano /etc/nginx/sites-available/orion-web
 ```
 
-Paste this config (replace `www.orionesolutions.com` with your domain):
-
 ```nginx
 server {
     listen 80;
-    server_name www.orionesolutions.com orionesolutions.com;
+    server_name your-domain.com www.your-domain.com;
 
-    # Security
-    add_header X-Frame-Options "DENY";
-    add_header X-Content-Type-Options "nosniff";
-
-    # Gzip
     gzip on;
     gzip_types text/plain text/css application/json application/javascript text/xml;
 
-    # Static assets — long cache
     location /_next/static/ {
         proxy_pass http://localhost:3000;
         add_header Cache-Control "public, max-age=31536000, immutable";
@@ -365,7 +408,6 @@ server {
         add_header Cache-Control "public, max-age=31536000";
     }
 
-    # Everything else to Next.js
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
@@ -380,8 +422,6 @@ server {
 }
 ```
 
-Enable and test:
-
 ```bash
 sudo ln -s /etc/nginx/sites-available/orion-web /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -390,31 +430,22 @@ sudo systemctl reload nginx
 
 ---
 
-### Step 7 — SSL certificate (HTTPS)
+### Step 7 — SSL (HTTPS)
 
 ```bash
 sudo apt-get install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d www.orionesolutions.com -d orionesolutions.com
-```
-
-Certbot auto-renews. Verify renewal works:
-
-```bash
-sudo certbot renew --dry-run
+sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+sudo certbot renew --dry-run    # Verify auto-renewal works
 ```
 
 ---
 
-### Step 8 — Point your domain to Linode
-
-In your DNS provider (or Linode DNS Manager), set:
+### Step 8 — DNS records
 
 | Type | Name | Value |
 |------|------|-------|
 | A | `@` | `YOUR_LINODE_IP` |
 | A | `www` | `YOUR_LINODE_IP` |
-
-Wait for DNS to propagate (up to 30 min), then visit `https://www.orionesolutions.com`.
 
 ---
 
@@ -422,59 +453,33 @@ Wait for DNS to propagate (up to 30 min), then visit `https://www.orionesolution
 
 ```bash
 cd /var/www/orion-web
-git pull origin main
+git pull origin develop
 npm install
+npx prisma generate          # Only needed if schema changed
+npx prisma db push           # Only needed if schema changed
 npm run build
 pm2 restart orion-web
 ```
 
-Or set up a simple deploy script:
-
-```bash
-# /var/www/orion-web/deploy.sh
-#!/bin/bash
-set -e
-cd /var/www/orion-web
-git pull origin main
-npm install --production=false
-npm run build
-pm2 restart orion-web
-echo "Deploy complete"
-```
+Or use the included deploy script:
 
 ```bash
 chmod +x deploy.sh
-./deploy.sh   # run this whenever you push changes
+./deploy.sh
 ```
-
----
-
-## Adding Real Images
-
-Place images in `public/assets/images/` following this structure:
-
-```
-public/assets/images/
-├── team/           # e.g. john-smith.jpg
-├── blog/           # e.g. cloud-migration.jpg
-├── portfolio/      # e.g. fintech-platform.jpg
-├── partners/       # e.g. aws.svg, azure.svg
-└── resources/      # e.g. cloud-guide-cover.jpg
-```
-
-Image paths in the data files already reference these locations (e.g. `/assets/images/team/john.jpg`).
 
 ---
 
 ## Security Features
 
-- Content Security Policy (CSP) headers
+- NextAuth v5 JWT authentication for admin panel
+- WordPress-style role-based access control (SUPER_ADMIN / ADMIN / EDITOR / AUTHOR)
+- Content Security Policy (CSP) headers on all routes
 - HSTS, X-Frame-Options, X-Content-Type-Options
-- Rate limiting on contact form API (3 req/min per IP)
-- reCAPTCHA v3 on contact form
-- IP allowlist for `/admin` routes (via `ADMIN_IP_ALLOWLIST`)
-- Input validation with Zod on all API routes
+- Server Actions with role guards — no direct API exposure for admin mutations
+- Input validation with Zod on all public API routes
 - Unique request ID on every response (`X-Request-ID`)
+- reCAPTCHA v3 support on contact form
 
 ---
 
