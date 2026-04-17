@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Container, Section } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
 import { CTA } from '@/components/sections/CTA';

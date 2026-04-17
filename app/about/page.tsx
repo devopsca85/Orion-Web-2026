@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { CheckCircle, Award, Globe2, Users } from 'lucide-react';
 import { PageHero } from '@/components/sections/Hero';
 import { Container, Section, SectionHeader } from '@/components/ui/Container';

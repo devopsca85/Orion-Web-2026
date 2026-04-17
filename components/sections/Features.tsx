@@ -1,5 +1,5 @@
 import { CheckCircle, Clock, Shield, TrendingUp, Users, Zap } from 'lucide-react';
-import { Container, Section, SectionHeader } from '@/components/ui/Container';
+import { Container, Section } from '@/components/ui/Container';
 import { cn } from '@/lib/utils';
 
 const features = [

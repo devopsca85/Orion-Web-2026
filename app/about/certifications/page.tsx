@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { CheckCircle, Shield } from 'lucide-react';
 import { PageHero } from '@/components/sections/Hero';
-import { Container, Section, SectionHeader } from '@/components/ui/Container';
+import { Container, Section } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { CTA } from '@/components/sections/CTA';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
