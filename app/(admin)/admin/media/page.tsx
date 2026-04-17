@@ -52,11 +52,16 @@ export default async function MediaPage() {
     <>
       <AdminTopBar title="Media Browser" user={session!.user} />
       <div className="p-6">
-        <div className="mb-6">
-          <p className="text-sm text-slate-500">
-            <span className="font-semibold text-slate-800">{files.length}</span> image{files.length !== 1 ? 's' : ''} in <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">public/assets/images</code>
-          </p>
-          <p className="text-xs text-slate-400 mt-1">Click &ldquo;Copy path&rdquo; to copy the public URL to clipboard.</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-slate-500">
+              <span className="font-semibold text-slate-800">{files.length}</span> file{files.length !== 1 ? 's' : ''} across{' '}
+              <span className="font-semibold text-slate-800">{Array.from(new Set(files.map(f => f.folder))).length}</span> folder{Array.from(new Set(files.map(f => f.folder))).length !== 1 ? 's' : ''}
+            </p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Click a folder to expand · hover a file name to preview · copy its public path
+            </p>
+          </div>
         </div>
 
         <MediaGrid files={sorted} />
