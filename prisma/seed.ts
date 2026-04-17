@@ -3,6 +3,7 @@
  * Run: npx prisma db seed
  */
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import { services } from '../lib/data/services';
 import { portfolioItems } from '../lib/data/portfolio';
 import { blogPosts } from '../lib/data/blog';
@@ -128,6 +129,20 @@ async function main() {
     });
   }
   console.log(`  ✓ ${stats.length} site stats`);
+
+  // ── Default Super Admin user ───────────────────────────────────────────────
+  const hashedPassword = await bcrypt.hash('Admin@2026!', 12);
+  await prisma.user.upsert({
+    where: { email: 'admin@orionesolutions.com' },
+    update: {},
+    create: {
+      name: 'Super Admin',
+      email: 'admin@orionesolutions.com',
+      password: hashedPassword,
+      role: 'SUPER_ADMIN',
+    },
+  });
+  console.log('  ✓ Super admin user: admin@orionesolutions.com / Admin@2026!');
 
   console.log('✅ Seed complete.');
 }

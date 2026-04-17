@@ -1,45 +1,20 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { auth } from '@/lib/auth'
+import { NextResponse } from 'next/server'
 
-// IP allowlist for admin routes (if any admin routes are added later)
-const ADMIN_IP_ALLOWLIST = (process.env.ADMIN_IP_ALLOWLIST || '')
-  .split(',')
-  .map((ip) => ip.trim())
-  .filter(Boolean);
+export default auth((req) => {
+  const { pathname } = req.nextUrl
+  const isAdminPath = pathname.startsWith('/admin')
+  const isLoginPage = pathname === '/admin/login'
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Protect /admin routes with IP allowlist
-  if (pathname.startsWith('/admin') && ADMIN_IP_ALLOWLIST.length > 0) {
-    const clientIp =
-      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-      request.headers.get('x-real-ip') ||
-      'unknown';
-
-    if (!ADMIN_IP_ALLOWLIST.includes(clientIp)) {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
+  if (isAdminPath && !isLoginPage && !req.auth) {
+    return NextResponse.redirect(new URL('/admin/login', req.url))
   }
-
-  const response = NextResponse.next();
-
-  // Additional security headers not covered by next.config.ts
-  // (next.config.ts handles the main CSP / HSTS headers)
-  response.headers.set('X-Request-ID', crypto.randomUUID());
-
-  return response;
-}
+  if (isLoginPage && req.auth) {
+    return NextResponse.redirect(new URL('/admin', req.url))
+  }
+  return NextResponse.next()
+})
 
 export const config = {
-  matcher: [
-    /*
-     * Match all paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, sitemap.xml, robots.txt
-     * - Public assets
-     */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|assets/).*)',
-  ],
-};
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|assets/|api/auth).*)'],
+}

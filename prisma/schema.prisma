@@ -42,6 +42,13 @@ enum PostStatus {
   ARCHIVED
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  AUTHOR
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // TRANSACTIONAL — Contact, Newsletter, Careers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -229,6 +236,41 @@ model TeamMember {
 
   @@index([isLeader, sortOrder])
   @@map("team_members")
+}
+
+model User {
+  id          String    @id @default(cuid())
+  name        String    @db.VarChar(100)
+  email       String    @unique @db.VarChar(255)
+  password    String    @db.VarChar(255)
+  role        Role      @default(AUTHOR)
+  avatar      String?   @db.VarChar(512)
+  active      Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  slug        String   @unique @db.VarChar(100)
+  title       String   @db.VarChar(250)
+  type        String   @db.VarChar(50)
+  topic       String   @db.VarChar(80)
+  excerpt     String   @db.VarChar(500)
+  coverImage  String?  @db.VarChar(512)
+  gated       Boolean  @default(true)
+  watchUrl    String?  @db.VarChar(512)
+  publishedAt DateTime @default(now())
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@map("resources")
 }
 
 /// Site-wide stats displayed on pages
