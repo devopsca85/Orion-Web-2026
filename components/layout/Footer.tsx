@@ -54,7 +54,7 @@ export function Footer({ branding }: FooterProps = {}) {
                 alt={logoAlt}
                 width={140}
                 height={36}
-                className="h-9 w-auto brightness-0 invert"
+                className="h-9 w-auto"
               />
               <span className="text-lg font-bold text-white hidden" id="footer-logo-fallback">
                 Orion <span className="text-secondary">eSolutions</span>

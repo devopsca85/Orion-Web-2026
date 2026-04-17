@@ -73,7 +73,7 @@ export function Header({ branding }: HeaderProps = {}) {
               alt={logoAlt}
               width={140}
               height={36}
-              className={cn('h-9 w-auto transition-all', scrolled ? 'brightness-100' : 'brightness-0 invert')}
+              className="h-9 w-auto"
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
             <span className={cn('text-xl font-bold transition-colors hidden', scrolled ? 'text-primary-900' : 'text-white')} id="logo-fallback">
