@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Youtube } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { NewsletterForm } from '@/components/ui/NewsletterForm';
 import { SITE_CONFIG, FOOTER_LINKS } from '@/lib/constants';
 
 export function Footer() {
@@ -128,24 +129,7 @@ export function Footer() {
             <p className="mb-4 text-sm text-gray-400">
               Subscribe to our newsletter for the latest insights on technology and digital transformation.
             </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-2"
-              aria-label="Newsletter subscription"
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                required
-                className="rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-secondary-600"
-              >
-                Subscribe
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
       </Container>
