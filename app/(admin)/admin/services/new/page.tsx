@@ -52,7 +52,7 @@ export default async function NewServicePage() {
 
             <div>
               <label htmlFor="features" className="block text-sm font-medium text-slate-700 mb-1">
-                Features <span className="text-slate-400 text-xs font-normal">(JSON string array, e.g. ["Feature 1","Feature 2"])</span>
+                Features <span className="text-slate-400 text-xs font-normal">(JSON string array, e.g. [&quot;Feature 1&quot;,&quot;Feature 2&quot;])</span>
               </label>
               <textarea id="features" name="features" rows={3} defaultValue='[]' className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono" />
             </div>

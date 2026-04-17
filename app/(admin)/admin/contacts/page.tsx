@@ -19,7 +19,7 @@ interface Props {
 export default async function ContactsPage({ searchParams }: Props) {
   const session = await auth()
   const { status } = await searchParams
-  const where = status && status !== 'all' ? { status: status as any } : {}
+  const where = status && status !== 'all' ? { status: status as import('@prisma/client').SubmissionStatus } : {}
 
   const [contacts, newCount, reviewedCount, respondedCount, closedCount] = await Promise.all([
     prisma.contactSubmission.findMany({

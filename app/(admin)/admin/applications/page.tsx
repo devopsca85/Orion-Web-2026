@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 
@@ -22,7 +23,7 @@ interface Props {
 export default async function ApplicationsPage({ searchParams }: Props) {
   const session = await auth()
   const { status } = await searchParams
-  const where = status && status !== 'all' ? { status: status as any } : {}
+  const where = status && status !== 'all' ? { status: status as ApplicationStatus } : {}
 
   const [applications, total] = await Promise.all([
     prisma.jobApplication.findMany({ where, orderBy: { createdAt: 'desc' } }),

@@ -22,7 +22,7 @@ export default async function BlogPage({ searchParams }: Props) {
   const session = await auth()
   const { status, page } = await searchParams
   const currentPage = parseInt(page ?? '1') || 1
-  const where = status && status !== 'all' ? { status: status as any } : {}
+  const where = status && status !== 'all' ? { status: status as import('@prisma/client').PostStatus } : {}
 
   const [posts, total] = await Promise.all([
     prisma.blogPost.findMany({
