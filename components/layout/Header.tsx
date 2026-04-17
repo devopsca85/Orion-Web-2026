@@ -10,12 +10,27 @@ import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 
-export function Header() {
+interface BrandingData {
+  logoUrl: string
+  logoAlt: string
+  phone: string
+  companyName: string
+}
+
+interface HeaderProps {
+  branding?: BrandingData
+}
+
+export function Header({ branding }: HeaderProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
+  const logoAlt = branding?.logoAlt || 'Orion Solutions';
+  const phone = branding?.phone || SITE_CONFIG.phone;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -54,8 +69,8 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Orion Solutions Home">
             <Image
-              src="/assets/images/logo.png"
-              alt="Orion Solutions"
+              src={logoSrc}
+              alt={logoAlt}
               width={140}
               height={36}
               priority
@@ -138,14 +153,14 @@ export function Header() {
           {/* CTA */}
           <div className="hidden items-center gap-3 lg:flex">
             <a
-              href={`tel:${SITE_CONFIG.phone.replace(/\D/g, '')}`}
+              href={`tel:${phone.replace(/\D/g, '')}`}
               className={cn(
                 'flex items-center gap-1.5 text-sm font-medium transition-colors',
                 scrolled ? 'text-gray-600 hover:text-primary' : 'text-white/80 hover:text-white'
               )}
             >
               <Phone className="h-4 w-4" />
-              {SITE_CONFIG.phone}
+              {phone}
             </a>
             <Button href="/contact" size="sm" variant={scrolled ? 'primary' : 'white'}>
               Get in Touch

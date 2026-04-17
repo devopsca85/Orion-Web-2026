@@ -284,3 +284,30 @@ model SiteStat {
 
   @@map("site_stats")
 }
+
+model Page {
+  id        String     @id @default(cuid())
+  title     String     @db.VarChar(250)
+  slug      String     @unique @db.VarChar(150)
+  content   String     @db.LongText
+  excerpt   String?    @db.VarChar(500)
+  status    PostStatus @default(DRAFT)
+  template  String     @default("default") @db.VarChar(50)
+  metaTitle String?    @db.VarChar(70)
+  metaDesc  String?    @db.VarChar(160)
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@map("pages")
+}
+
+model SiteSetting {
+  key       String   @id @db.VarChar(100)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

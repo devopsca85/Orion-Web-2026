@@ -16,6 +16,8 @@ import {
   ImageIcon,
   LogOut,
   ChevronRight,
+  Layout,
+  Palette,
 } from 'lucide-react'
 
 interface NavItem {
@@ -44,6 +46,7 @@ const navGroups: NavGroup[] = [
       { href: '/admin/team', label: 'Team', icon: <Users size={16} /> },
       { href: '/admin/services', label: 'Services', icon: <Wrench size={16} /> },
       { href: '/admin/resources', label: 'Resources', icon: <BookOpen size={16} /> },
+      { href: '/admin/pages', label: 'Pages', icon: <Layout size={16} /> },
     ],
   },
   {
@@ -59,6 +62,12 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/admin/users', label: 'Users', icon: <UserCog size={16} /> },
       { href: '/admin/media', label: 'Media', icon: <ImageIcon size={16} /> },
+    ],
+  },
+  {
+    title: 'Settings',
+    items: [
+      { href: '/admin/branding', label: 'Branding', icon: <Palette size={16} /> },
     ],
   },
 ]

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { OrganizationSchema, WebSiteSchema } from '@/components/seo/JsonLd';
 import { SITE_CONFIG } from '@/lib/constants';
+import { getSettings } from '@/lib/settings';
 import './globals.css';
 
 const inter = Inter({
@@ -78,10 +79,20 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const brandSettings = await getSettings(['brand.primaryColor', 'brand.secondaryColor'])
+  const primaryColor = brandSettings['brand.primaryColor'] || '#1e3a8a'
+  const secondaryColor = brandSettings['brand.secondaryColor'] || '#f97316'
+
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
+        <style>{`
+          :root {
+            --brand-primary: ${primaryColor};
+            --brand-secondary: ${secondaryColor};
+          }
+        `}</style>
         <OrganizationSchema />
         <WebSiteSchema />
         <link rel="icon" href="/favicon.ico" sizes="any" />

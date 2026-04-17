@@ -5,8 +5,41 @@ import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
 import { SITE_CONFIG, FOOTER_LINKS } from '@/lib/constants';
 
-export function Footer() {
+interface BrandingData {
+  logoUrl: string
+  logoAlt: string
+  phone: string
+  email: string
+  address: { street: string; city: string; state: string; zip: string }
+  social: { linkedin: string; twitter: string; facebook: string; youtube: string }
+  companyName: string
+  footerCopyright: string
+}
+
+interface FooterProps {
+  branding?: BrandingData
+}
+
+export function Footer({ branding }: FooterProps = {}) {
   const currentYear = new Date().getFullYear();
+
+  const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
+  const logoAlt = branding?.logoAlt || 'Orion Solutions';
+  const phone = branding?.phone || SITE_CONFIG.phone;
+  const email = branding?.email || SITE_CONFIG.email;
+  const address = {
+    street: branding?.address?.street || SITE_CONFIG.address.street,
+    city: branding?.address?.city || SITE_CONFIG.address.city,
+    state: branding?.address?.state || SITE_CONFIG.address.state,
+    zip: branding?.address?.zip || SITE_CONFIG.address.zip,
+  };
+  const social = {
+    linkedin: branding?.social?.linkedin || SITE_CONFIG.social.linkedin,
+    twitter: branding?.social?.twitter || SITE_CONFIG.social.twitter,
+    facebook: branding?.social?.facebook || SITE_CONFIG.social.facebook,
+    youtube: branding?.social?.youtube || SITE_CONFIG.social.youtube,
+  };
+  const footerCopyright = branding?.footerCopyright || '';
 
   return (
     <footer className="bg-orion-slate text-gray-300">
@@ -17,8 +50,8 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
               <Image
-                src="/assets/images/logo.png"
-                alt="Orion Solutions"
+                src={logoSrc}
+                alt={logoAlt}
                 width={140}
                 height={36}
                 className="h-9 w-auto brightness-0 invert"
@@ -33,23 +66,23 @@ export function Footer() {
             {/* Contact info */}
             <ul className="space-y-3 text-sm">
               <li>
-                <a href={`mailto:${SITE_CONFIG.email}`} className="flex items-center gap-2 transition-colors hover:text-white">
+                <a href={`mailto:${email}`} className="flex items-center gap-2 transition-colors hover:text-white">
                   <Mail className="h-4 w-4 text-secondary flex-shrink-0" />
-                  {SITE_CONFIG.email}
+                  {email}
                 </a>
               </li>
               <li>
-                <a href={`tel:${SITE_CONFIG.phone.replace(/\D/g, '')}`} className="flex items-center gap-2 transition-colors hover:text-white">
+                <a href={`tel:${phone.replace(/\D/g, '')}`} className="flex items-center gap-2 transition-colors hover:text-white">
                   <Phone className="h-4 w-4 text-secondary flex-shrink-0" />
-                  {SITE_CONFIG.phone}
+                  {phone}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-secondary flex-shrink-0 mt-0.5" />
                 <span>
-                  {SITE_CONFIG.address.street}
+                  {address.street}
                   <br />
-                  {SITE_CONFIG.address.city}, {SITE_CONFIG.address.state} {SITE_CONFIG.address.zip}
+                  {address.city}, {address.state} {address.zip}
                 </span>
               </li>
             </ul>
@@ -57,10 +90,10 @@ export function Footer() {
             {/* Social */}
             <div className="mt-6 flex gap-3">
               {[
-                { href: SITE_CONFIG.social.linkedin, icon: Linkedin, label: 'LinkedIn' },
-                { href: SITE_CONFIG.social.twitter, icon: Twitter, label: 'Twitter' },
-                { href: SITE_CONFIG.social.facebook, icon: Facebook, label: 'Facebook' },
-                { href: SITE_CONFIG.social.youtube, icon: Youtube, label: 'YouTube' },
+                { href: social.linkedin, icon: Linkedin, label: 'LinkedIn' },
+                { href: social.twitter, icon: Twitter, label: 'Twitter' },
+                { href: social.facebook, icon: Facebook, label: 'Facebook' },
+                { href: social.youtube, icon: Youtube, label: 'YouTube' },
               ].map(({ href, icon: Icon, label }) => (
                 <a
                   key={label}
@@ -142,7 +175,9 @@ export function Footer() {
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 py-6 text-xs text-gray-500 sm:flex-row">
             <p>
-              &copy; {currentYear} {SITE_CONFIG.name}. All rights reserved.
+              {footerCopyright
+                ? footerCopyright
+                : `© ${currentYear} ${SITE_CONFIG.name}. All rights reserved.`}
             </p>
             <div className="flex gap-6">
               {FOOTER_LINKS.legal.map((link) => (
