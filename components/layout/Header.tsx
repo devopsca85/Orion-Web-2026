@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NAV_LINKS, SITE_CONFIG } from '@/lib/constants';
-import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 
 interface BrandingData {
@@ -55,124 +54,111 @@ export function Header({ branding }: HeaderProps = {}) {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <header
-      className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
-        scrolled
-          ? 'bg-white shadow-md backdrop-blur-sm'
-          : 'bg-transparent'
-      )}
-    >
+    <header className="fixed inset-x-0 top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <Container>
-        <nav className="flex h-16 items-center justify-between md:h-20">
+        <nav className="flex h-16 items-center justify-between md:h-[72px]">
+
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Orion Solutions Home">
+          <Link href="/" className="flex items-center flex-shrink-0" aria-label="Orion eSolutions Home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoSrc}
               alt={logoAlt}
-              width={140}
-              height={36}
-              className="h-9 w-auto"
+              width={160}
+              height={44}
+              className="h-10 w-auto"
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
-            <span className={cn('text-xl font-bold transition-colors hidden', scrolled ? 'text-primary-900' : 'text-white')} id="logo-fallback">
+            <span className="text-xl font-bold text-primary hidden" id="logo-fallback">
               Orion <span className="text-secondary">eSolutions</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <div ref={dropdownRef} className="hidden items-center gap-1 lg:flex">
-            {NAV_LINKS.map((link) => (
-              <div key={link.href} className="relative">
-                {'children' in link ? (
-                  <button
-                    onClick={() =>
-                      setActiveDropdown(activeDropdown === link.href ? null : link.href)
-                    }
-                    className={cn(
-                      'flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                      scrolled
-                        ? isActive(link.href)
-                          ? 'text-primary'
-                          : 'text-gray-700 hover:text-primary'
-                        : isActive(link.href)
-                        ? 'text-secondary'
-                        : 'text-white/90 hover:text-white'
-                    )}
-                    aria-expanded={activeDropdown === link.href}
-                  >
-                    {link.label}
-                    <ChevronDown
-                      className={cn(
-                        'h-4 w-4 transition-transform',
-                        activeDropdown === link.href && 'rotate-180'
-                      )}
-                    />
-                  </button>
-                ) : (
-                  <Link
-                    href={link.href}
-                    className={cn(
-                      'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                      scrolled
-                        ? isActive(link.href)
-                          ? 'text-primary'
-                          : 'text-gray-700 hover:text-primary'
-                        : isActive(link.href)
-                        ? 'text-secondary'
-                        : 'text-white/90 hover:text-white'
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                )}
+          <div ref={dropdownRef} className="hidden items-center gap-0.5 lg:flex">
+            {NAV_LINKS.map((link) => {
+              const isContact = link.href === '/contact';
+              const active    = isActive(link.href);
+              const baseCls   = isContact
+                ? 'text-primary font-semibold hover:text-primary-700'
+                : active
+                  ? 'text-primary font-semibold'
+                  : 'text-gray-800 font-semibold hover:text-primary';
 
-                {/* Dropdown */}
-                {'children' in link && activeDropdown === link.href && (
-                  <div className="absolute left-0 top-full mt-1 w-64 rounded-xl border border-gray-100 bg-white py-2 shadow-xl">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
+              return (
+                <div key={link.href} className="relative">
+                  {'children' in link ? (
+                    <button
+                      onClick={() =>
+                        setActiveDropdown(activeDropdown === link.href ? null : link.href)
+                      }
+                      className={cn(
+                        'flex items-center gap-0.5 rounded-lg px-3 py-2 text-sm transition-colors',
+                        baseCls
+                      )}
+                      aria-expanded={activeDropdown === link.href}
+                    >
+                      {link.label}
+                      <ChevronDown
                         className={cn(
-                          'block px-4 py-2.5 text-sm transition-colors hover:bg-primary-50 hover:text-primary',
-                          pathname === child.href ? 'bg-primary-50 text-primary font-medium' : 'text-gray-700'
+                          'h-3.5 w-3.5 transition-transform ml-0.5',
+                          activeDropdown === link.href && 'rotate-180'
                         )}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                      />
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        'rounded-lg px-3 py-2 text-sm transition-colors block',
+                        baseCls
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
+
+                  {/* Dropdown */}
+                  {'children' in link && activeDropdown === link.href && (
+                    <div className="absolute left-0 top-full mt-1.5 w-64 rounded-xl border border-gray-100 bg-white py-2 shadow-xl ring-1 ring-black/5">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className={cn(
+                            'block px-4 py-2.5 text-sm transition-colors hover:bg-primary-50 hover:text-primary',
+                            pathname === child.href
+                              ? 'bg-primary-50 text-primary font-medium'
+                              : 'text-gray-700'
+                          )}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
-          {/* CTA */}
-          <div className="hidden items-center gap-3 lg:flex">
-            <a
-              href={`tel:${phone.replace(/\D/g, '')}`}
-              className={cn(
-                'flex items-center gap-1.5 text-sm font-medium transition-colors',
-                scrolled ? 'text-gray-600 hover:text-primary' : 'text-white/80 hover:text-white'
-              )}
-            >
-              <Phone className="h-4 w-4" />
-              {phone}
-            </a>
-            <Button href="/contact" size="sm" variant={scrolled ? 'primary' : 'white'}>
-              Get in Touch
-            </Button>
+          {/* Phone CTA */}
+          <div className="hidden items-center gap-4 lg:flex">
+            {phone && phone !== '+1 (800) 000-0000' && (
+              <a
+                href={`tel:${phone.replace(/\D/g, '')}`}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary transition-colors"
+              >
+                <Phone className="h-4 w-4" />
+                {phone}
+              </a>
+            )}
           </div>
 
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={cn(
-              'rounded-lg p-2 transition-colors lg:hidden',
-              scrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-white hover:bg-white/10'
-            )}
+            className="rounded-lg p-2 text-gray-700 hover:bg-gray-100 transition-colors lg:hidden"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -191,10 +177,12 @@ export function Header({ branding }: HeaderProps = {}) {
                   <Link
                     href={link.href}
                     className={cn(
-                      'block rounded-lg px-3 py-2.5 text-base font-medium transition-colors',
-                      isActive(link.href)
-                        ? 'bg-primary-50 text-primary'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                      'block rounded-lg px-3 py-2.5 text-base font-semibold transition-colors',
+                      link.href === '/contact'
+                        ? 'text-primary'
+                        : isActive(link.href)
+                          ? 'bg-primary-50 text-primary'
+                          : 'text-gray-800 hover:bg-gray-50 hover:text-primary'
                     )}
                   >
                     {link.label}
@@ -219,11 +207,6 @@ export function Header({ branding }: HeaderProps = {}) {
                   )}
                 </div>
               ))}
-              <div className="pt-4 pb-2">
-                <Button href="/contact" className="w-full justify-center">
-                  Get in Touch
-                </Button>
-              </div>
             </div>
           </Container>
         </div>
