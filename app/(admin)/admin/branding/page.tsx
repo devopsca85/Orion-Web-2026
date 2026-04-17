@@ -34,7 +34,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
     'social.linkedin',
     'social.twitter',
     'social.facebook',
-    'social.youtube',
+    'social.instagram',
   ])
 
   const logoUrl = settings['logo.url'] || ''
@@ -343,15 +343,15 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
               </div>
 
               <div>
-                <label htmlFor="social.youtube" className="block text-sm font-medium text-slate-700 mb-1">
-                  YouTube URL
+                <label htmlFor="social.instagram" className="block text-sm font-medium text-slate-700 mb-1">
+                  Instagram URL
                 </label>
                 <input
-                  id="social.youtube"
-                  name="social.youtube"
+                  id="social.instagram"
+                  name="social.instagram"
                   type="url"
-                  defaultValue={settings['social.youtube'] || ''}
-                  placeholder="https://youtube.com/@..."
+                  defaultValue={settings['social.instagram'] || ''}
+                  placeholder="https://instagram.com/..."
                   className={inputClass}
                 />
               </div>

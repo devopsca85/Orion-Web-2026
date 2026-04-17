@@ -18,6 +18,13 @@ import {
   ChevronRight,
   Layout,
   Palette,
+  Home,
+  Quote,
+  Building2,
+  Layers,
+  Trophy,
+  HelpCircle,
+  Code2,
 } from 'lucide-react'
 
 interface NavItem {
@@ -39,14 +46,31 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    title: 'Pages',
+    items: [
+      { href: '/admin/home', label: 'Home Page', icon: <Home size={16} /> },
+      { href: '/admin/pages', label: 'Custom Pages', icon: <Layout size={16} /> },
+    ],
+  },
+  {
     title: 'Content',
     items: [
       { href: '/admin/blog', label: 'Blog Posts', icon: <FileText size={16} /> },
       { href: '/admin/portfolio', label: 'Portfolio', icon: <Briefcase size={16} /> },
+      { href: '/admin/testimonials', label: 'Testimonials', icon: <Quote size={16} /> },
       { href: '/admin/team', label: 'Team', icon: <Users size={16} /> },
       { href: '/admin/services', label: 'Services', icon: <Wrench size={16} /> },
       { href: '/admin/resources', label: 'Resources', icon: <BookOpen size={16} /> },
-      { href: '/admin/pages', label: 'Pages', icon: <Layout size={16} /> },
+    ],
+  },
+  {
+    title: 'Site Sections',
+    items: [
+      { href: '/admin/client-logos', label: 'Client Logos', icon: <Building2 size={16} /> },
+      { href: '/admin/tech-stack', label: 'Tech Stack', icon: <Code2 size={16} /> },
+      { href: '/admin/engagement-models', label: 'Engagement Models', icon: <Layers size={16} /> },
+      { href: '/admin/awards', label: 'Awards', icon: <Trophy size={16} /> },
+      { href: '/admin/faqs', label: 'FAQs', icon: <HelpCircle size={16} /> },
     ],
   },
   {

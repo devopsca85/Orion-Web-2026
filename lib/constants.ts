@@ -17,7 +17,7 @@ export const SITE_CONFIG = {
     linkedin: 'https://www.linkedin.com/company/orionesolutions',
     twitter: 'https://twitter.com/orionesolutions',
     facebook: 'https://www.facebook.com/orionesolutions',
-    youtube: 'https://www.youtube.com/@orionesolutions',
+    instagram: 'https://www.instagram.com/orionesolutions',
   },
   ogImage: '/assets/images/og-image.jpg',
   twitterHandle: '@orionesolutions',

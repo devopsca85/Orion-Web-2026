@@ -46,6 +46,18 @@
   }
 }
 
+/* Client logo ticker animation */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker 35s linear infinite;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
 /* Quill editor output alignment — used by public page renderer */
 .ql-align-center { text-align: center; }
 .ql-align-right  { text-align: right; }

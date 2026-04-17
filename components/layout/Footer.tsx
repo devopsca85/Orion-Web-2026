@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { LogoImg } from '@/components/ui/LogoImg';
-import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Youtube } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
 import { SITE_CONFIG, FOOTER_LINKS } from '@/lib/constants';
@@ -11,7 +11,7 @@ interface BrandingData {
   phone: string
   email: string
   address: { street: string; city: string; state: string; zip: string }
-  social: { linkedin: string; twitter: string; facebook: string; youtube: string }
+  social: { linkedin: string; twitter: string; facebook: string; instagram: string }
   companyName: string
   footerCopyright: string
 }
@@ -37,7 +37,7 @@ export function Footer({ branding }: FooterProps = {}) {
     linkedin: branding?.social?.linkedin || SITE_CONFIG.social.linkedin,
     twitter: branding?.social?.twitter || SITE_CONFIG.social.twitter,
     facebook: branding?.social?.facebook || SITE_CONFIG.social.facebook,
-    youtube: branding?.social?.youtube || SITE_CONFIG.social.youtube,
+    instagram: branding?.social?.instagram || SITE_CONFIG.social.instagram,
   };
   const footerCopyright = branding?.footerCopyright || '';
 
@@ -93,7 +93,7 @@ export function Footer({ branding }: FooterProps = {}) {
                 { href: social.linkedin, icon: Linkedin, label: 'LinkedIn' },
                 { href: social.twitter, icon: Twitter, label: 'Twitter' },
                 { href: social.facebook, icon: Facebook, label: 'Facebook' },
-                { href: social.youtube, icon: Youtube, label: 'YouTube' },
+                { href: social.instagram, icon: Instagram, label: 'Instagram' },
               ].map(({ href, icon: Icon, label }) => (
                 <a
                   key={label}

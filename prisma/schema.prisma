@@ -311,3 +311,93 @@ model SiteSetting {
 
   @@map("site_settings")
 }
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  title     String   @db.VarChar(150)
+  company   String   @db.VarChar(100)
+  quote     String   @db.Text
+  avatar    String?  @db.VarChar(512)
+  rating    Int      @default(5)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("testimonials")
+}
+
+model ClientLogo {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  logoUrl   String   @db.VarChar(512)
+  href      String?  @db.VarChar(512)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("client_logos")
+}
+
+model TechStack {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  logoUrl   String   @db.VarChar(512)
+  category  String   @db.VarChar(80)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, category])
+  @@map("tech_stack")
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String   @db.VarChar(300)
+  answer    String   @db.Text
+  category  String?  @db.VarChar(80)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("faqs")
+}
+
+model Award {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(200)
+  issuer      String   @db.VarChar(150)
+  year        Int
+  logoUrl     String?  @db.VarChar(512)
+  description String?  @db.VarChar(500)
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("awards")
+}
+
+model EngagementModel {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(150)
+  description String   @db.Text
+  features    Json
+  icon        String?  @db.VarChar(100)
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("engagement_models")
+}

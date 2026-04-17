@@ -29,7 +29,7 @@ export async function saveBrandingSettings(formData: FormData) {
     { key: 'social.linkedin', value: (formData.get('social.linkedin') as string) || '' },
     { key: 'social.twitter', value: (formData.get('social.twitter') as string) || '' },
     { key: 'social.facebook', value: (formData.get('social.facebook') as string) || '' },
-    { key: 'social.youtube', value: (formData.get('social.youtube') as string) || '' },
+    { key: 'social.instagram', value: (formData.get('social.instagram') as string) || '' },
   ]
 
   for (const entry of entries) {
@@ -43,4 +43,34 @@ export async function saveBrandingSettings(formData: FormData) {
   revalidateTag('site-settings')
   revalidatePath('/', 'layout')
   redirect('/admin/branding?saved=1')
+}
+
+export async function saveHomeSettings(formData: FormData) {
+  await requireAdmin()
+  const keys = [
+    'home.hero.eyebrow',
+    'home.hero.title',
+    'home.hero.highlight',
+    'home.hero.description',
+    'home.hero.primaryCtaLabel',
+    'home.hero.primaryCtaHref',
+    'home.hero.secondaryCtaLabel',
+    'home.hero.secondaryCtaHref',
+    'home.hero.bullet1',
+    'home.hero.bullet2',
+    'home.hero.bullet3',
+  ]
+
+  for (const key of keys) {
+    const value = (formData.get(key) as string) || ''
+    await prisma.siteSetting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    })
+  }
+
+  revalidateTag('site-settings')
+  revalidatePath('/')
+  redirect('/admin/home?saved=1')
 }
