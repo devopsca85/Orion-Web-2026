@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Youtube } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
@@ -49,13 +48,14 @@ export function Footer({ branding }: FooterProps = {}) {
           {/* Brand column */}
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={logoSrc}
                 alt={logoAlt}
                 width={140}
                 height={36}
                 className="h-9 w-auto brightness-0 invert"
-                unoptimized={logoSrc.endsWith('.svg')}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />
               <span className="text-lg font-bold text-white hidden" id="footer-logo-fallback">
                 Orion <span className="text-secondary">eSolutions</span>

@@ -3,7 +3,6 @@ import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { ColorPicker } from '@/components/admin/ColorPicker'
 import { getSettings } from '@/lib/settings'
 import { saveBrandingSettings } from '@/lib/admin/settings-actions'
-import Image from 'next/image'
 import { CheckCircle } from 'lucide-react'
 
 interface Props {
@@ -37,7 +36,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
     'social.youtube',
   ])
 
-  const logoUrl = settings['logo.url'] || '/assets/images/logo.png'
+  const logoUrl = settings['logo.url'] || ''
 
   return (
     <>
@@ -63,14 +62,17 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
               <div className="shrink-0">
                 <p className="text-xs text-slate-500 mb-2">Current Logo</p>
                 <div className="h-16 w-40 flex items-center justify-center border border-slate-200 rounded-lg p-2 bg-white">
-                  <Image
-                    src={logoUrl}
-                    alt={settings['logo.alt'] || 'Current logo'}
-                    width={140}
-                    height={48}
-                    className="h-12 w-auto object-contain"
-                    unoptimized={logoUrl.endsWith('.svg')}
-                  />
+                  {logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoUrl}
+                      alt={settings['logo.alt'] || 'Logo'}
+                      className="h-12 w-auto max-w-full object-contain"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                    />
+                  ) : (
+                    <span className="text-xs text-slate-400">No logo set</span>
+                  )}
                 </div>
               </div>
 

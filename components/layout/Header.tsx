@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -68,15 +67,14 @@ export function Header({ branding }: HeaderProps = {}) {
         <nav className="flex h-16 items-center justify-between md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Orion Solutions Home">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={logoSrc}
               alt={logoAlt}
               width={140}
               height={36}
-              priority
-              unoptimized={logoSrc.endsWith('.svg')}
               className={cn('h-9 w-auto transition-all', scrolled ? 'brightness-100' : 'brightness-0 invert')}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
             <span className={cn('text-xl font-bold transition-colors hidden', scrolled ? 'text-primary-900' : 'text-white')} id="logo-fallback">
               Orion <span className="text-secondary">eSolutions</span>
