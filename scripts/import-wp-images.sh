@@ -1,24 +1,24 @@
 #!/bin/bash
 # =============================================================================
 # import-wp-images.sh
-# Scans images already copied to public/assets/images and organises them
-# into the correct subfolders expected by the Next.js site.
+# Scans /public/assets/uploads (WordPress dump) and copies images into the
+# correct subfolders under /public/assets/images expected by the Next.js site.
 # Usage: bash scripts/import-wp-images.sh
 # =============================================================================
 
-DEST="$(cd "$(dirname "$0")/.." && pwd)/public/assets/images"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$ROOT/public/assets/uploads"
+DEST="$ROOT/public/assets/images"
 
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
 ok()   { echo -e "${GREEN}  ✓${NC} $1"; }
-warn() { echo -e "${YELLOW}  !${NC} $1"; }
 miss() { echo -e "${RED}  ✗${NC} $1"; }
 
-if [ ! -d "$DEST" ]; then
-  echo -e "${RED}Destination folder not found: $DEST${NC}"
+if [ ! -d "$SRC" ]; then
+  echo -e "${RED}Source folder not found: $SRC${NC}"
   exit 1
 fi
 
@@ -26,25 +26,30 @@ echo ""
 echo "============================================"
 echo " Orion Solutions — Image Organiser"
 echo "============================================"
-echo " Source : $DEST  (flat dump)"
-echo " Dest   : $DEST  (organised into subfolders)"
+echo " Source : $SRC"
+echo " Dest   : $DEST"
 echo ""
 
-mkdir -p "$DEST/team" "$DEST/blog" "$DEST/portfolio" \
-         "$DEST/resources" "$DEST/partners" "$DEST/certs"
+# Create all required destination folders
+mkdir -p \
+  "$DEST" \
+  "$DEST/team" \
+  "$DEST/blog" \
+  "$DEST/portfolio" \
+  "$DEST/resources" \
+  "$DEST/partners" \
+  "$DEST/certs"
 
-# Find best matching image already in public/assets/images by keyword
+echo "  Folders created."
+echo ""
+
+# Find best matching image in SRC by keyword
 find_image() {
   local keyword="$1"
-  local extensions="jpg jpeg png webp svg"
-  for ext in $extensions; do
-    local result
-    # Search recursively so it finds files already moved to subfolders too
-    result=$(find "$DEST" -iname "*${keyword}*.$ext" 2>/dev/null | head -1)
-    if [ -n "$result" ]; then
-      echo "$result"
-      return
-    fi
+  local result
+  for ext in jpg jpeg png webp svg; do
+    result=$(find "$SRC" -iname "*${keyword}*.$ext" 2>/dev/null | head -1)
+    [ -n "$result" ] && echo "$result" && return
   done
 }
 
@@ -53,11 +58,8 @@ copy_image() {
   local dest_path="$2"
   local label="$3"
 
-  # Skip if the exact destination already exists
-  if [ -f "$dest_path" ]; then
-    ok "$label  (already in place)"
-    return
-  fi
+  # Skip if exact destination already exists
+  [ -f "$dest_path" ] && ok "$label  (already in place)" && return
 
   local src
   src=$(find_image "$keyword")
@@ -65,10 +67,8 @@ copy_image() {
     local ext="${src##*.}"
     local final_dest="${dest_path%.*}.$ext"
     cp "$src" "$final_dest"
-    # Also copy as the declared extension if different (code references specific extensions)
-    if [ "$final_dest" != "$dest_path" ]; then
-      cp "$src" "$dest_path"
-    fi
+    # Also copy with the declared extension if different
+    [ "$final_dest" != "$dest_path" ] && cp "$src" "$dest_path"
     ok "$label  →  $(basename "$src")"
   else
     miss "$label  (not found — keyword: '$keyword')"
@@ -95,48 +95,48 @@ echo ""
 
 # ── BLOG ─────────────────────────────────────────────────────────────────────
 echo "[ Blog Images ]"
-copy_image "cloud-cost"  "$DEST/blog/cloud-cost.jpg"      "blog/cloud-cost.jpg"
-copy_image "finops"      "$DEST/blog/cloud-cost.jpg"      "blog/cloud-cost.jpg (alt)"
-copy_image "ai-enterprise" "$DEST/blog/ai-enterprise.jpg" "blog/ai-enterprise.jpg"
+copy_image "cloud-cost"           "$DEST/blog/cloud-cost.jpg"      "blog/cloud-cost.jpg"
+copy_image "finops"               "$DEST/blog/cloud-cost.jpg"      "blog/cloud-cost.jpg (alt)"
+copy_image "ai-enterprise"        "$DEST/blog/ai-enterprise.jpg"   "blog/ai-enterprise.jpg"
 copy_image "artificial-intelligence" "$DEST/blog/ai-enterprise.jpg" "blog/ai-enterprise.jpg (alt)"
-copy_image "zero-trust"  "$DEST/blog/zero-trust.jpg"      "blog/zero-trust.jpg"
-copy_image "security"    "$DEST/blog/zero-trust.jpg"      "blog/zero-trust.jpg (alt)"
-copy_image "architecture" "$DEST/blog/architecture.jpg"   "blog/architecture.jpg"
-copy_image "microservice" "$DEST/blog/architecture.jpg"   "blog/architecture.jpg (alt)"
+copy_image "zero-trust"           "$DEST/blog/zero-trust.jpg"      "blog/zero-trust.jpg"
+copy_image "security"             "$DEST/blog/zero-trust.jpg"      "blog/zero-trust.jpg (alt)"
+copy_image "architecture"         "$DEST/blog/architecture.jpg"    "blog/architecture.jpg"
+copy_image "microservice"         "$DEST/blog/architecture.jpg"    "blog/architecture.jpg (alt)"
 echo ""
 
 # ── PORTFOLIO ────────────────────────────────────────────────────────────────
 echo "[ Portfolio / Case Studies ]"
-copy_image "fintech"       "$DEST/portfolio/fintech.jpg"         "portfolio/fintech.jpg"
-copy_image "banking"       "$DEST/portfolio/fintech.jpg"         "portfolio/fintech.jpg (alt)"
-copy_image "healthcare"    "$DEST/portfolio/healthcare.jpg"      "portfolio/healthcare.jpg"
-copy_image "medical"       "$DEST/portfolio/healthcare.jpg"      "portfolio/healthcare.jpg (alt)"
-copy_image "ecommerce"     "$DEST/portfolio/ecommerce.jpg"       "portfolio/ecommerce.jpg"
-copy_image "retail"        "$DEST/portfolio/ecommerce.jpg"       "portfolio/ecommerce.jpg (alt)"
-copy_image "manufacturing" "$DEST/portfolio/manufacturing.jpg"   "portfolio/manufacturing.jpg"
-copy_image "factory"       "$DEST/portfolio/manufacturing.jpg"   "portfolio/manufacturing.jpg (alt)"
+copy_image "fintech"       "$DEST/portfolio/fintech.jpg"       "portfolio/fintech.jpg"
+copy_image "banking"       "$DEST/portfolio/fintech.jpg"       "portfolio/fintech.jpg (alt)"
+copy_image "healthcare"    "$DEST/portfolio/healthcare.jpg"    "portfolio/healthcare.jpg"
+copy_image "medical"       "$DEST/portfolio/healthcare.jpg"    "portfolio/healthcare.jpg (alt)"
+copy_image "ecommerce"     "$DEST/portfolio/ecommerce.jpg"     "portfolio/ecommerce.jpg"
+copy_image "retail"        "$DEST/portfolio/ecommerce.jpg"     "portfolio/ecommerce.jpg (alt)"
+copy_image "manufacturing" "$DEST/portfolio/manufacturing.jpg" "portfolio/manufacturing.jpg"
+copy_image "factory"       "$DEST/portfolio/manufacturing.jpg" "portfolio/manufacturing.jpg (alt)"
 echo ""
 
 # ── RESOURCES ────────────────────────────────────────────────────────────────
 echo "[ Resources ]"
-copy_image "cloud-migration"  "$DEST/resources/cloud-migration-guide.jpg" "resources/cloud-migration-guide.jpg"
-copy_image "ai-report"        "$DEST/resources/ai-report.jpg"             "resources/ai-report.jpg"
-copy_image "zero-trust"       "$DEST/resources/zero-trust.jpg"            "resources/zero-trust.jpg"
-copy_image "digital-transform" "$DEST/resources/dt-roi.jpg"               "resources/dt-roi.jpg"
-copy_image "data-mesh"        "$DEST/resources/data-mesh.jpg"             "resources/data-mesh.jpg"
-copy_image "finops"           "$DEST/resources/finops-webinar.jpg"        "resources/finops-webinar.jpg"
+copy_image "cloud-migration"   "$DEST/resources/cloud-migration-guide.jpg" "resources/cloud-migration-guide.jpg"
+copy_image "ai-report"         "$DEST/resources/ai-report.jpg"             "resources/ai-report.jpg"
+copy_image "zero-trust"        "$DEST/resources/zero-trust.jpg"            "resources/zero-trust.jpg"
+copy_image "digital-transform" "$DEST/resources/dt-roi.jpg"                "resources/dt-roi.jpg"
+copy_image "data-mesh"         "$DEST/resources/data-mesh.jpg"             "resources/data-mesh.jpg"
+copy_image "finops"            "$DEST/resources/finops-webinar.jpg"        "resources/finops-webinar.jpg"
 echo ""
 
 # ── PARTNERS ─────────────────────────────────────────────────────────────────
 echo "[ Partner Logos ]"
-copy_image "aws"          "$DEST/partners/aws.svg"         "partners/aws.svg"
-copy_image "azure"        "$DEST/partners/azure.svg"       "partners/azure.svg"
-copy_image "google-cloud" "$DEST/partners/gcp.svg"         "partners/gcp.svg"
-copy_image "salesforce"   "$DEST/partners/salesforce.svg"  "partners/salesforce.svg"
-copy_image "snowflake"    "$DEST/partners/snowflake.svg"   "partners/snowflake.svg"
-copy_image "databricks"   "$DEST/partners/databricks.svg"  "partners/databricks.svg"
-copy_image "crowdstrike"  "$DEST/partners/crowdstrike.svg" "partners/crowdstrike.svg"
-copy_image "hashicorp"    "$DEST/partners/hashicorp.svg"   "partners/hashicorp.svg"
+copy_image "aws"          "$DEST/partners/aws.svg"          "partners/aws.svg"
+copy_image "azure"        "$DEST/partners/azure.svg"        "partners/azure.svg"
+copy_image "google-cloud" "$DEST/partners/gcp.svg"          "partners/gcp.svg"
+copy_image "salesforce"   "$DEST/partners/salesforce.svg"   "partners/salesforce.svg"
+copy_image "snowflake"    "$DEST/partners/snowflake.svg"    "partners/snowflake.svg"
+copy_image "databricks"   "$DEST/partners/databricks.svg"   "partners/databricks.svg"
+copy_image "crowdstrike"  "$DEST/partners/crowdstrike.svg"  "partners/crowdstrike.svg"
+copy_image "hashicorp"    "$DEST/partners/hashicorp.svg"    "partners/hashicorp.svg"
 echo ""
 
 # ── CERTS ────────────────────────────────────────────────────────────────────
@@ -158,9 +158,9 @@ echo ""
 # ── SUMMARY ──────────────────────────────────────────────────────────────────
 echo "============================================"
 total=$(find "$DEST" -type f ! -name ".gitkeep" | wc -l)
-echo -e " ${GREEN}Done.${NC} $total image files in $DEST"
+echo -e " ${GREEN}Done.${NC} $total image files now in $DEST"
 echo ""
-echo " Missing images above (✗) — rename those files so they contain"
-echo " the keyword shown, then run this script again."
+echo " For any ✗ missing above: ensure the file exists in"
+echo " $SRC with the keyword in its filename, then re-run."
 echo "============================================"
 echo ""
