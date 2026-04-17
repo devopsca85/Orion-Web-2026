@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Youtube } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
@@ -15,12 +16,14 @@ export function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <svg viewBox="0 0 24 24" className="h-5 w-5 text-white fill-current">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-              <span className="text-lg font-bold text-white">
+              <Image
+                src="/assets/images/logo.png"
+                alt="Orion Solutions"
+                width={140}
+                height={36}
+                className="h-9 w-auto brightness-0 invert"
+              />
+              <span className="text-lg font-bold text-white hidden" id="footer-logo-fallback">
                 Orion <span className="text-secondary">Solutions</span>
               </span>
             </Link>

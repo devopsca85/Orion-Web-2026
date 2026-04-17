@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -52,17 +53,16 @@ export function Header() {
         <nav className="flex h-16 items-center justify-between md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0" aria-label="Orion Solutions Home">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-white fill-current">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span
-              className={cn(
-                'text-xl font-bold transition-colors',
-                scrolled ? 'text-primary-900' : 'text-white'
-              )}
-            >
+            <Image
+              src="/assets/images/logo.png"
+              alt="Orion Solutions"
+              width={140}
+              height={36}
+              priority
+              className={cn('h-9 w-auto transition-all', scrolled ? 'brightness-100' : 'brightness-0 invert')}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+            <span className={cn('text-xl font-bold transition-colors hidden', scrolled ? 'text-primary-900' : 'text-white')} id="logo-fallback">
               Orion <span className="text-secondary">Solutions</span>
             </span>
           </Link>
