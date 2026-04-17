@@ -24,15 +24,21 @@ export default async function PagesAdminPage({ searchParams }: Props) {
   const currentPage = parseInt(page ?? '1') || 1
   const where = status && status !== 'all' ? { status: status as import('@prisma/client').PostStatus } : {}
 
-  const [pages, total] = await Promise.all([
-    prisma.page.findMany({
-      where,
-      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-      skip: (currentPage - 1) * PAGES_PER_PAGE,
-      take: PAGES_PER_PAGE,
-    }),
-    prisma.page.count({ where }),
-  ])
+  let pages: Awaited<ReturnType<typeof prisma.page.findMany>> = []
+  let total = 0
+  try {
+    ;[pages, total] = await Promise.all([
+      prisma.page.findMany({
+        where,
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        skip: (currentPage - 1) * PAGES_PER_PAGE,
+        take: PAGES_PER_PAGE,
+      }),
+      prisma.page.count({ where }),
+    ])
+  } catch {
+    // Table not yet created — show empty state until `prisma db push` is run
+  }
 
   const totalPages = Math.ceil(total / PAGES_PER_PAGE)
   const statuses = ['all', 'PUBLISHED', 'DRAFT', 'ARCHIVED']

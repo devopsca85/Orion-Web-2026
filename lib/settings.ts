@@ -3,10 +3,15 @@ import { prisma } from '@/lib/prisma'
 
 export const getSettings = unstable_cache(
   async (keys?: string[]): Promise<Record<string, string>> => {
-    const settings = await prisma.siteSetting.findMany(
-      keys ? { where: { key: { in: keys } } } : undefined
-    )
-    return Object.fromEntries(settings.map((s) => [s.key, s.value]))
+    try {
+      const settings = await prisma.siteSetting.findMany(
+        keys ? { where: { key: { in: keys } } } : undefined
+      )
+      return Object.fromEntries(settings.map((s) => [s.key, s.value]))
+    } catch {
+      // Table may not exist yet — return empty so pages still render with defaults
+      return {}
+    }
   },
   ['site-settings'],
   { revalidate: 60, tags: ['site-settings'] }
