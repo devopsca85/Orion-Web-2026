@@ -58,6 +58,7 @@ export function MediaGrid({ files }: MediaGridProps) {
                     {/* Preview */}
                     <div className="aspect-square bg-slate-50 flex items-center justify-center overflow-hidden">
                       {isImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={file.path}
                           alt={file.name}

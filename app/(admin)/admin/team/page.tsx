@@ -51,6 +51,7 @@ export default async function TeamPage() {
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
                             {member.avatarUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img src={member.avatarUrl} alt={member.name} className="w-8 h-8 rounded-full object-cover" />
                             ) : (
                               <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">

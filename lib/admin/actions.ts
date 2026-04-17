@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { PostStatus, SubmissionStatus, Role } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 // ── Auth helper ──────────────────────────────────────────────────────────────
@@ -32,9 +33,8 @@ export async function createBlogPost(formData: FormData) {
   const slugRaw = formData.get('slug') as string
   const slug = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   const tagsRaw = formData.get('tags') as string
-  const tags = tagsRaw
-    ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean)
-    : []
+  const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
+  const status = (formData.get('status') as PostStatus) || PostStatus.DRAFT
 
   await prisma.blogPost.create({
     data: {
@@ -45,13 +45,13 @@ export async function createBlogPost(formData: FormData) {
       category: formData.get('category') as string,
       tags,
       authorId: author.id,
-      status: (formData.get('status') as any) || 'DRAFT',
+      status,
       featured: formData.get('featured') === 'on',
       imageUrl: (formData.get('imageUrl') as string) || null,
       readingTime: parseInt(formData.get('readingTime') as string) || 5,
       metaTitle: (formData.get('metaTitle') as string) || null,
       metaDesc: (formData.get('metaDesc') as string) || null,
-      publishedAt: formData.get('status') === 'PUBLISHED' ? new Date() : null,
+      publishedAt: status === PostStatus.PUBLISHED ? new Date() : null,
     },
   })
   revalidatePath('/admin/blog')
@@ -60,11 +60,9 @@ export async function createBlogPost(formData: FormData) {
 
 export async function updateBlogPost(id: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR', 'AUTHOR')
-  const status = formData.get('status') as string
+  const status = (formData.get('status') as PostStatus) || PostStatus.DRAFT
   const tagsRaw = formData.get('tags') as string
-  const tags = tagsRaw
-    ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean)
-    : []
+  const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
 
   await prisma.blogPost.update({
     where: { slug: id },
@@ -74,20 +72,20 @@ export async function updateBlogPost(id: string, formData: FormData) {
       content: formData.get('content') as string,
       category: formData.get('category') as string,
       tags,
-      status: status as any,
+      status,
       featured: formData.get('featured') === 'on',
       imageUrl: (formData.get('imageUrl') as string) || null,
       readingTime: parseInt(formData.get('readingTime') as string) || 5,
       metaTitle: (formData.get('metaTitle') as string) || null,
       metaDesc: (formData.get('metaDesc') as string) || null,
-      publishedAt: status === 'PUBLISHED' ? new Date() : null,
+      publishedAt: status === PostStatus.PUBLISHED ? new Date() : null,
     },
   })
   revalidatePath('/admin/blog')
   redirect('/admin/blog')
 }
 
-export async function deleteBlogPost(slug: string, _formData?: FormData) {
+export async function deleteBlogPost(slug: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
   await prisma.blogPost.delete({ where: { slug } })
   revalidatePath('/admin/blog')
@@ -100,10 +98,8 @@ export async function createPortfolioItem(formData: FormData) {
   const slugRaw = formData.get('slug') as string
   const slug = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
   const techRaw = formData.get('technologies') as string
-  const technologies = techRaw
-    ? techRaw.split(',').map((t) => t.trim()).filter(Boolean)
-    : []
-  let metrics: any[] = []
+  const technologies = techRaw ? techRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
+  let metrics: Record<string, string>[] = []
   try {
     metrics = JSON.parse((formData.get('metrics') as string) || '[]')
   } catch {
@@ -133,10 +129,8 @@ export async function createPortfolioItem(formData: FormData) {
 export async function updatePortfolioItem(slug: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
   const techRaw = formData.get('technologies') as string
-  const technologies = techRaw
-    ? techRaw.split(',').map((t) => t.trim()).filter(Boolean)
-    : []
-  let metrics: any[] = []
+  const technologies = techRaw ? techRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
+  let metrics: Record<string, string>[] = []
   try {
     metrics = JSON.parse((formData.get('metrics') as string) || '[]')
   } catch {
@@ -164,7 +158,7 @@ export async function updatePortfolioItem(slug: string, formData: FormData) {
   redirect('/admin/portfolio')
 }
 
-export async function deletePortfolioItem(slug: string, _formData?: FormData) {
+export async function deletePortfolioItem(slug: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
   await prisma.portfolioItem.delete({ where: { slug } })
   revalidatePath('/admin/portfolio')
@@ -205,7 +199,7 @@ export async function updateTeamMember(id: string, formData: FormData) {
   redirect('/admin/team')
 }
 
-export async function deleteTeamMember(id: string, _formData?: FormData) {
+export async function deleteTeamMember(id: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN')
   await prisma.teamMember.delete({ where: { id } })
   revalidatePath('/admin/team')
@@ -285,7 +279,7 @@ export async function updateService(slug: string, formData: FormData) {
   redirect('/admin/services')
 }
 
-export async function deleteService(slug: string, _formData?: FormData) {
+export async function deleteService(slug: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
   await prisma.service.delete({ where: { slug } })
   revalidatePath('/admin/services')
@@ -334,7 +328,7 @@ export async function updateResource(id: string, formData: FormData) {
   redirect('/admin/resources')
 }
 
-export async function deleteResource(id: string, _formData?: FormData) {
+export async function deleteResource(id: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
   await prisma.resource.delete({ where: { id } })
   revalidatePath('/admin/resources')
@@ -343,12 +337,12 @@ export async function deleteResource(id: string, _formData?: FormData) {
 // ── Contacts ──────────────────────────────────────────────────────────────────
 export async function updateContactStatus(id: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
-  const status = formData.get('status') as string
+  const status = formData.get('status') as SubmissionStatus
   await prisma.contactSubmission.update({
     where: { id },
     data: {
-      status: status as any,
-      respondedAt: status === 'RESPONDED' ? new Date() : undefined,
+      status,
+      respondedAt: status === SubmissionStatus.RESPONDED ? new Date() : undefined,
     },
   })
   revalidatePath('/admin/contacts')
@@ -365,7 +359,7 @@ export async function addContactNote(id: string, formData: FormData) {
 }
 
 // ── Subscribers ───────────────────────────────────────────────────────────────
-export async function deleteSubscriber(id: string, _formData?: FormData) {
+export async function deleteSubscriber(id: string) {
   await requireRole('SUPER_ADMIN', 'ADMIN')
   await prisma.newsletterSubscriber.delete({ where: { id } })
   revalidatePath('/admin/subscribers')
@@ -381,7 +375,7 @@ export async function createUser(formData: FormData) {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       password: hashed,
-      role: (formData.get('role') as any) || 'AUTHOR',
+      role: (formData.get('role') as Role) || Role.AUTHOR,
     },
   })
   revalidatePath('/admin/users')
@@ -391,10 +385,11 @@ export async function createUser(formData: FormData) {
 export async function updateUser(id: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN')
   const password = formData.get('password') as string
-  const updateData: any = {
+  type UserUpdate = { name: string; email: string; role: Role; active: boolean; password?: string }
+  const updateData: UserUpdate = {
     name: formData.get('name') as string,
     email: formData.get('email') as string,
-    role: formData.get('role') as any,
+    role: formData.get('role') as Role,
     active: formData.get('active') === 'on',
   }
   if (password) {
@@ -405,7 +400,7 @@ export async function updateUser(id: string, formData: FormData) {
   redirect('/admin/users')
 }
 
-export async function deleteUser(id: string, _formData?: FormData) {
+export async function deleteUser(id: string) {
   await requireRole('SUPER_ADMIN')
   await prisma.user.delete({ where: { id } })
   revalidatePath('/admin/users')

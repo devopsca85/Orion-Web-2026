@@ -14,7 +14,7 @@ import {
   Bell,
   UserCheck,
   UserCog,
-  Image,
+  ImageIcon,
   LogOut,
   ChevronRight,
 } from 'lucide-react'
@@ -59,7 +59,7 @@ const navGroups: NavGroup[] = [
     title: 'System',
     items: [
       { href: '/admin/users', label: 'Users', icon: <UserCog size={16} /> },
-      { href: '/admin/media', label: 'Media', icon: <Image size={16} /> },
+      { href: '/admin/media', label: 'Media', icon: <ImageIcon size={16} /> },
     ],
   },
 ]

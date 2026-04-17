@@ -9,7 +9,7 @@ interface DeleteFormProps {
 }
 
 export function DeleteForm({ action, label = 'Delete' }: DeleteFormProps) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending] = useTransition()
   const [confirming, setConfirming] = useState(false)
 
   if (confirming) {

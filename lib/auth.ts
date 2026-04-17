@@ -20,15 +20,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(credentials.password as string, user.password)
         if (!valid) return null
         await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
-        return { id: user.id, name: user.name, email: user.email, role: user.role }
+        return { id: user.id, name: user.name, email: user.email, role: user.role as string }
       },
     }),
   ],
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.role = (user as any).role
+        token.id = user.id as string
+        token.role = user.role
       }
       return token
     },
