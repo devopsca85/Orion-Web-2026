@@ -21,7 +21,6 @@ interface HeaderProps {
 
 export function Header({ branding }: HeaderProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -29,12 +28,6 @@ export function Header({ branding }: HeaderProps = {}) {
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
   const logoAlt = branding?.logoAlt || 'Orion eSolutions';
   const phone = branding?.phone || SITE_CONFIG.phone;
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     setIsOpen(false);
