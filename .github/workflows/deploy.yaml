@@ -40,15 +40,15 @@ jobs:
             git config --global --add safe.directory ${APP_DIR}
  
             echo "Pulling latest code..."
-            GIT_SSH_COMMAND='ssh -i /root/.ssh/monapp' git pull origin develop
+            GIT_SSH_COMMAND='ssh -i /root/.ssh/id_rsa' git pull origin develop
  
             echo "Installing dependencies..."
-            /root/.nvm/versions/node/v24.14.1/bin/npm i
+            /root/.nvm/versions/node/v24.15.0/bin/npm i
  
             echo "Building application..."
-            /root/.nvm/versions/node/v24.14.1/bin/npm run build
+            /root/.nvm/versions/node/v24.15.0/bin/npm run build
  
             echo "Restarting PM2..."
-            /root/.nvm/versions/node/v24.14.1/bin/pm2 restart web26.customerdemourl.com
+            /root/.nvm/versions/node/v24.15.0/bin/pm2 restart web26.customerdemourl.com
  
             echo "Deployment completed!"
