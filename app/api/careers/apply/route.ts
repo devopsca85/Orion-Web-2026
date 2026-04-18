@@ -4,6 +4,7 @@ import path from 'path'
 import { db } from '@/lib/db'
 import { SITE_CONFIG } from '@/lib/constants'
 import { spamGuard } from '@/lib/spam-guard'
+import { buildEmailHtml, sendResendEmail } from '@/lib/email'
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -83,37 +84,27 @@ export async function POST(req: NextRequest) {
 
   // Send email notification
   try {
-    const apiKey  = process.env.RESEND_API_KEY
     const toEmail = process.env.CONTACT_EMAIL || SITE_CONFIG.email
-    if (apiKey) {
-      const { Resend } = await import('resend')
-      const resend = new Resend(apiKey)
-      const cvLink  = resumeUrl
-        ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold;width:140px">CV / Resume</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="${SITE_CONFIG.url}${resumeUrl}">Download CV</a></td></tr>`
-        : ''
-      await resend.emails.send({
-        from: `${SITE_CONFIG.name} <noreply@${new URL(SITE_CONFIG.url).hostname}>`,
-        to: toEmail,
-        replyTo: email,
-        subject: `New Job Application — ${role} (${name})`,
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
-            <h2 style="color:#1d4ed8">New Job Application</h2>
-            <table style="width:100%;border-collapse:collapse">
-              <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold;width:140px">Name</td><td style="padding:8px;border-bottom:1px solid #eee">${name}</td></tr>
-              <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">Email</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="mailto:${email}">${email}</a></td></tr>
-              <tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">Role</td><td style="padding:8px;border-bottom:1px solid #eee">${role}</td></tr>
-              ${phone ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">Phone</td><td style="padding:8px;border-bottom:1px solid #eee">${phone}</td></tr>` : ''}
-              ${linkedinUrl ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">LinkedIn</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="${linkedinUrl}">${linkedinUrl}</a></td></tr>` : ''}
-              ${portfolioUrl ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">Portfolio</td><td style="padding:8px;border-bottom:1px solid #eee"><a href="${portfolioUrl}">${portfolioUrl}</a></td></tr>` : ''}
-              ${cvLink}
-            </table>
-            ${coverLetter ? `<h3 style="color:#1d4ed8;margin-top:16px">Cover Letter</h3><div style="background:#f8fafc;border-left:4px solid #1d4ed8;padding:12px 16px;white-space:pre-wrap">${coverLetter}</div>` : ''}
-            <p style="color:#94a3b8;font-size:12px;margin-top:24px">View all applications at ${SITE_CONFIG.url}/admin/applications</p>
-          </div>
-        `,
-      })
-    }
+    const rows = [
+      { label: 'Name',      value: name,  href: undefined },
+      { label: 'Email',     value: email, href: `mailto:${email}` },
+      { label: 'Role',      value: role },
+      ...(phone       ? [{ label: 'Phone',     value: phone }] : []),
+      ...(linkedinUrl ? [{ label: 'LinkedIn',  value: linkedinUrl,  href: linkedinUrl  }] : []),
+      ...(portfolioUrl? [{ label: 'Portfolio', value: portfolioUrl, href: portfolioUrl }] : []),
+      ...(resumeUrl   ? [{ label: 'CV',        value: 'Download CV', href: `${SITE_CONFIG.url}${resumeUrl}` }] : []),
+    ]
+    await sendResendEmail({
+      to: toEmail,
+      replyTo: email,
+      subject: `New Job Application — ${role} (${name})`,
+      html: buildEmailHtml({
+        heading: 'New Job Application',
+        rows,
+        body: coverLetter ?? undefined,
+        footer: `View all applications at ${SITE_CONFIG.url}/admin/applications`,
+      }),
+    })
   } catch (err) {
     console.error('[Careers Apply] Email error:', err)
   }

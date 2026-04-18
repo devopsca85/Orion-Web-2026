@@ -3,6 +3,7 @@ import { contactSchema } from '@/lib/validations';
 import { SITE_CONFIG } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { isHoneypot, hasSpamContent } from '@/lib/spam-guard';
+import { buildEmailHtml, sendResendEmail } from '@/lib/email';
 
 const RATE_LIMIT_MAP = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -57,41 +58,24 @@ async function sendEmail(data: {
   service?: string;
   message: string;
 }): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_EMAIL || SITE_CONFIG.email;
-
-  if (!apiKey) {
-    // Log in development, skip email send
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Contact Form] Email would be sent:', { to: toEmail, data });
-      return;
-    }
-    throw new Error('Email service not configured');
-  }
-
-  const { Resend } = await import('resend');
-  const resend = new Resend(apiKey);
-
-  await resend.emails.send({
-    from: `${SITE_CONFIG.name} Website <noreply@${new URL(SITE_CONFIG.url).hostname}>`,
+  const rows = [
+    { label: 'Name',    value: data.name,    href: undefined },
+    { label: 'Email',   value: data.email,   href: `mailto:${data.email}` },
+    ...(data.company ? [{ label: 'Company', value: data.company }] : []),
+    ...(data.phone   ? [{ label: 'Phone',   value: data.phone   }] : []),
+    ...(data.service ? [{ label: 'Service', value: data.service }] : []),
+  ];
+  await sendResendEmail({
     to: toEmail,
     replyTo: data.email,
     subject: `New Contact Form Submission — ${data.name}${data.company ? ` (${data.company})` : ''}`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #1e3a8a;">New Contact Form Submission</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 140px;">Name</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.name}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td><td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${data.email}">${data.email}</a></td></tr>
-          ${data.company ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Company</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.company}</td></tr>` : ''}
-          ${data.phone ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Phone</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.phone}</td></tr>` : ''}
-          ${data.service ? `<tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Service</td><td style="padding: 8px; border-bottom: 1px solid #eee;">${data.service}</td></tr>` : ''}
-        </table>
-        <h3 style="color: #1e3a8a; margin-top: 16px;">Message</h3>
-        <div style="background: #f8fafc; border-left: 4px solid #1e3a8a; padding: 12px 16px; white-space: pre-wrap;">${data.message}</div>
-        <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">Submitted via ${SITE_CONFIG.url}/contact</p>
-      </div>
-    `,
+    html: buildEmailHtml({
+      heading: 'New Contact Form Submission',
+      rows,
+      body: data.message,
+      footer: `Submitted via ${SITE_CONFIG.url}/contact`,
+    }),
   });
 }
 

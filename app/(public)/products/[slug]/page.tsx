@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+export const revalidate = 3600
 import { PageHero } from '@/components/sections/Hero'
 import { Container, Section } from '@/components/ui/Container'
 import { CTA } from '@/components/sections/CTA'

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { SITE_CONFIG } from '@/lib/constants'
 import { spamGuard } from '@/lib/spam-guard'
+import { buildEmailHtml, escapeHtml, sendResendEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   let body: { formId: string; data: Record<string, unknown>; _hp?: string; _ts?: string }
@@ -53,17 +54,16 @@ export async function POST(req: NextRequest) {
   // Send notification email
   try {
     const toEmail = form.notifyEmail || process.env.CONTACT_EMAIL || SITE_CONFIG.email
-    const apiKey = process.env.RESEND_API_KEY
-    if (apiKey && toEmail) {
+    if (toEmail) {
       const fields = Array.isArray(form.fields) ? (form.fields as { name: string; label: string }[]) : []
-      const rows = fields.map((f) => `<tr><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold;width:160px">${f.label}</td><td style="padding:8px;border-bottom:1px solid #eee">${(data as Record<string, unknown>)[f.name] ?? ''}</td></tr>`).join('')
-      const { Resend } = await import('resend')
-      const resend = new Resend(apiKey)
-      await resend.emails.send({
-        from: `${SITE_CONFIG.name} <noreply@${new URL(SITE_CONFIG.url).hostname}>`,
+      const rows = fields.map((f) => ({
+        label: f.label,
+        value: String((data as Record<string, unknown>)[f.name] ?? ''),
+      }))
+      await sendResendEmail({
         to: toEmail,
-        subject: `New form submission — ${form.title}`,
-        html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2 style="color:#1d4ed8">New submission: ${form.title}</h2><table style="width:100%;border-collapse:collapse">${rows}</table><p style="color:#94a3b8;font-size:12px;margin-top:24px">Submitted via ${SITE_CONFIG.url}</p></div>`,
+        subject: `New form submission — ${escapeHtml(form.title)}`,
+        html: buildEmailHtml({ heading: `New submission: ${form.title}`, rows }),
       })
     }
   } catch (err) {

@@ -211,13 +211,13 @@ function parseJsonArr(raw: string | null): string[] {
   try { const p = JSON.parse(raw); return Array.isArray(p) ? p : [] } catch { return [] }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseStats(raw: string | null): any[] {
+function parseStats(raw: string | null): { value: string; label: string }[] {
   if (!raw?.trim()) return []
-  return raw.split('\n').map((line) => {
+  return raw.split('\n').flatMap((line) => {
     const [value, ...rest] = line.split('|')
-    return { value: value.trim(), label: rest.join('|').trim() }
-  }).filter((s) => s.value && s.label)
+    const stat = { value: value.trim(), label: rest.join('|').trim() }
+    return stat.value && stat.label ? [stat] : []
+  })
 }
 
 export async function createService(formData: FormData) {

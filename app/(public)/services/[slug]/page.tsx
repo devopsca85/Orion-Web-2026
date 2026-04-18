@@ -7,6 +7,8 @@ import { SITE_CONFIG } from '@/lib/constants'
 import { prisma } from '@/lib/prisma'
 import { CheckCircle2 } from 'lucide-react'
 
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   const slugs = [
     'artificial-intelligence','application-development','cloud-services','technology-development',
