@@ -1,5 +1,3 @@
-'use server'
-
 import { SITE_CONFIG } from '@/lib/constants'
 
 /** Escape user-supplied strings before embedding in email HTML. */
