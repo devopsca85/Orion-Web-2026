@@ -36,6 +36,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  // Reduce build memory: skip browser source maps and limit compile workers
+  productionBrowserSourceMaps: false,
+  experimental: {
+    cpus: 1,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
