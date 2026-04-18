@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, Phone, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { NAV_LINKS, SITE_CONFIG, type NavLink, type NavLinkMega, type NavLinkDropdown } from '@/lib/constants'
+import { NAV_LINKS, SITE_CONFIG, type NavLink, type NavLinkMega, type NavLinkDropdown, type NavLinkProductMega } from '@/lib/constants'
 
 interface BrandingData {
   logoUrl: string
@@ -20,6 +20,10 @@ interface HeaderProps {
 
 function isMega(link: NavLink): link is NavLinkMega {
   return 'mega' in link && link.mega === true
+}
+
+function isProductMega(link: NavLink): link is NavLinkProductMega {
+  return 'productMega' in link && (link as NavLinkProductMega).productMega === true
 }
 
 function hasChildren(link: NavLink): link is NavLinkDropdown {
@@ -119,6 +123,21 @@ export function Header({ branding }: HeaderProps = {}) {
                 )
               }
 
+              if (isProductMega(link)) {
+                return (
+                  <div key={link.href} className="relative">
+                    <button
+                      onClick={() => setActiveDropdown(isDropOpen ? null : link.href)}
+                      className={cn('flex items-center gap-0.5 rounded-lg px-3 py-2 text-sm transition-colors', baseCls)}
+                      aria-expanded={isDropOpen}
+                    >
+                      {link.label}
+                      <ChevronDown className={cn('h-3.5 w-3.5 ml-0.5 transition-transform', isDropOpen && 'rotate-180')} />
+                    </button>
+                  </div>
+                )
+              }
+
               if (hasChildren(link)) {
                 const cols = link.children.length > 6 ? 2 : 1
                 return (
@@ -200,7 +219,40 @@ export function Header({ branding }: HeaderProps = {}) {
         </nav>
       </div>
 
-      {/* ─── Mega panel (desktop, full-width) ───────────────────── */}
+      {/* ─── Products mega panel (desktop, full-width cards) ────── */}
+      {navItems.map((link) => {
+        if (activeDropdown !== link.href || !isProductMega(link)) return null
+        return (
+          <div key={link.href} className="hidden lg:block absolute inset-x-0 top-full bg-white border-t border-gray-100 shadow-2xl z-40">
+            <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-6">
+              <div className="grid grid-cols-5 divide-x divide-gray-100">
+                {link.items.map((product) => (
+                  <Link
+                    key={product.href}
+                    href={product.href}
+                    onClick={() => setActiveDropdown(null)}
+                    className="group flex flex-col gap-3 px-6 py-4 hover:bg-primary/5 transition-colors first:pl-0 last:pr-0"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={product.logoUrl} alt={product.label} className="h-10 w-auto object-contain" />
+                      <span className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white transition-colors group-hover:bg-secondary">
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors mb-1">{product.label}</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">{product.description}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+
+      {/* ─── Services mega panel (desktop, full-width) ───────────── */}
       {navItems.map((link) => {
         if (activeDropdown !== link.href || !isMega(link)) return null
         return (
@@ -264,7 +316,7 @@ export function Header({ branding }: HeaderProps = {}) {
         <div className="border-t border-gray-100 bg-white shadow-lg lg:hidden max-h-[80vh] overflow-y-auto">
           <div className="px-4 py-4 space-y-1">
             {NAV_LINKS.map((link) => {
-              const hasSub = isMega(link) || hasChildren(link)
+              const hasSub = isMega(link) || isProductMega(link) || hasChildren(link)
               const isExpanded = mobileOpen.has(link.href)
 
               return (
@@ -321,6 +373,16 @@ export function Header({ branding }: HeaderProps = {}) {
                               </div>
                             </div>
                           ))
+                        : isProductMega(link)
+                          ? link.items.map((product) => (
+                              <Link
+                                key={product.href}
+                                href={product.href}
+                                className="block rounded-lg px-2 py-2 text-sm text-gray-500 hover:text-primary transition-colors"
+                              >
+                                {product.label}
+                              </Link>
+                            ))
                         : hasChildren(link) && link.children.map((child) => (
                             <Link
                               key={child.href}

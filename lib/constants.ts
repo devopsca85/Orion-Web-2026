@@ -36,11 +36,19 @@ export interface MegaColumn {
   items: NavChild[]
 }
 
-export interface NavLinkSimple  { label: string; href: string }
+export interface NavLinkSimple   { label: string; href: string }
 export interface NavLinkDropdown { label: string; href: string; children: NavChild[] }
-export interface NavLinkMega    { label: string; href: string; mega: true; columns: MegaColumn[] }
+export interface NavLinkMega     { label: string; href: string; mega: true; columns: MegaColumn[] }
 
-export type NavLink = NavLinkSimple | NavLinkDropdown | NavLinkMega
+export interface ProductCard {
+  label: string
+  href: string
+  description: string
+  logoUrl: string
+}
+export interface NavLinkProductMega { label: string; href: string; productMega: true; items: ProductCard[] }
+
+export type NavLink = NavLinkSimple | NavLinkDropdown | NavLinkMega | NavLinkProductMega
 
 // ─── Navigation data (matches live site) ─────────────────────────────────────
 
@@ -119,12 +127,13 @@ export const NAV_LINKS: NavLink[] = [
   {
     label: 'Products',
     href: '/products',
-    children: [
-      { label: 'Orion ERP',              href: '/products/orion-erp' },
-      { label: 'Orion CRM',              href: '/products/orion-crm' },
-      { label: 'Orion Analytics',        href: '/products/orion-analytics' },
-      { label: 'Orion HR Suite',         href: '/products/orion-hr-suite' },
-      { label: 'Orion Customer Portal',  href: '/products/orion-customer-portal' },
+    productMega: true,
+    items: [
+      { label: 'Orion ERP',             href: '/products/orion-erp',             description: 'Cloud-native, modular ERP unifying finance, supply chain, HR, and projects with real-time insights.',                    logoUrl: '/assets/images/logo.png' },
+      { label: 'Orion CRM',             href: '/products/orion-crm',             description: 'Intelligent CRM that tracks leads, automates follow-ups, and closes deals faster.',                                        logoUrl: '/assets/images/logo.png' },
+      { label: 'Orion Analytics',       href: '/products/orion-analytics',       description: 'Real-time business intelligence dashboards that turn raw data into actionable insights.',                                  logoUrl: '/assets/images/logo.png' },
+      { label: 'Orion HR Suite',        href: '/products/orion-hr-suite',        description: 'End-to-end HR management from recruitment and onboarding through payroll and performance reviews.',                        logoUrl: '/assets/images/logo.png' },
+      { label: 'Orion Customer Portal', href: '/products/orion-customer-portal', description: 'Self-service portal giving customers 24/7 access to support tickets, invoices, and project status.',                      logoUrl: '/assets/images/logo.png' },
     ],
   },
   { label: 'Case Studies', href: '/case-studies' },
