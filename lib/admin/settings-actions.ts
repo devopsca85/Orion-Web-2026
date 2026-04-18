@@ -59,6 +59,8 @@ export async function saveHomeSettings(formData: FormData) {
     'home.hero.bullet1',
     'home.hero.bullet2',
     'home.hero.bullet3',
+    'home.hero.backgroundImage',
+    'home.hero.overlayOpacity',
   ]
 
   for (const key of keys) {

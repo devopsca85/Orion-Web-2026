@@ -1,161 +1,134 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import { PageHero } from '@/components/sections/Hero';
-import { Container, Section } from '@/components/ui/Container';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { CTA } from '@/components/sections/CTA';
-import { BreadcrumbSchema, ServiceSchema } from '@/components/seo/JsonLd';
-import { services, getServiceBySlug } from '@/lib/data/services';
-import { generateMetadata as genMeta } from '@/lib/seo';
-import { SITE_CONFIG } from '@/lib/constants';
+import type { Metadata } from 'next'
+import { PageHero } from '@/components/sections/Hero'
+import { Container, Section } from '@/components/ui/Container'
+import { CTA } from '@/components/sections/CTA'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
+import { SITE_CONFIG } from '@/lib/constants'
+import { prisma } from '@/lib/prisma'
+import { CheckCircle2 } from 'lucide-react'
 
 export async function generateStaticParams() {
-  return services.map((s) => ({ slug: s.slug }));
+  const slugs = [
+    'artificial-intelligence','application-development','cloud-services','technology-development',
+    'ai-development','generative-ai-development','llm-development','hire-machine-learning-developers',
+    'nlp-services','ai-consulting','software-development','custom-application-development',
+    'web-development','mobile-application-development','it-staff-augmentation','qa-services',
+    'erp-development','devops-consulting','cloud-managed-services','cloud-migration-services',
+    'crm-development','cybersecurity','managed-it-services','react-js-development',
+    'react-native-development','ionic-app-development','dot-net-development',
+    'codeigniter-development','api-web-services','zend-web-development',
+  ]
+  return slugs.map((slug) => ({ slug }))
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const service = getServiceBySlug(slug);
-  if (!service) return {};
-  return genMeta({
-    title: service.metaTitle || service.title,
-    description: service.metaDescription || service.description,
-    path: `/services/${service.slug}`,
-    keywords: [service.title, ...service.technologies],
-  });
+interface Props { params: Promise<{ slug: string }> }
+
+function slugToTitle(slug: string) {
+  return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 }
 
-export default async function ServicePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const service = getServiceBySlug(slug);
-  if (!service) notFound();
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  try {
+    const s = await prisma.service.findUnique({ where: { slug }, select: { title: true, metaTitle: true, metaDescription: true } })
+    if (s) return { title: s.metaTitle || `${s.title} — ${SITE_CONFIG.name}`, description: s.metaDescription || undefined }
+  } catch { /* DB not ready */ }
+  return { title: `${slugToTitle(slug)} — ${SITE_CONFIG.name}` }
+}
 
-  const relatedServices = services.filter((s) => s.slug !== service.slug).slice(0, 3);
+export default async function ServicePage({ params }: Props) {
+  const { slug } = await params
+
+  let service: { title: string; shortDesc: string; description: string; features: unknown; benefits: unknown; technologies: unknown } | null = null
+  try {
+    service = await prisma.service.findUnique({
+      where: { slug, published: true },
+      select: { title: true, shortDesc: true, description: true, features: true, benefits: true, technologies: true },
+    })
+  } catch { /* DB not ready */ }
+
+  const title        = service?.title || slugToTitle(slug)
+  const description  = service?.shortDesc || `Expert ${title} services tailored to your business needs.`
+  const features     = Array.isArray(service?.features) ? service!.features as string[] : []
+  const benefits     = Array.isArray(service?.benefits) ? service!.benefits as string[] : []
+  const technologies = Array.isArray(service?.technologies) ? service!.technologies as string[] : []
 
   return (
     <>
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', url: SITE_CONFIG.url },
-          { name: 'Services', url: `${SITE_CONFIG.url}/services` },
-          { name: service.title, url: `${SITE_CONFIG.url}/services/${service.slug}` },
-        ]}
-      />
-      <ServiceSchema
-        name={service.title}
-        description={service.description}
-        url={`${SITE_CONFIG.url}/services/${service.slug}`}
-      />
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: SITE_CONFIG.url },
+        { name: 'Services', url: `${SITE_CONFIG.url}/services` },
+        { name: title, url: `${SITE_CONFIG.url}/services/${slug}` },
+      ]} />
 
       <PageHero
-        title={service.title}
-        description={service.shortDescription}
-        breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Services', href: '/services' },
-          { label: service.title },
-        ]}
+        title={title}
+        description={description}
+        breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Services', href: '/services' }, { label: title }]}
       />
 
-      {/* Overview */}
       <Section className="bg-white">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-3 lg:gap-16">
-            {/* Main content */}
-            <div className="lg:col-span-2">
-              <h2 className="mb-4 text-2xl font-bold text-gray-900">Overview</h2>
-              <p className="mb-8 text-lg leading-relaxed text-gray-600">{service.description}</p>
+          {service?.description ? (
+            <div className="prose prose-gray max-w-4xl mx-auto" dangerouslySetInnerHTML={{ __html: service.description }} />
+          ) : (
+            <div className="max-w-4xl mx-auto text-center py-12">
+              <span className="inline-flex items-center gap-2 bg-primary/5 text-primary text-sm font-semibold px-4 py-2 rounded-full mb-6">
+                Content Coming Soon
+              </span>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
+              <p className="text-lg text-gray-600">
+                We are building out this page. Contact us to learn how our {title} expertise can drive results for your business.
+              </p>
+            </div>
+          )}
 
-              <h3 className="mb-4 text-xl font-bold text-gray-900">What We Deliver</h3>
-              <ul className="mb-8 space-y-3">
-                {service.features.map((feat) => (
-                  <li key={feat} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 flex-shrink-0 text-secondary mt-0.5" />
-                    <span className="text-gray-700">{feat}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <h3 className="mb-4 text-xl font-bold text-gray-900">Key Benefits</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {service.benefits.map((benefit) => (
-                  <div
-                    key={benefit}
-                    className="rounded-xl border border-gray-100 bg-gray-50 p-4"
-                  >
-                    <p className="text-sm font-medium text-gray-700">{benefit}</p>
+          {features.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Features</h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {features.map((f) => (
+                  <div key={f} className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
+                    <CheckCircle2 size={18} className="text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-700">{f}</span>
                   </div>
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Sidebar */}
-            <aside className="space-y-6">
-              <Card padding="lg">
-                <h3 className="mb-4 font-bold text-gray-900">Technologies We Use</h3>
-                <div className="flex flex-wrap gap-2">
-                  {service.technologies.map((tech) => (
-                    <Badge key={tech} variant="primary">{tech}</Badge>
-                  ))}
-                </div>
-              </Card>
+          {benefits.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Benefits</h2>
+              <ul className="space-y-3">
+                {benefits.map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-gray-600">
+                    <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />{b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              <Card padding="lg" className="border-primary/20 bg-primary/5">
-                <h3 className="mb-3 font-bold text-gray-900">Ready to Get Started?</h3>
-                <p className="mb-4 text-sm text-gray-600">
-                  Speak with one of our {service.title.toLowerCase()} experts. Free 30-minute consultation.
-                </p>
-                <a
-                  href="/contact"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
-                >
-                  Book a Free Call <ArrowRight className="h-4 w-4" />
-                </a>
-              </Card>
-            </aside>
-          </div>
+          {technologies.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Technologies</h2>
+              <div className="flex flex-wrap gap-2">
+                {technologies.map((t) => (
+                  <span key={t} className="text-sm bg-primary/5 text-primary font-medium px-3 py-1.5 rounded-full">{t}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </Container>
       </Section>
 
-      {/* Related Services */}
-      {relatedServices.length > 0 && (
-        <Section className="bg-gray-50">
-          <Container>
-            <h2 className="mb-8 text-2xl font-bold text-gray-900">Related Services</h2>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {relatedServices.map((related) => (
-                <a
-                  key={related.slug}
-                  href={`/services/${related.slug}`}
-                  className="group block rounded-2xl border border-gray-100 bg-white p-6 shadow-soft transition-all hover:-translate-y-1 hover:shadow-card-hover"
-                >
-                  <h3 className="mb-2 font-bold text-gray-900 group-hover:text-primary transition-colors">
-                    {related.title}
-                  </h3>
-                  <p className="text-sm text-gray-600">{related.shortDescription}</p>
-                </a>
-              ))}
-            </div>
-          </Container>
-        </Section>
-      )}
-
       <CTA
-        title={`Start Your ${service.title} Journey`}
-        description="Let's discuss your specific needs and how we can help you achieve your technology goals."
-        primaryCta={{ label: 'Talk to an Expert', href: '/contact' }}
-        secondaryCta={{ label: 'View Case Studies', href: '/portfolio' }}
+        title={`Ready to Get Started with ${title}?`}
+        description="Let's discuss how our expertise can help your business grow."
+        primaryCta={{ label: 'Get a Free Consultation', href: '/contact' }}
+        variant="primary"
       />
     </>
-  );
+  )
 }

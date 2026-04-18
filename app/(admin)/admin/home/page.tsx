@@ -27,6 +27,8 @@ export default async function HomeAdminPage({ searchParams }: Props) {
     'home.hero.bullet1',
     'home.hero.bullet2',
     'home.hero.bullet3',
+    'home.hero.backgroundImage',
+    'home.hero.overlayOpacity',
   ])
 
   return (
@@ -46,6 +48,40 @@ export default async function HomeAdminPage({ searchParams }: Props) {
             <h2 className="text-base font-semibold text-slate-800 border-b border-slate-100 pb-3">
               Hero Section
             </h2>
+
+            {/* Background image */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-4 border-b border-slate-100">
+              <div className="sm:col-span-2">
+                <label htmlFor="home.hero.backgroundImage" className="block text-sm font-medium text-slate-700 mb-1">
+                  Background Image URL
+                </label>
+                <input
+                  id="home.hero.backgroundImage"
+                  name="home.hero.backgroundImage"
+                  type="text"
+                  defaultValue={settings['home.hero.backgroundImage'] || ''}
+                  placeholder="/assets/images/hero-bg.jpg"
+                  className={inputClass}
+                />
+                <p className="text-xs text-slate-400 mt-1">Paste a public path or upload via Media. Leave blank to use colour gradient.</p>
+              </div>
+              <div>
+                <label htmlFor="home.hero.overlayOpacity" className="block text-sm font-medium text-slate-700 mb-1">
+                  Overlay Opacity (0–1)
+                </label>
+                <input
+                  id="home.hero.overlayOpacity"
+                  name="home.hero.overlayOpacity"
+                  type="number"
+                  step="0.05"
+                  min="0"
+                  max="1"
+                  defaultValue={settings['home.hero.overlayOpacity'] || '0.65'}
+                  className={inputClass}
+                />
+                <p className="text-xs text-slate-400 mt-1">Higher = darker overlay.</p>
+              </div>
+            </div>
 
             <div>
               <label htmlFor="home.hero.eyebrow" className="block text-sm font-medium text-slate-700 mb-1">

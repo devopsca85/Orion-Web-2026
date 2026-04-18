@@ -21,94 +21,151 @@ export const SITE_CONFIG = {
   },
   ogImage: '/assets/images/og-image.jpg',
   twitterHandle: '@orionesolutions',
-} as const;
+} as const
 
-export const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  {
-    label: 'Services',
-    href: '/services',
-    children: [
-      { label: 'Software Development', href: '/services/software-development' },
-      { label: 'Cloud Solutions', href: '/services/cloud-solutions' },
-      { label: 'IT Consulting', href: '/services/it-consulting' },
-      { label: 'Digital Transformation', href: '/services/digital-transformation' },
-      { label: 'Cybersecurity', href: '/services/cybersecurity' },
-      { label: 'Data & Analytics', href: '/services/data-analytics' },
-    ],
-  },
+// ─── Navigation types ─────────────────────────────────────────────────────────
+
+export interface NavChild {
+  label: string
+  href: string
+}
+
+export interface MegaColumn {
+  title: string
+  href: string
+  items: NavChild[]
+}
+
+export interface NavLinkSimple  { label: string; href: string }
+export interface NavLinkDropdown { label: string; href: string; children: NavChild[] }
+export interface NavLinkMega    { label: string; href: string; mega: true; columns: MegaColumn[] }
+
+export type NavLink = NavLinkSimple | NavLinkDropdown | NavLinkMega
+
+// ─── Navigation data (matches live site) ─────────────────────────────────────
+
+export const NAV_LINKS: NavLink[] = [
   {
     label: 'Industries',
     href: '/industries',
     children: [
-      { label: 'Financial Services', href: '/industries/financial-services' },
       { label: 'Healthcare & Life Sciences', href: '/industries/healthcare' },
-      { label: 'Retail & E-Commerce', href: '/industries/retail-ecommerce' },
-      { label: 'Manufacturing', href: '/industries/manufacturing' },
-      { label: 'Government & Public Sector', href: '/industries/government-public-sector' },
-      { label: 'Education & EdTech', href: '/industries/education' },
-      { label: 'Telecommunications', href: '/industries/telecommunications' },
-      { label: 'Energy & Utilities', href: '/industries/energy-utilities' },
+      { label: 'Finance & Banking',          href: '/industries/finance-banking' },
+      { label: 'Retail & E-Commerce',        href: '/industries/retail-ecommerce' },
+      { label: 'Education & EdTech',         href: '/industries/education' },
+      { label: 'Manufacturing',              href: '/industries/manufacturing' },
+      { label: 'Real Estate',               href: '/industries/real-estate' },
+      { label: 'Government',                href: '/industries/government' },
+      { label: 'Logistics & Transportation', href: '/industries/logistics-transportation' },
     ],
   },
   {
-    label: 'Company',
-    href: '/about',
-    children: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Our Culture', href: '/about/culture' },
-      { label: 'Certifications', href: '/about/certifications' },
-      { label: 'Corporate Responsibility', href: '/about/csr' },
-      { label: 'Partners', href: '/partners' },
-      { label: 'Careers', href: '/careers' },
+    label: 'Services',
+    href: '/services',
+    mega: true,
+    columns: [
+      {
+        title: 'Artificial Intelligence',
+        href: '/services/artificial-intelligence',
+        items: [
+          { label: 'AI Development',                    href: '/services/ai-development' },
+          { label: 'Generative AI Development',         href: '/services/generative-ai-development' },
+          { label: 'LLM Development',                   href: '/services/llm-development' },
+          { label: 'Hire Machine Learning Developers',  href: '/services/hire-machine-learning-developers' },
+          { label: 'NLP Services',                      href: '/services/nlp-services' },
+          { label: 'AI Consulting',                     href: '/services/ai-consulting' },
+        ],
+      },
+      {
+        title: 'Application Development',
+        href: '/services/application-development',
+        items: [
+          { label: 'Software Development',          href: '/services/software-development' },
+          { label: 'Custom Application Development', href: '/services/custom-application-development' },
+          { label: 'Web Development',               href: '/services/web-development' },
+          { label: 'Mobile Application Development', href: '/services/mobile-application-development' },
+          { label: 'IT Staff Augmentation',         href: '/services/it-staff-augmentation' },
+          { label: 'QA Services',                   href: '/services/qa-services' },
+        ],
+      },
+      {
+        title: 'Cloud Services',
+        href: '/services/cloud-services',
+        items: [
+          { label: 'ERP Development',           href: '/services/erp-development' },
+          { label: 'DevOps Consulting',          href: '/services/devops-consulting' },
+          { label: 'Cloud Managed Services',    href: '/services/cloud-managed-services' },
+          { label: 'Cloud Migration Services',  href: '/services/cloud-migration-services' },
+          { label: 'CRM Development',           href: '/services/crm-development' },
+          { label: 'Cybersecurity',             href: '/services/cybersecurity' },
+          { label: 'Managed IT Services',       href: '/services/managed-it-services' },
+        ],
+      },
+      {
+        title: 'Technology Development',
+        href: '/services/technology-development',
+        items: [
+          { label: 'React JS Development',     href: '/services/react-js-development' },
+          { label: 'React Native Development', href: '/services/react-native-development' },
+          { label: 'Ionic App Development',    href: '/services/ionic-app-development' },
+          { label: 'Dot Net Development',      href: '/services/dot-net-development' },
+          { label: 'CodeIgniter Development',  href: '/services/codeigniter-development' },
+          { label: 'API Web Services',         href: '/services/api-web-services' },
+          { label: 'Zend Web Development',     href: '/services/zend-web-development' },
+        ],
+      },
     ],
   },
-  { label: 'Portfolio', href: '/portfolio' },
   {
-    label: 'Resources',
-    href: '/resources',
+    label: 'Products',
+    href: '/products',
     children: [
-      { label: 'All Resources', href: '/resources' },
-      { label: 'Blog & Insights', href: '/blog' },
-      { label: 'Guides & Whitepapers', href: '/resources' },
-      { label: 'Webinars', href: '/resources' },
+      { label: 'Orion ERP',              href: '/products/orion-erp' },
+      { label: 'Orion CRM',              href: '/products/orion-crm' },
+      { label: 'Orion Analytics',        href: '/products/orion-analytics' },
+      { label: 'Orion HR Suite',         href: '/products/orion-hr-suite' },
+      { label: 'Orion Customer Portal',  href: '/products/orion-customer-portal' },
     ],
   },
-  { label: 'Contact', href: '/contact' },
-] as const;
+  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'Careers',      href: '/careers' },
+  { label: 'Blog',         href: '/blog' },
+  { label: 'Contact Us',   href: '/contact' },
+]
+
+// ─── Footer links ─────────────────────────────────────────────────────────────
 
 export const FOOTER_LINKS = {
   services: [
-    { label: 'Software Development', href: '/services/software-development' },
-    { label: 'Cloud Solutions', href: '/services/cloud-solutions' },
-    { label: 'IT Consulting', href: '/services/it-consulting' },
-    { label: 'Digital Transformation', href: '/services/digital-transformation' },
-    { label: 'Cybersecurity', href: '/services/cybersecurity' },
-    { label: 'Data & Analytics', href: '/services/data-analytics' },
+    { label: 'AI Development',             href: '/services/ai-development' },
+    { label: 'Software Development',       href: '/services/software-development' },
+    { label: 'Web Development',            href: '/services/web-development' },
+    { label: 'Mobile App Development',     href: '/services/mobile-application-development' },
+    { label: 'Cloud Managed Services',     href: '/services/cloud-managed-services' },
+    { label: 'Cybersecurity',             href: '/services/cybersecurity' },
+    { label: 'DevOps Consulting',         href: '/services/devops-consulting' },
+    { label: 'IT Staff Augmentation',     href: '/services/it-staff-augmentation' },
   ],
   industries: [
-    { label: 'Financial Services', href: '/industries/financial-services' },
-    { label: 'Healthcare', href: '/industries/healthcare' },
+    { label: 'Healthcare',          href: '/industries/healthcare' },
+    { label: 'Finance & Banking',   href: '/industries/finance-banking' },
     { label: 'Retail & E-Commerce', href: '/industries/retail-ecommerce' },
-    { label: 'Manufacturing', href: '/industries/manufacturing' },
-    { label: 'Government', href: '/industries/government-public-sector' },
-    { label: 'Education', href: '/industries/education' },
+    { label: 'Education',           href: '/industries/education' },
+    { label: 'Manufacturing',       href: '/industries/manufacturing' },
+    { label: 'Government',         href: '/industries/government' },
   ],
   company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Our Culture', href: '/about/culture' },
-    { label: 'Certifications', href: '/about/certifications' },
-    { label: 'Partners', href: '/partners' },
-    { label: 'Portfolio', href: '/portfolio' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Resources', href: '/resources' },
-    { label: 'Careers', href: '/careers' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'About Us',    href: '/about' },
+    { label: 'Portfolio',   href: '/portfolio' },
+    { label: 'Case Studies', href: '/case-studies' },
+    { label: 'Blog',        href: '/blog' },
+    { label: 'Careers',     href: '/careers' },
+    { label: 'Contact',     href: '/contact' },
   ],
   legal: [
-    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Privacy Policy',   href: '/privacy-policy' },
     { label: 'Terms of Service', href: '/terms-of-service' },
-    { label: 'Cookie Policy', href: '/cookie-policy' },
-    { label: 'Sitemap', href: '/sitemap-page' },
+    { label: 'Cookie Policy',    href: '/cookie-policy' },
+    { label: 'Sitemap',         href: '/sitemap-page' },
   ],
-} as const;
+} as const

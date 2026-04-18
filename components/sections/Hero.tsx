@@ -15,6 +15,8 @@ interface HeroProps {
   secondaryCta?: { label: string; href: string };
   bullets?: string[];
   variant?: 'home' | 'page';
+  backgroundImage?: string;
+  overlayOpacity?: string;
 }
 
 export function Hero({
@@ -26,8 +28,11 @@ export function Hero({
   secondaryCta,
   bullets,
   variant = 'home',
+  backgroundImage,
+  overlayOpacity = '0.65',
 }: HeroProps) {
   const isHome = variant === 'home';
+  const opacity = parseFloat(overlayOpacity || '0.65');
 
   return (
     <section
@@ -37,9 +42,30 @@ export function Hero({
       )}
       aria-label="Hero"
     >
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-hero-pattern opacity-40" />
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary to-primary-800" />
+      {/* Background image (if set) */}
+      {backgroundImage && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={backgroundImage}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div
+            className="absolute inset-0 bg-primary"
+            style={{ opacity: Math.min(1, Math.max(0, opacity)) }}
+          />
+        </>
+      )}
+
+      {/* Default gradient (shown when no background image) */}
+      {!backgroundImage && (
+        <>
+          <div className="absolute inset-0 bg-hero-pattern opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary to-primary-800" />
+        </>
+      )}
 
       {/* Decorative orbs */}
       <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-secondary/10 blur-3xl" />
