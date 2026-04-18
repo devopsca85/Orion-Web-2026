@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
   try {
     await db.formSubmission.create({
-      data: { formId: form.id, data, ipAddress },
+      data: { formId: form.id, data: data as Record<string, string>, ipAddress },
     })
   } catch (err) {
     console.error('[Forms Submit] DB insert error:', err)
