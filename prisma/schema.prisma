@@ -401,3 +401,58 @@ model EngagementModel {
   @@index([active, sortOrder])
   @@map("engagement_models")
 }
+
+/// Job openings managed in admin and displayed on /careers
+model JobOpening {
+  id           String   @id @default(cuid())
+  title        String   @db.VarChar(200)
+  department   String   @db.VarChar(100)
+  location     String   @db.VarChar(150)
+  type         String   @db.VarChar(50)
+  level        String   @db.VarChar(80)
+  description  String   @db.LongText
+  requirements Json
+  salary       String?  @db.VarChar(100)
+  active       Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("job_openings")
+}
+
+/// Form definitions created in the form builder
+model Form {
+  id          String           @id @default(cuid())
+  name        String           @db.VarChar(150)
+  slug        String           @unique @db.VarChar(100)
+  title       String           @db.VarChar(200)
+  description String?          @db.VarChar(500)
+  /// JSON array of field configs: { name, label, type, required, options? }
+  fields      Json
+  submitLabel String           @default("Submit") @db.VarChar(80)
+  successMsg  String           @default("Thank you! We\u2019ll be in touch shortly.") @db.Text
+  notifyEmail String?          @db.VarChar(255)
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  submissions FormSubmission[]
+
+  @@index([slug])
+  @@map("forms")
+}
+
+/// Submissions received through dynamic forms
+model FormSubmission {
+  id        String   @id @default(cuid())
+  formId    String
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  /// JSON object: { fieldName: value }
+  data      Json
+  ipAddress String?  @db.VarChar(45)
+  createdAt DateTime @default(now())
+
+  @@index([formId, createdAt])
+  @@map("form_submissions")
+}

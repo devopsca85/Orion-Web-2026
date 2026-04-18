@@ -25,6 +25,9 @@ import {
   Trophy,
   HelpCircle,
   Code2,
+  GraduationCap,
+  FormInput,
+  Settings,
 } from 'lucide-react'
 
 interface NavItem {
@@ -74,11 +77,23 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    title: 'Careers',
+    items: [
+      { href: '/admin/job-openings', label: 'Job Openings', icon: <GraduationCap size={16} /> },
+      { href: '/admin/applications', label: 'Applications', icon: <UserCheck size={16} /> },
+    ],
+  },
+  {
+    title: 'Forms',
+    items: [
+      { href: '/admin/forms', label: 'Form Builder', icon: <FormInput size={16} /> },
+    ],
+  },
+  {
     title: 'Inbox',
     items: [
       { href: '/admin/contacts', label: 'Contacts', icon: <Mail size={16} /> },
       { href: '/admin/subscribers', label: 'Subscribers', icon: <Bell size={16} /> },
-      { href: '/admin/applications', label: 'Job Applications', icon: <UserCheck size={16} /> },
     ],
   },
   {
@@ -92,6 +107,7 @@ const navGroups: NavGroup[] = [
     title: 'Settings',
     items: [
       { href: '/admin/branding', label: 'Branding', icon: <Palette size={16} /> },
+      { href: '/admin/email-settings', label: 'Email Settings', icon: <Settings size={16} /> },
     ],
   },
 ]

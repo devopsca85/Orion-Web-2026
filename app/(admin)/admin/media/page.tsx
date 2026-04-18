@@ -59,7 +59,7 @@ export default async function MediaPage() {
               <span className="font-semibold text-slate-800">{Array.from(new Set(files.map(f => f.folder))).length}</span> folder{Array.from(new Set(files.map(f => f.folder))).length !== 1 ? 's' : ''}
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
-              Click a folder to expand · hover a file name to preview · copy its public path
+              Use the Upload button on each folder · click folder name to expand · copy public paths
             </p>
           </div>
         </div>
