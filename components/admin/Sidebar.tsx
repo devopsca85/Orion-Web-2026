@@ -63,6 +63,7 @@ const navGroups: NavGroup[] = [
       { href: '/admin/testimonials', label: 'Testimonials', icon: <Quote size={16} /> },
       { href: '/admin/team', label: 'Team', icon: <Users size={16} /> },
       { href: '/admin/services', label: 'Services', icon: <Wrench size={16} /> },
+      { href: '/admin/products', label: 'Products', icon: <Layers size={16} /> },
       { href: '/admin/resources', label: 'Resources', icon: <BookOpen size={16} /> },
     ],
   },

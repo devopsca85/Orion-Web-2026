@@ -402,6 +402,25 @@ model EngagementModel {
   @@map("engagement_models")
 }
 
+/// Software products managed in admin and displayed on /products
+model Product {
+  slug        String   @id @db.VarChar(100)
+  title       String   @db.VarChar(150)
+  tagline     String   @db.VarChar(300)
+  description String   @db.Text
+  logoUrl     String?  @db.VarChar(512)
+  features    Json
+  metaTitle   String?  @db.VarChar(70)
+  metaDesc    String?  @db.VarChar(160)
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@map("products")
+}
+
 /// Job openings managed in admin and displayed on /careers
 model JobOpening {
   id           String   @id @default(cuid())

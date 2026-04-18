@@ -1,30 +1,55 @@
 'use client'
 
-import { useState } from 'react'
-import { Send, Loader2, CheckCircle } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Send, Loader2, CheckCircle, Paperclip, X } from 'lucide-react'
 
 interface Props {
   role: string
   jobId: string
 }
 
+const ALLOWED_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]
+const MAX_MB = 5
+
 export function JobApplicationForm({ role, jobId }: Props) {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-  const [error, setError] = useState('')
+  const [status, setStatus]   = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [error, setError]     = useState('')
+  const [cvFile, setCvFile]   = useState<File | null>(null)
+  const fileRef               = useRef<HTMLInputElement>(null)
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError('Only PDF or DOCX files are accepted.')
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_MB * 1024 * 1024) {
+      setError(`File must be under ${MAX_MB} MB.`)
+      e.target.value = ''
+      return
+    }
+    setError('')
+    setCvFile(file)
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('sending')
     setError('')
+
     const form = e.currentTarget
-    const data = Object.fromEntries(new FormData(form))
+    const fd   = new FormData(form)
+    fd.set('role', role)
+    fd.set('jobId', jobId)
+    if (cvFile) fd.set('cv', cvFile)
 
     try {
-      const res = await fetch('/api/careers/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, role, jobId }),
-      })
+      const res = await fetch('/api/careers/apply', { method: 'POST', body: fd })
       if (!res.ok) {
         const j = await res.json().catch(() => ({}))
         throw new Error(j.message || 'Submission failed')
@@ -75,6 +100,41 @@ export function JobApplicationForm({ role, jobId }: Props) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio / GitHub</label>
           <input name="portfolioUrl" type="url" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://github.com/…" />
+        </div>
+
+        {/* CV Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            CV / Resume <span className="text-gray-400 font-normal text-xs">(PDF or DOCX, max {MAX_MB} MB)</span>
+          </label>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {cvFile ? (
+            <div className="flex items-center gap-2 border border-primary/30 bg-primary/5 rounded-lg px-3 py-2 text-sm">
+              <Paperclip size={14} className="text-primary shrink-0" />
+              <span className="flex-1 text-gray-700 truncate">{cvFile.name}</span>
+              <button
+                type="button"
+                onClick={() => { setCvFile(null); if (fileRef.current) fileRef.current.value = '' }}
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-2 w-full border border-dashed border-gray-300 hover:border-primary rounded-lg px-3 py-3 text-sm text-gray-500 hover:text-primary transition-colors"
+            >
+              <Paperclip size={14} /> Click to attach CV (PDF or DOCX)
+            </button>
+          )}
         </div>
 
         <div>
