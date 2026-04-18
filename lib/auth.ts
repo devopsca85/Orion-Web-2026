@@ -5,9 +5,9 @@ import { prisma } from '@/lib/prisma'
 import { checkLoginRateLimit, recordFailedLogin, clearLoginAttempts } from '@/lib/login-rate-limit'
 import { headers } from 'next/headers'
 
-function getClientIp(): string {
+async function getClientIp(): Promise<string> {
   try {
-    const h = headers()
+    const h = await headers()
     return (h.get('x-forwarded-for') ?? h.get('x-real-ip') ?? '').split(',')[0].trim() || 'unknown'
   } catch {
     return 'unknown'
@@ -26,7 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null
 
         const email = credentials.email as string
-        const ip    = getClientIp()
+        const ip    = await getClientIp()
 
         // Rate-limit check before hitting DB
         const { allowed, retryAfterMs } = checkLoginRateLimit(email, ip)
