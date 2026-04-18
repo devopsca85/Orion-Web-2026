@@ -142,6 +142,12 @@ model Service {
   features        Json
   benefits        Json
   technologies    Json
+  /// Hero section fields
+  heroBadge       String?  @db.VarChar(200)
+  heroHighlight   String?  @db.VarChar(200)
+  heroSubtext     String?  @db.VarChar(300)
+  heroImageUrl    String?  @db.VarChar(512)
+  heroStats       Json?
   metaTitle       String?  @db.VarChar(70)
   metaDescription String?  @db.VarChar(160)
   published       Boolean  @default(true)

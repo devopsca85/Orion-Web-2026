@@ -206,38 +206,44 @@ export async function deleteTeamMember(id: string) {
 }
 
 // ── Services ──────────────────────────────────────────────────────────────────
+function parseJsonArr(raw: string | null): string[] {
+  if (!raw) return []
+  try { const p = JSON.parse(raw); return Array.isArray(p) ? p : [] } catch { return [] }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseStats(raw: string | null): any[] {
+  if (!raw?.trim()) return []
+  return raw.split('\n').map((line) => {
+    const [value, ...rest] = line.split('|')
+    return { value: value.trim(), label: rest.join('|').trim() }
+  }).filter((s) => s.value && s.label)
+}
+
 export async function createService(formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
-  const title = formData.get('title') as string
+  const title   = formData.get('title') as string
   const slugRaw = formData.get('slug') as string
-  const slug = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-  let features: string[] = []
-  let benefits: string[] = []
-  let technologies: string[] = []
-  try {
-    features = JSON.parse((formData.get('features') as string) || '[]')
-    benefits = JSON.parse((formData.get('benefits') as string) || '[]')
-    technologies = JSON.parse((formData.get('technologies') as string) || '[]')
-  } catch {
-    features = []
-    benefits = []
-    technologies = []
-  }
+  const slug    = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
   await prisma.service.create({
     data: {
-      slug,
-      title,
-      shortDesc: formData.get('shortDesc') as string,
-      description: formData.get('description') as string,
-      icon: (formData.get('icon') as string) || 'Star',
-      features,
-      benefits,
-      technologies,
-      metaTitle: (formData.get('metaTitle') as string) || null,
+      slug, title,
+      shortDesc:     formData.get('shortDesc') as string,
+      description:   formData.get('description') as string,
+      icon:          (formData.get('icon') as string) || 'Star',
+      features:      parseJsonArr(formData.get('features') as string),
+      benefits:      parseJsonArr(formData.get('benefits') as string),
+      technologies:  parseJsonArr(formData.get('technologies') as string),
+      heroBadge:     (formData.get('heroBadge') as string)?.trim() || null,
+      heroHighlight: (formData.get('heroHighlight') as string)?.trim() || null,
+      heroSubtext:   (formData.get('heroSubtext') as string)?.trim() || null,
+      heroImageUrl:  (formData.get('heroImageUrl') as string)?.trim() || null,
+      heroStats:     parseStats(formData.get('heroStats') as string),
+      metaTitle:     (formData.get('metaTitle') as string) || null,
       metaDescription: (formData.get('metaDescription') as string) || null,
-      published: formData.get('published') === 'on',
-      sortOrder: parseInt(formData.get('sortOrder') as string) || 0,
+      published:     formData.get('published') === 'on',
+      sortOrder:     parseInt(formData.get('sortOrder') as string) || 0,
     },
   })
   revalidatePath('/admin/services')
@@ -246,33 +252,26 @@ export async function createService(formData: FormData) {
 
 export async function updateService(slug: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
-  let features: string[] = []
-  let benefits: string[] = []
-  let technologies: string[] = []
-  try {
-    features = JSON.parse((formData.get('features') as string) || '[]')
-    benefits = JSON.parse((formData.get('benefits') as string) || '[]')
-    technologies = JSON.parse((formData.get('technologies') as string) || '[]')
-  } catch {
-    features = []
-    benefits = []
-    technologies = []
-  }
 
   await prisma.service.update({
     where: { slug },
     data: {
-      title: formData.get('title') as string,
-      shortDesc: formData.get('shortDesc') as string,
-      description: formData.get('description') as string,
-      icon: (formData.get('icon') as string) || 'Star',
-      features,
-      benefits,
-      technologies,
-      metaTitle: (formData.get('metaTitle') as string) || null,
+      title:         formData.get('title') as string,
+      shortDesc:     formData.get('shortDesc') as string,
+      description:   formData.get('description') as string,
+      icon:          (formData.get('icon') as string) || 'Star',
+      features:      parseJsonArr(formData.get('features') as string),
+      benefits:      parseJsonArr(formData.get('benefits') as string),
+      technologies:  parseJsonArr(formData.get('technologies') as string),
+      heroBadge:     (formData.get('heroBadge') as string)?.trim() || null,
+      heroHighlight: (formData.get('heroHighlight') as string)?.trim() || null,
+      heroSubtext:   (formData.get('heroSubtext') as string)?.trim() || null,
+      heroImageUrl:  (formData.get('heroImageUrl') as string)?.trim() || null,
+      heroStats:     parseStats(formData.get('heroStats') as string),
+      metaTitle:     (formData.get('metaTitle') as string) || null,
       metaDescription: (formData.get('metaDescription') as string) || null,
-      published: formData.get('published') === 'on',
-      sortOrder: parseInt(formData.get('sortOrder') as string) || 0,
+      published:     formData.get('published') === 'on',
+      sortOrder:     parseInt(formData.get('sortOrder') as string) || 0,
     },
   })
   revalidatePath('/admin/services')

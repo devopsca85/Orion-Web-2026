@@ -74,6 +74,52 @@ export default async function EditServicePage({ params }: Props) {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
+            <h2 className="font-semibold text-slate-800 text-lg">Hero Section</h2>
+            <p className="text-xs text-slate-500 -mt-3">Controls the large two-column header shown on this service page.</p>
+
+            <div>
+              <label htmlFor="heroBadge" className="block text-sm font-medium text-slate-700 mb-1">
+                Hero Badge <span className="text-slate-400 text-xs font-normal">(e.g. "ChatGPT & Co-Pilot")</span>
+              </label>
+              <input id="heroBadge" name="heroBadge" type="text" defaultValue={service.heroBadge ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label htmlFor="heroHighlight" className="block text-sm font-medium text-slate-700 mb-1">
+                Title Highlight <span className="text-slate-400 text-xs font-normal">(exact words to colour orange)</span>
+              </label>
+              <input id="heroHighlight" name="heroHighlight" type="text" defaultValue={service.heroHighlight ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label htmlFor="heroSubtext" className="block text-sm font-medium text-slate-700 mb-1">
+                Hero Subtext <span className="text-slate-400 text-xs font-normal">(e.g. "12+ Years | Diverse Expertise | 24×7 Support")</span>
+              </label>
+              <input id="heroSubtext" name="heroSubtext" type="text" defaultValue={service.heroSubtext ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label htmlFor="heroImageUrl" className="block text-sm font-medium text-slate-700 mb-1">Hero Image URL</label>
+              <input id="heroImageUrl" name="heroImageUrl" type="text" defaultValue={service.heroImageUrl ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label htmlFor="heroStats" className="block text-sm font-medium text-slate-700 mb-1">
+                Stats <span className="text-slate-400 text-xs font-normal">(one per line: "700+ | Satisfied Clients")</span>
+              </label>
+              <textarea
+                id="heroStats" name="heroStats" rows={4}
+                defaultValue={
+                  Array.isArray(service.heroStats)
+                    ? (service.heroStats as {value:string;label:string}[]).map((s) => `${s.value} | ${s.label}`).join('\n')
+                    : ''
+                }
+                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
+              />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
             <h2 className="font-semibold text-slate-800 text-lg">SEO & Settings</h2>
 
             <div>
