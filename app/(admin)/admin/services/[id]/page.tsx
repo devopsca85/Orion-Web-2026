@@ -79,7 +79,7 @@ export default async function EditServicePage({ params }: Props) {
 
             <div>
               <label htmlFor="heroBadge" className="block text-sm font-medium text-slate-700 mb-1">
-                Hero Badge <span className="text-slate-400 text-xs font-normal">(e.g. "ChatGPT & Co-Pilot")</span>
+                Hero Badge <span className="text-slate-400 text-xs font-normal">(e.g. &quot;ChatGPT &amp; Co-Pilot&quot;)</span>
               </label>
               <input id="heroBadge" name="heroBadge" type="text" defaultValue={service.heroBadge ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
             </div>
@@ -93,7 +93,7 @@ export default async function EditServicePage({ params }: Props) {
 
             <div>
               <label htmlFor="heroSubtext" className="block text-sm font-medium text-slate-700 mb-1">
-                Hero Subtext <span className="text-slate-400 text-xs font-normal">(e.g. "12+ Years | Diverse Expertise | 24×7 Support")</span>
+                Hero Subtext <span className="text-slate-400 text-xs font-normal">(e.g. &quot;12+ Years | Diverse Expertise | 24×7 Support&quot;)</span>
               </label>
               <input id="heroSubtext" name="heroSubtext" type="text" defaultValue={service.heroSubtext ?? ''} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
             </div>
@@ -105,7 +105,7 @@ export default async function EditServicePage({ params }: Props) {
 
             <div>
               <label htmlFor="heroStats" className="block text-sm font-medium text-slate-700 mb-1">
-                Stats <span className="text-slate-400 text-xs font-normal">(one per line: "700+ | Satisfied Clients")</span>
+                Stats <span className="text-slate-400 text-xs font-normal">(one per line: &quot;700+ | Satisfied Clients&quot;)</span>
               </label>
               <textarea
                 id="heroStats" name="heroStats" rows={4}
