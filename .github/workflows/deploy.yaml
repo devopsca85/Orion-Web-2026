@@ -1,24 +1,52 @@
-- name: SSH into Server & Deploy
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: ${{ secrets.SSH_HOST }}
-    username: root
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    port: 22
-    timeout: 120s
-    command_timeout: 20m
-    script_stop: true
-    script: |
-      set -euo pipefail
+name: Deploy via Git Pull
 
-      APP_DIR="/var/www/web26.customerdemourl.com"
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
 
-      cd "${APP_DIR}"
+concurrency:
+  group: web26-deploy
+  cancel-in-progress: true
 
-      git config --global --add safe.directory ${APP_DIR}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
-      git pull origin develop
+    steps:
+      - name: SSH into Server & Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          timeout: 120s
+          command_timeout: 20m
+          script_stop: true
+          script: |
+            set -euo pipefail
 
-      /root/.nvm/versions/node/v24.15.0/bin/npm i
-      /root/.nvm/versions/node/v24.15.0/bin/npm run build
-      /root/.nvm/versions/node/v24.15.0/bin/pm2 restart web26.customerdemourl.com
+            APP_DIR="/var/www/web26.customerdemourl.com"
+
+            echo "Switching to project directory..."
+            cd "${APP_DIR}"
+
+            echo "Fixing git safe directory..."
+            git config --global --add safe.directory ${APP_DIR}
+
+            echo "Pulling latest code..."
+            git pull origin develop
+
+            echo "Installing dependencies..."
+            /root/.nvm/versions/node/v24.15.0/bin/npm i
+
+            echo "Building application..."
+            /root/.nvm/versions/node/v24.15.0/bin/npm run build
+
+            echo "Restarting PM2..."
+            /root/.nvm/versions/node/v24.15.0/bin/pm2 restart web26.customerdemourl.com
+
+            echo "Deployment completed!"
