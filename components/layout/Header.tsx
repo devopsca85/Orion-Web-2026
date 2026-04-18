@@ -98,23 +98,61 @@ export function Header({ branding }: HeaderProps = {}) {
           <div className="hidden lg:flex items-center flex-1 gap-0.5">
             {navItems.map((link) => {
               const active = isActive(link.href)
-              const isOpen = activeDropdown === link.href
+              const isDropOpen = activeDropdown === link.href
 
               const baseCls = active
                 ? 'text-primary font-semibold'
                 : 'text-gray-700 font-semibold hover:text-primary'
 
-              if (isMega(link) || hasChildren(link)) {
+              if (isMega(link)) {
                 return (
                   <div key={link.href} className="relative">
                     <button
-                      onClick={() => setActiveDropdown(isOpen ? null : link.href)}
+                      onClick={() => setActiveDropdown(isDropOpen ? null : link.href)}
                       className={cn('flex items-center gap-0.5 rounded-lg px-3 py-2 text-sm transition-colors', baseCls)}
-                      aria-expanded={isOpen}
+                      aria-expanded={isDropOpen}
                     >
                       {link.label}
-                      <ChevronDown className={cn('h-3.5 w-3.5 ml-0.5 transition-transform', isOpen && 'rotate-180')} />
+                      <ChevronDown className={cn('h-3.5 w-3.5 ml-0.5 transition-transform', isDropOpen && 'rotate-180')} />
                     </button>
+                  </div>
+                )
+              }
+
+              if (hasChildren(link)) {
+                const cols = link.children.length > 6 ? 2 : 1
+                return (
+                  <div key={link.href} className="relative">
+                    <button
+                      onClick={() => setActiveDropdown(isDropOpen ? null : link.href)}
+                      className={cn('flex items-center gap-0.5 rounded-lg px-3 py-2 text-sm transition-colors', baseCls)}
+                      aria-expanded={isDropOpen}
+                    >
+                      {link.label}
+                      <ChevronDown className={cn('h-3.5 w-3.5 ml-0.5 transition-transform', isDropOpen && 'rotate-180')} />
+                    </button>
+                    {isDropOpen && (
+                      <div
+                        className="absolute left-0 top-full mt-1 bg-white border border-gray-100 shadow-xl rounded-xl z-40 overflow-hidden"
+                        style={{ minWidth: cols === 2 ? '400px' : '220px' }}
+                      >
+                        <div className={cn('py-2', cols === 2 && 'grid grid-cols-2 gap-x-0')}>
+                          {link.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              onClick={() => setActiveDropdown(null)}
+                              className={cn(
+                                'block px-4 py-2.5 text-sm transition-colors hover:bg-primary/5 hover:text-primary',
+                                pathname === child.href ? 'text-primary font-medium bg-primary/5' : 'text-gray-700'
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               }
@@ -162,99 +200,63 @@ export function Header({ branding }: HeaderProps = {}) {
         </nav>
       </div>
 
-      {/* ─── Dropdown panels (desktop) ───────────────────────────── */}
+      {/* ─── Mega panel (desktop, full-width) ───────────────────── */}
       {navItems.map((link) => {
-        if (activeDropdown !== link.href) return null
-
-        if (isMega(link)) {
-          return (
-            <div key={link.href} className="hidden lg:block absolute inset-x-0 top-full bg-white border-t border-gray-100 shadow-2xl z-40">
-              <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-5 gap-8">
-                  {/* 4 service columns */}
-                  {link.columns.map((col) => (
-                    <div key={col.href}>
-                      <Link
-                        href={col.href}
-                        onClick={() => setActiveDropdown(null)}
-                        className={cn(
-                          'block text-sm font-bold mb-3 pb-2 border-b border-gray-100 transition-colors',
-                          pathname.startsWith(col.href) ? 'text-primary' : 'text-gray-900 hover:text-primary'
-                        )}
-                      >
-                        {col.title}
-                      </Link>
-                      <ul className="space-y-1.5">
-                        {col.items.map((item) => (
-                          <li key={item.href}>
-                            <Link
-                              href={item.href}
-                              onClick={() => setActiveDropdown(null)}
-                              className={cn(
-                                'block text-sm transition-colors leading-snug',
-                                pathname === item.href
-                                  ? 'text-primary font-medium'
-                                  : 'text-gray-600 hover:text-primary'
-                              )}
-                            >
-                              {item.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-
-                  {/* 5th column: CTA panel */}
-                  <div className="bg-primary/5 rounded-2xl p-5 flex flex-col justify-between">
-                    <div>
-                      <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Why Orion?</p>
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        Achieve digital excellence for your business through Orion&apos;s transformative services, gaining a distinct competitive advantage.
-                      </p>
-                    </div>
+        if (activeDropdown !== link.href || !isMega(link)) return null
+        return (
+          <div key={link.href} className="hidden lg:block absolute inset-x-0 top-full bg-white border-t border-gray-100 shadow-2xl z-40">
+            <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
+              <div className="grid grid-cols-5 gap-8">
+                {link.columns.map((col) => (
+                  <div key={col.href}>
                     <Link
-                      href="/contact"
+                      href={col.href}
                       onClick={() => setActiveDropdown(null)}
-                      className="mt-5 flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                      className={cn(
+                        'block text-sm font-bold mb-3 pb-2 border-b border-gray-100 transition-colors',
+                        pathname.startsWith(col.href) ? 'text-primary' : 'text-gray-900 hover:text-primary'
+                      )}
                     >
-                      Get in Touch <ArrowRight className="h-4 w-4" />
+                      {col.title}
                     </Link>
+                    <ul className="space-y-1.5">
+                      {col.items.map((item) => (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            onClick={() => setActiveDropdown(null)}
+                            className={cn(
+                              'block text-sm transition-colors leading-snug',
+                              pathname === item.href ? 'text-primary font-medium' : 'text-gray-600 hover:text-primary'
+                            )}
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                ))}
+                {/* 5th column: CTA panel */}
+                <div className="bg-primary/5 rounded-2xl p-5 flex flex-col justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Why Orion?</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      Achieve digital excellence for your business through Orion&apos;s transformative services, gaining a distinct competitive advantage.
+                    </p>
+                  </div>
+                  <Link
+                    href="/contact"
+                    onClick={() => setActiveDropdown(null)}
+                    className="mt-5 flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                  >
+                    Get in Touch <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
             </div>
-          )
-        }
-
-        if (hasChildren(link)) {
-          const cols = link.children.length > 6 ? 2 : 1
-          return (
-            <div
-              key={link.href}
-              className="hidden lg:block absolute top-full bg-white border border-gray-100 shadow-xl rounded-xl z-40 overflow-hidden"
-              style={{ left: 'auto', minWidth: cols === 2 ? '400px' : '220px' }}
-            >
-              <div className={cn('py-2', cols === 2 && 'grid grid-cols-2 gap-x-0')}>
-                {link.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    onClick={() => setActiveDropdown(null)}
-                    className={cn(
-                      'block px-4 py-2.5 text-sm transition-colors hover:bg-primary/5 hover:text-primary',
-                      pathname === child.href ? 'text-primary font-medium bg-primary/5' : 'text-gray-700'
-                    )}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )
-        }
-
-        return null
+          </div>
+        )
       })}
 
       {/* ─── Mobile menu ─────────────────────────────────────────── */}
