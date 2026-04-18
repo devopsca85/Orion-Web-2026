@@ -20,9 +20,9 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
           timeout: 120s
           command_timeout: 20m
           script_stop: true
@@ -34,11 +34,13 @@ jobs:
             echo "Switching to project directory..."
             cd "${APP_DIR}"
 
+            command -v git >/dev/null 2>&1 || { echo "git not found"; exit 1; }
+
             echo "Fixing git safe directory..."
             git config --global --add safe.directory ${APP_DIR}
 
             echo "Pulling latest code..."
-            git pull origin develop
+            GIT_SSH_COMMAND='ssh -i /root/.ssh/id_rsa' git pull origin develop
 
             echo "Installing dependencies..."
             /root/.nvm/versions/node/v24.15.0/bin/npm i
