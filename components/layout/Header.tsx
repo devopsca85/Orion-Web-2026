@@ -65,7 +65,6 @@ export function Header({ branding }: HeaderProps = {}) {
   }
 
   const navItems = NAV_LINKS.filter((l) => l.label !== 'Contact Us')
-  const contactLink = NAV_LINKS.find((l) => l.label === 'Contact Us')
 
   return (
     <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
