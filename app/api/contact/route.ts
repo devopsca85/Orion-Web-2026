@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { contactSchema } from '@/lib/validations';
 import { SITE_CONFIG } from '@/lib/constants';
 import { db } from '@/lib/db';
+import { isHoneypot, hasSpamContent } from '@/lib/spam-guard';
 
 const RATE_LIMIT_MAP = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -121,6 +122,15 @@ export async function POST(req: NextRequest) {
   }
 
   const { recaptchaToken, ...formData } = parsed.data;
+
+  // Honeypot + spam content check
+  const anyBody = body as Record<string, unknown>
+  if (isHoneypot(anyBody._hp)) {
+    return NextResponse.json({ message: 'Submission rejected.' }, { status: 400 })
+  }
+  if (hasSpamContent(formData.name, formData.message, formData.company)) {
+    return NextResponse.json({ message: 'Your message was flagged as spam.' }, { status: 400 })
+  }
 
   // Verify reCAPTCHA
   const isHuman = await verifyRecaptcha(recaptchaToken);

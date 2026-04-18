@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Loader2, CheckCircle } from 'lucide-react'
 
 interface FieldConfig {
@@ -27,7 +27,8 @@ interface Props {
 
 export function DynamicForm({ form }: Props) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-  const [error, setError] = useState('')
+  const [error, setError]   = useState('')
+  const loadedAt            = useRef(Date.now())
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -42,12 +43,13 @@ export function DynamicForm({ form }: Props) {
         data[field.name] = (raw.get(field.name) as string) ?? ''
       }
     }
+    const _hp = raw.get('_hp') as string
 
     try {
       const res = await fetch('/api/forms/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formId: form.id, data }),
+        body: JSON.stringify({ formId: form.id, data, _hp, _ts: loadedAt.current }),
       })
       if (!res.ok) {
         const j = await res.json().catch(() => ({}))
@@ -75,6 +77,8 @@ export function DynamicForm({ form }: Props) {
       {form.description && <p className="text-sm text-gray-500 mb-5">{form.description}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        {/* Honeypot — invisible to humans, filled by bots */}
+        <input type="text" name="_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
         {form.fields.map((field) => (
           <div key={field.name}>
             <label className="block text-sm font-medium text-gray-700 mb-1">

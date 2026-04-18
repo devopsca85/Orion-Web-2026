@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, AlertCircle, Send } from 'lucide-react';
@@ -55,6 +55,7 @@ const inputClass = (hasError: boolean) =>
 export function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const loadedAt = useRef(Date.now());
 
   const {
     register,
@@ -69,10 +70,11 @@ export function ContactForm() {
   const onSubmit = async (data: ContactFormData) => {
     try {
       setStatus('idle');
+      const hpEl = document.querySelector<HTMLInputElement>('input[name="_hp"]')
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, _hp: hpEl?.value ?? '', _ts: loadedAt.current }),
       });
 
       if (!response.ok) {
@@ -105,6 +107,8 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+      {/* Honeypot — invisible to humans, filled by bots */}
+      <input type="text" name="_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
       {status === 'error' && (
         <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />

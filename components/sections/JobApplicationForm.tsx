@@ -19,6 +19,7 @@ export function JobApplicationForm({ role, jobId }: Props) {
   const [error, setError]     = useState('')
   const [cvFile, setCvFile]   = useState<File | null>(null)
   const fileRef               = useRef<HTMLInputElement>(null)
+  const loadedAt              = useRef(Date.now())
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -46,6 +47,7 @@ export function JobApplicationForm({ role, jobId }: Props) {
     const fd   = new FormData(form)
     fd.set('role', role)
     fd.set('jobId', jobId)
+    fd.set('_ts', String(loadedAt.current))
     if (cvFile) fd.set('cv', cvFile)
 
     try {
@@ -77,6 +79,8 @@ export function JobApplicationForm({ role, jobId }: Props) {
       <p className="text-sm text-gray-500 mb-5">{role}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Honeypot — invisible to humans, filled by bots */}
+        <input type="text" name="_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
           <input name="name" required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Jane Smith" />

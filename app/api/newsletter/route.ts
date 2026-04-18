@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { SITE_CONFIG } from '@/lib/constants';
+import { spamGuard } from '@/lib/spam-guard';
 
 const subscribeSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -67,6 +68,14 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ message: 'Invalid request body.' }, { status: 400 });
   }
+
+  const anyBody = body as Record<string, unknown> | null
+  const blocked = spamGuard(req, 'newsletter', {
+    _hp: anyBody?._hp,
+    _ts: anyBody?._ts,
+    rateLimit: { max: 3, windowMs: 60_000 },
+  })
+  if (blocked) return NextResponse.json({ message: blocked.message }, { status: blocked.status })
 
   const parsed = subscribeSchema.safeParse(body);
   if (!parsed.success) {

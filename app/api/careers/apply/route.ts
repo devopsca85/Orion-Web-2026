@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { db } from '@/lib/db'
 import { SITE_CONFIG } from '@/lib/constants'
+import { spamGuard } from '@/lib/spam-guard'
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -27,6 +28,15 @@ export async function POST(req: NextRequest) {
   const portfolioUrl= (formData.get('portfolioUrl')as string | null)?.trim() || null
   const coverLetter = (formData.get('coverLetter') as string | null)?.trim() || null
   const cvFile      = formData.get('cv') as File | null
+  const _hp         = formData.get('_hp') as string | null
+  const _ts         = formData.get('_ts') as string | null
+
+  const blocked = spamGuard(req, 'careers-apply', {
+    _hp, _ts,
+    texts: [name, coverLetter],
+    rateLimit: { max: 3, windowMs: 60_000 },
+  })
+  if (blocked) return NextResponse.json({ message: blocked.message }, { status: blocked.status })
 
   if (!name || !email || !role) {
     return NextResponse.json({ message: 'Name, email, and role are required.' }, { status: 422 })

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { SITE_CONFIG } from '@/lib/constants'
+import { spamGuard } from '@/lib/spam-guard'
 
 export async function POST(req: NextRequest) {
   let body: Record<string, string>
@@ -8,7 +9,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Invalid request.' }, { status: 400 })
   }
 
-  const { name, email, phone, message, service } = body
+  const { name, email, phone, message, service, _hp, _ts } = body
+
+  const blocked = spamGuard(req, 'service-inquiry', {
+    _hp, _ts,
+    texts: [name, message],
+    rateLimit: { max: 5, windowMs: 60_000 },
+  })
+  if (blocked) return NextResponse.json({ message: blocked.message }, { status: blocked.status })
+
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
     return NextResponse.json({ message: 'Name, email, and message are required.' }, { status: 422 })
   }

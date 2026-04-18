@@ -1,0 +1,95 @@
+// Centralised spam-protection utilities
+// Applied to every public form API route
+
+// ── In-memory rate limiter (per namespace × IP) ───────────────────────────────
+
+interface RateEntry { count: number; resetAt: number }
+const stores = new Map<string, Map<string, RateEntry>>()
+
+export function checkRateLimit(
+  namespace: string,
+  ip: string,
+  { max = 5, windowMs = 60_000 }: { max?: number; windowMs?: number } = {}
+): boolean {
+  if (!stores.has(namespace)) stores.set(namespace, new Map())
+  const store = stores.get(namespace)!
+  const now   = Date.now()
+  const rec   = store.get(ip)
+  if (!rec || now > rec.resetAt) {
+    store.set(ip, { count: 1, resetAt: now + windowMs })
+    return true
+  }
+  if (rec.count >= max) return false
+  rec.count++
+  return true
+}
+
+// Prune stale entries every 30 minutes
+if (typeof setInterval !== 'undefined') {
+  setInterval(() => {
+    const now = Date.now()
+    for (const store of stores.values()) {
+      for (const [k, rec] of store.entries()) {
+        if (now > rec.resetAt) store.delete(k)
+      }
+    }
+  }, 30 * 60_000)
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+export function getIp(req: Request): string {
+  return (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
+}
+
+/** Returns true if the honeypot field was filled (bot behaviour). */
+export function isHoneypot(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+/** Returns true if the form was submitted unrealistically fast — bots don't wait. */
+export function isTooFast(ts: unknown, minMs = 3_000): boolean {
+  const n = Number(ts)
+  if (isNaN(n) || n <= 0) return false
+  return Date.now() - n < minMs
+}
+
+const SPAM_PATTERNS = [
+  /\b(viagra|cialis|casino|poker|lottery|jackpot|click here|buy now|free money|make money fast|work from home|weight loss|diet pills|enlargement|seo service|backlink|adult content)\b/i,
+  /https?:\/\/[^\s]+\s+https?:\/\/[^\s]+/i,  // multiple URLs in one message
+  /(.)\1{9,}/,                                 // 10+ repeated characters in a row
+]
+
+/** Returns true if any field contains obvious spam patterns. */
+export function hasSpamContent(...texts: (string | null | undefined)[]): boolean {
+  const combined = texts.filter(Boolean).join(' ')
+  return SPAM_PATTERNS.some((p) => p.test(combined))
+}
+
+/** Single-call guard: returns an error response or null if clean. */
+export function spamGuard(
+  req: Request,
+  namespace: string,
+  { _hp, _ts, texts = [], rateLimit }: {
+    _hp?: unknown
+    _ts?: unknown
+    texts?: (string | null | undefined)[]
+    rateLimit?: { max: number; windowMs: number }
+  }
+): { blocked: true; status: number; message: string } | null {
+  const ip = getIp(req)
+
+  if (!checkRateLimit(namespace, ip, rateLimit ?? { max: 5, windowMs: 60_000 })) {
+    return { blocked: true, status: 429, message: 'Too many requests. Please wait a minute and try again.' }
+  }
+  if (isHoneypot(_hp)) {
+    return { blocked: true, status: 400, message: 'Submission rejected.' }
+  }
+  if (isTooFast(_ts)) {
+    return { blocked: true, status: 400, message: 'Submission rejected. Please take a moment to fill out the form.' }
+  }
+  if (hasSpamContent(...texts)) {
+    return { blocked: true, status: 400, message: 'Your message was flagged as spam. Please remove any promotional content and try again.' }
+  }
+  return null
+}

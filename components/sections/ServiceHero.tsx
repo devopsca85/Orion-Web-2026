@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { Send, Loader2, CheckCircle, ChevronRight } from 'lucide-react'
 
@@ -40,18 +40,20 @@ export function ServiceHero({
 }: ServiceHeroProps) {
   const [formState, setFormState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const [formError, setFormError] = useState('')
+  const loadedAt     = useRef(Date.now())
   const displayStats = (stats && stats.length > 0) ? stats : DEFAULT_STATS
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setFormState('sending')
     setFormError('')
-    const data = Object.fromEntries(new FormData(e.currentTarget))
+    const fd   = new FormData(e.currentTarget)
+    const data = Object.fromEntries(fd)
     try {
       const res = await fetch('/api/service-inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, service: serviceName || title }),
+        body: JSON.stringify({ ...data, service: serviceName || title, _ts: loadedAt.current }),
       })
       if (!res.ok) {
         const j = await res.json().catch(() => ({}))
@@ -155,6 +157,8 @@ export function ServiceHero({
                   <p className="text-sm text-gray-500 text-center mb-6">Chat with Our Experts.</p>
 
                   <form onSubmit={handleSubmit} className="space-y-3">
+                    {/* Honeypot — hidden from humans, filled by bots */}
+                    <input type="text" name="_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }} />
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Name <span className="text-red-500">*</span>
