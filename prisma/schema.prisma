@@ -480,3 +480,26 @@ model FormSubmission {
   @@index([formId, createdAt])
   @@map("form_submissions")
 }
+
+/// Navigation items managed from admin — drives the public site header
+model NavItem {
+  id        String    @id @default(cuid())
+  label     String    @db.VarChar(100)
+  href      String    @db.VarChar(255)
+  parentId  String?
+  parent    NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  NavItem[] @relation("NavTree")
+  /// link | dropdown | mega | megaGroup | productMega | productCard
+  type      String    @default("link") @db.VarChar(20)
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  openInNew Boolean   @default(false)
+  cardDesc  String?   @db.VarChar(300)
+  logoUrl   String?   @db.VarChar(512)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([parentId, sortOrder])
+  @@index([active, sortOrder])
+  @@map("nav_items")
+}

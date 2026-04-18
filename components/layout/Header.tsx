@@ -16,6 +16,7 @@ interface BrandingData {
 
 interface HeaderProps {
   branding?: BrandingData
+  navLinks?: NavLink[]
 }
 
 function isMega(link: NavLink): link is NavLinkMega {
@@ -30,7 +31,7 @@ function hasChildren(link: NavLink): link is NavLinkDropdown {
   return 'children' in link
 }
 
-export function Header({ branding }: HeaderProps = {}) {
+export function Header({ branding, navLinks }: HeaderProps = {}) {
   const [isOpen, setIsOpen]               = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen]         = useState<Set<string>>(new Set())
@@ -68,10 +69,10 @@ export function Header({ branding }: HeaderProps = {}) {
     })
   }
 
-  const navItems = NAV_LINKS.filter((l) => l.label !== 'Contact Us')
+  const navItems = (navLinks ?? NAV_LINKS).filter((l) => l.label !== 'Contact Us')
 
   return (
-    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-[#1e3a8a] border-b border-[#162d6e] shadow-lg">
 
       {/* ─── Desktop bar ──────────────────────────────────────────── */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
@@ -105,8 +106,8 @@ export function Header({ branding }: HeaderProps = {}) {
               const isDropOpen = activeDropdown === link.href
 
               const baseCls = active
-                ? 'text-primary font-semibold'
-                : 'text-gray-700 font-semibold hover:text-primary'
+                ? 'text-orange-400 font-semibold'
+                : 'text-white/85 font-semibold hover:text-orange-400'
 
               if (isMega(link)) {
                 return (
@@ -193,7 +194,7 @@ export function Header({ branding }: HeaderProps = {}) {
             {phone && phone !== '+1 (800) 000-0000' && (
               <a
                 href={`tel:${phone.replace(/\D/g, '')}`}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
+                className="flex items-center gap-1.5 text-sm font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap"
               >
                 <Phone className="h-4 w-4" />
                 {phone}
@@ -201,7 +202,7 @@ export function Header({ branding }: HeaderProps = {}) {
             )}
             <Link
               href="/contact"
-              className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors whitespace-nowrap shadow-sm"
+              className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors whitespace-nowrap shadow-sm"
             >
               Let&apos;s Talk <ArrowRight className="h-4 w-4" />
             </Link>
@@ -210,7 +211,7 @@ export function Header({ branding }: HeaderProps = {}) {
           {/* Mobile hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-lg p-2 text-gray-700 hover:bg-gray-100 transition-colors lg:hidden"
+            className="rounded-lg p-2 text-white hover:bg-white/10 transition-colors lg:hidden"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -315,7 +316,7 @@ export function Header({ branding }: HeaderProps = {}) {
       {isOpen && (
         <div className="border-t border-gray-100 bg-white shadow-lg lg:hidden max-h-[80vh] overflow-y-auto">
           <div className="px-4 py-4 space-y-1">
-            {NAV_LINKS.map((link) => {
+            {(navLinks ?? NAV_LINKS).map((link) => {
               const hasSub = isMega(link) || isProductMega(link) || hasChildren(link)
               const isExpanded = mobileOpen.has(link.href)
 

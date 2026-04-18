@@ -1,24 +1,28 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
+import { getNavLinks } from '@/lib/navigation'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const settings = await getSettings([
-    'logo.url',
-    'logo.alt',
-    'contact.phone',
-    'contact.email',
-    'contact.address.street',
-    'contact.address.city',
-    'contact.address.state',
-    'contact.address.zip',
-    'social.linkedin',
-    'social.twitter',
-    'social.facebook',
-    'social.instagram',
-    'brand.companyName',
-    'brand.tagline',
-    'brand.footerCopyright',
+  const [settings, navLinks] = await Promise.all([
+    getSettings([
+      'logo.url',
+      'logo.alt',
+      'contact.phone',
+      'contact.email',
+      'contact.address.street',
+      'contact.address.city',
+      'contact.address.state',
+      'contact.address.zip',
+      'social.linkedin',
+      'social.twitter',
+      'social.facebook',
+      'social.instagram',
+      'brand.companyName',
+      'brand.tagline',
+      'brand.footerCopyright',
+    ]),
+    getNavLinks(),
   ])
 
   const branding = {
@@ -45,7 +49,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <>
-      <Header branding={branding} />
+      <Header branding={branding} navLinks={navLinks} />
       <main id="main-content" className="flex-1">
         {children}
       </main>

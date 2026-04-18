@@ -17,6 +17,7 @@ import {
   LogOut,
   ChevronRight,
   Layout,
+  Navigation,
   Palette,
   Home,
   Quote,
@@ -53,6 +54,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/admin/home', label: 'Home Page', icon: <Home size={16} /> },
       { href: '/admin/pages', label: 'Custom Pages', icon: <Layout size={16} /> },
+      { href: '/admin/navigation', label: 'Navigation', icon: <Navigation size={16} /> },
     ],
   },
   {
