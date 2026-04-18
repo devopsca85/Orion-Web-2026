@@ -432,7 +432,7 @@ model Form {
   /// JSON array of field configs: { name, label, type, required, options? }
   fields      Json
   submitLabel String           @default("Submit") @db.VarChar(80)
-  successMsg  String           @default("Thank you! We\u2019ll be in touch shortly.") @db.Text
+  successMsg  String           @default("Thank you! We'll be in touch shortly.") @db.VarChar(500)
   notifyEmail String?          @db.VarChar(255)
   active      Boolean          @default(true)
   createdAt   DateTime         @default(now())
