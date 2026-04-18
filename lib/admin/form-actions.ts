@@ -19,9 +19,11 @@ export interface FormFieldConfig {
   options?: string[]
 }
 
-function parseFields(raw: string): FormFieldConfig[] {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseFields(raw: string): any[] {
   try {
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
   }
