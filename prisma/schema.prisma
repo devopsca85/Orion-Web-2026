@@ -503,3 +503,22 @@ model NavItem {
   @@index([active, sortOrder])
   @@map("nav_items")
 }
+
+/// Visitor page views — powers the analytics dashboard
+model PageView {
+  id        String   @id @default(cuid())
+  path      String   @db.VarChar(500)
+  ip        String   @db.VarChar(45)
+  country   String?  @db.VarChar(2)
+  city      String?  @db.VarChar(100)
+  ua        String?  @db.VarChar(500)
+  referrer  String?  @db.VarChar(500)
+  bot       Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ip, createdAt])
+  @@index([country, createdAt])
+  @@index([path, createdAt])
+  @@map("page_views")
+}

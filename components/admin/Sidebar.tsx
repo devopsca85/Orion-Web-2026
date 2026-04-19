@@ -29,6 +29,8 @@ import {
   GraduationCap,
   FormInput,
   Settings,
+  BarChart2,
+  ShieldCheck,
 } from 'lucide-react'
 
 interface NavItem {
@@ -46,7 +48,9 @@ const navGroups: NavGroup[] = [
   {
     title: 'Overview',
     items: [
-      { href: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
+      { href: '/admin',            label: 'Dashboard',  icon: <LayoutDashboard size={16} /> },
+      { href: '/admin/analytics',  label: 'Analytics',  icon: <BarChart2 size={16} /> },
+      { href: '/admin/security',   label: 'Security',   icon: <ShieldCheck size={16} /> },
     ],
   },
   {

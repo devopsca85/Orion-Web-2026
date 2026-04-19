@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { runSecurityAudit } from '@/lib/security-audit'
 import Link from 'next/link'
 import {
   FileText,
@@ -8,16 +9,22 @@ import {
   Mail,
   Bell,
   Plus,
+  ShieldCheck,
+  BarChart2,
 } from 'lucide-react'
 
 export default async function AdminDashboard() {
   const session = await auth()
+
+  const todayStart = new Date()
+  todayStart.setHours(0, 0, 0, 0)
 
   const [
     totalPosts,
     totalPortfolio,
     newContacts,
     totalSubscribers,
+    todayVisitors,
     recentContacts,
     recentPosts,
   ] = await Promise.all([
@@ -25,6 +32,7 @@ export default async function AdminDashboard() {
     prisma.portfolioItem.count(),
     prisma.contactSubmission.count({ where: { status: 'NEW' } }),
     prisma.newsletterSubscriber.count({ where: { unsubscribed: false } }),
+    prisma.pageView.count({ where: { createdAt: { gte: todayStart }, bot: false } }),
     prisma.contactSubmission.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -36,31 +44,42 @@ export default async function AdminDashboard() {
     }),
   ])
 
+  const audit = runSecurityAudit()
+
+  const gradeColor =
+    audit.score >= 90 ? 'text-green-600' :
+    audit.score >= 75 ? 'text-orange-500' : 'text-red-600'
+
+  const gradeBg =
+    audit.score >= 90 ? 'bg-green-50' :
+    audit.score >= 75 ? 'bg-orange-50' : 'bg-red-50'
+
   const stats = [
-    { label: 'Total Posts', value: totalPosts, icon: <FileText size={20} />, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Portfolio Items', value: totalPortfolio, icon: <Briefcase size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'New Contacts', value: newContacts, icon: <Mail size={20} />, color: 'text-orange-600', bg: 'bg-orange-50' },
-    { label: 'Subscribers', value: totalSubscribers, icon: <Bell size={20} />, color: 'text-green-600', bg: 'bg-green-50' },
+    { label: 'Total Posts',      value: totalPosts,       icon: <FileText  size={20} />, color: 'text-blue-600',   bg: 'bg-blue-50',   href: '/admin/blog' },
+    { label: 'Portfolio Items',  value: totalPortfolio,   icon: <Briefcase size={20} />, color: 'text-indigo-600', bg: 'bg-indigo-50', href: '/admin/portfolio' },
+    { label: 'New Contacts',     value: newContacts,      icon: <Mail      size={20} />, color: 'text-orange-600', bg: 'bg-orange-50', href: '/admin/contacts' },
+    { label: 'Subscribers',      value: totalSubscribers, icon: <Bell      size={20} />, color: 'text-green-600',  bg: 'bg-green-50',  href: '/admin/subscribers' },
   ]
 
   const statusColors: Record<string, string> = {
-    NEW: 'bg-blue-100 text-blue-700',
-    REVIEWED: 'bg-yellow-100 text-yellow-700',
+    NEW:       'bg-blue-100 text-blue-700',
+    REVIEWED:  'bg-yellow-100 text-yellow-700',
     RESPONDED: 'bg-purple-100 text-purple-700',
-    CLOSED: 'bg-slate-100 text-slate-600',
-    SPAM: 'bg-red-100 text-red-600',
+    CLOSED:    'bg-slate-100 text-slate-600',
+    SPAM:      'bg-red-100 text-red-600',
   }
 
   const postStatusColors: Record<string, string> = {
     PUBLISHED: 'bg-green-100 text-green-700',
-    DRAFT: 'bg-yellow-100 text-yellow-700',
-    ARCHIVED: 'bg-slate-100 text-slate-600',
+    DRAFT:     'bg-yellow-100 text-yellow-700',
+    ARCHIVED:  'bg-slate-100 text-slate-600',
   }
 
   return (
     <>
       <AdminTopBar title="Dashboard" user={session!.user} />
       <div className="p-6 space-y-6">
+
         {/* Welcome */}
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
@@ -71,19 +90,62 @@ export default async function AdminDashboard() {
           </p>
         </div>
 
-        {/* Stat Cards */}
+        {/* Content stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+            <Link key={stat.label} href={stat.href} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:border-indigo-200 transition-colors">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-slate-500 font-medium">{stat.label}</span>
-                <span className={`${stat.bg} ${stat.color} p-2 rounded-lg`}>
-                  {stat.icon}
-                </span>
+                <span className={`${stat.bg} ${stat.color} p-2 rounded-lg`}>{stat.icon}</span>
               </div>
               <p className="text-3xl font-bold text-slate-800">{stat.value}</p>
-            </div>
+            </Link>
           ))}
+        </div>
+
+        {/* Security + Analytics overview */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          {/* Security score */}
+          <Link
+            href="/admin/security"
+            className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:border-indigo-200 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-slate-500 font-medium">Security Score</span>
+              <span className={`${gradeBg} ${gradeColor} p-2 rounded-lg`}>
+                <ShieldCheck size={20} />
+              </span>
+            </div>
+            <div className="flex items-end gap-3">
+              <p className={`text-5xl font-bold ${gradeColor}`}>{audit.grade}</p>
+              <div className="mb-1">
+                <p className="text-2xl font-bold text-slate-700">{audit.score}<span className="text-sm text-slate-400 font-normal">/100</span></p>
+                <p className="text-xs text-slate-400">OWASP Top 10 · {audit.rules.filter(r => r.status === 'pass').length}/{audit.rules.length} rules passing</p>
+              </div>
+            </div>
+            {audit.rules.filter(r => r.status === 'fail').length > 0 && (
+              <p className="mt-3 text-xs text-red-600 bg-red-50 rounded px-2 py-1 inline-block">
+                {audit.rules.filter(r => r.status === 'fail').length} critical issue{audit.rules.filter(r => r.status === 'fail').length > 1 ? 's' : ''} — view details
+              </p>
+            )}
+          </Link>
+
+          {/* Visitor analytics */}
+          <Link
+            href="/admin/analytics"
+            className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:border-indigo-200 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-slate-500 font-medium">Visitors Today</span>
+              <span className="bg-teal-50 text-teal-600 p-2 rounded-lg">
+                <BarChart2 size={20} />
+              </span>
+            </div>
+            <p className="text-5xl font-bold text-slate-800">{todayVisitors.toLocaleString()}</p>
+            <p className="text-xs text-slate-400 mt-1">non-bot page views · view full analytics</p>
+          </Link>
+
         </div>
 
         {/* Quick Actions */}
@@ -128,26 +190,20 @@ export default async function AdminDashboard() {
                 <tbody className="divide-y divide-slate-100">
                   {recentContacts.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-5 py-8 text-center text-slate-400 text-sm">
-                        No contact submissions yet
-                      </td>
+                      <td colSpan={4} className="px-5 py-8 text-center text-slate-400 text-sm">No contact submissions yet</td>
                     </tr>
-                  ) : (
-                    recentContacts.map((c) => (
-                      <tr key={c.id} className="hover:bg-slate-50">
-                        <td className="px-5 py-3 font-medium text-slate-800">{c.name}</td>
-                        <td className="px-5 py-3 text-slate-500">{c.service ?? '—'}</td>
-                        <td className="px-5 py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[c.status] ?? ''}`}>
-                            {c.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 text-slate-400">
-                          {c.createdAt.toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                  ) : recentContacts.map((c) => (
+                    <tr key={c.id} className="hover:bg-slate-50">
+                      <td className="px-5 py-3 font-medium text-slate-800">{c.name}</td>
+                      <td className="px-5 py-3 text-slate-500">{c.service ?? '—'}</td>
+                      <td className="px-5 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[c.status] ?? ''}`}>
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-400">{c.createdAt.toLocaleDateString()}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -172,26 +228,20 @@ export default async function AdminDashboard() {
                 <tbody className="divide-y divide-slate-100">
                   {recentPosts.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-5 py-8 text-center text-slate-400 text-sm">
-                        No blog posts yet
-                      </td>
+                      <td colSpan={4} className="px-5 py-8 text-center text-slate-400 text-sm">No blog posts yet</td>
                     </tr>
-                  ) : (
-                    recentPosts.map((p) => (
-                      <tr key={p.slug} className="hover:bg-slate-50">
-                        <td className="px-5 py-3 font-medium text-slate-800 max-w-[200px] truncate">{p.title}</td>
-                        <td className="px-5 py-3 text-slate-500">{p.author.name}</td>
-                        <td className="px-5 py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${postStatusColors[p.status] ?? ''}`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 text-slate-400">
-                          {p.createdAt.toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                  ) : recentPosts.map((p) => (
+                    <tr key={p.slug} className="hover:bg-slate-50">
+                      <td className="px-5 py-3 font-medium text-slate-800 max-w-[200px] truncate">{p.title}</td>
+                      <td className="px-5 py-3 text-slate-500">{p.author.name}</td>
+                      <td className="px-5 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${postStatusColors[p.status] ?? ''}`}>
+                          {p.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-400">{p.createdAt.toLocaleDateString()}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

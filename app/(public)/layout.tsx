@@ -2,6 +2,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
 import { getNavLinks } from '@/lib/navigation'
+import { TrackPageView } from '@/components/analytics/TrackPageView'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [settings, navLinks] = await Promise.all([
@@ -49,6 +50,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <>
+      <TrackPageView />
       <Header branding={branding} navLinks={navLinks} />
       <main id="main-content" className="flex-1">
         {children}
