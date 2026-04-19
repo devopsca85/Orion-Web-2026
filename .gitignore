@@ -44,6 +44,9 @@ Thumbs.db
 coverage/
 .nyc_output
 
+# Next.js auto-generated
+next-env.d.ts
+
 # Misc
 .eslintcache
 .vercel
