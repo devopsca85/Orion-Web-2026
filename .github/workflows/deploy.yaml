@@ -16,7 +16,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export NVM_DIR="/root/.nvm"
+          export NVM_DIR="/home/dev/.nvm"
           source "$NVM_DIR/nvm.sh"
           APP_DIR="/var/www/web26.customerdemourl.com"
           echo "Switching to project directory..."
@@ -24,7 +24,7 @@ jobs:
           echo "Fixing git safe directory..."
           git config --global --add safe.directory ${APP_DIR}
           echo "Pulling latest code..."
-          GIT_SSH_COMMAND='ssh -i /root/.ssh/id_rsa' git pull origin develop
+          GIT_SSH_COMMAND='ssh -i /home/dev/.ssh/id_rsa' git pull origin develop
           echo "Installing dependencies..."
           npm install
           echo "Building application..."
