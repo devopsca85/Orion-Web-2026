@@ -72,7 +72,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
   const navItems = (navLinks ?? NAV_LINKS).filter((l) => l.label !== 'Contact Us')
 
   return (
-    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-[#1e3a8a] border-b border-[#162d6e] shadow-lg">
+    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-[var(--brand-primary)] border-b border-black/20 shadow-lg">
 
       {/* ─── Desktop bar ──────────────────────────────────────────── */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
@@ -106,8 +106,8 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
               const isDropOpen = activeDropdown === link.href
 
               const baseCls = active
-                ? 'text-orange-400 font-semibold'
-                : 'text-white/85 font-semibold hover:text-orange-400'
+                ? 'text-[var(--brand-secondary)] font-semibold'
+                : 'text-white/85 font-semibold hover:text-[var(--brand-secondary)]'
 
               if (isMega(link)) {
                 return (
@@ -202,7 +202,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
             )}
             <Link
               href="/contact"
-              className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors whitespace-nowrap shadow-sm"
+              className="flex items-center gap-1.5 bg-[var(--brand-secondary)] hover:opacity-90 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-colors whitespace-nowrap shadow-sm"
             >
               Let&apos;s Talk <ArrowRight className="h-4 w-4" />
             </Link>

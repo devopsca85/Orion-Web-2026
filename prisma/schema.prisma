@@ -504,6 +504,16 @@ model NavItem {
   @@map("nav_items")
 }
 
+/// Admin-managed IP block list — checked by API routes before processing requests
+model BlockedIp {
+  id        String   @id @default(cuid())
+  ip        String   @unique @db.VarChar(45)
+  reason    String?  @db.VarChar(200)
+  createdAt DateTime @default(now())
+
+  @@map("blocked_ips")
+}
+
 /// Visitor page views — powers the analytics dashboard
 model PageView {
   id        String   @id @default(cuid())

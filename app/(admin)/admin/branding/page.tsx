@@ -128,9 +128,8 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
               defaultValue={settings['brand.secondaryColor'] || '#f97316'}
             />
 
-            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              Color changes apply to CSS variables immediately after saving. For full Tailwind class
-              propagation, rebuild the site after saving.
+            <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+              Color changes take effect instantly on next page load — no rebuild required.
             </p>
           </div>
 

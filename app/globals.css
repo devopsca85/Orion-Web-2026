@@ -5,6 +5,8 @@
 @layer base {
   :root {
     --font-inter: 'Inter', system-ui, sans-serif;
+    --brand-primary: #1e3a8a;
+    --brand-secondary: #f97316;
     scroll-behavior: smooth;
   }
 

@@ -39,7 +39,29 @@ if (typeof setInterval !== 'undefined') {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 export function getIp(req: Request): string {
-  return (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown'
+  const raw = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim()
+    || req.headers.get('x-real-ip')
+    || 'unknown'
+  // Unwrap IPv4-mapped IPv6 (::ffff:1.2.3.4 → 1.2.3.4)
+  return raw.replace(/^::ffff:/i, '')
+}
+
+// ── IP block list (1-minute in-process cache) ─────────────────────────────────
+
+let _blockedSet: Set<string> = new Set()
+let _blockedExpiry = 0
+
+export async function isBlockedIp(ip: string): Promise<boolean> {
+  const now = Date.now()
+  if (now > _blockedExpiry) {
+    try {
+      const { prisma } = await import('@/lib/prisma')
+      const rows = await prisma.blockedIp.findMany({ select: { ip: true } })
+      _blockedSet    = new Set(rows.map((r) => r.ip))
+      _blockedExpiry = now + 60_000
+    } catch { /* keep stale cache on DB error */ }
+  }
+  return _blockedSet.has(ip)
 }
 
 /** Returns true if the honeypot field was filled (bot behaviour). */
