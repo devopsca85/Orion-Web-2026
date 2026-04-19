@@ -107,7 +107,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
 
               const baseCls = active
                 ? 'text-[var(--brand-secondary)] font-semibold'
-                : 'text-white/85 font-semibold hover:text-[var(--brand-secondary)]'
+                : 'text-[var(--brand-nav)] font-semibold hover:text-[var(--brand-secondary)]'
 
               if (isMega(link)) {
                 return (
