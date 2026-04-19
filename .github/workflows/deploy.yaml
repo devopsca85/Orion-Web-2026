@@ -47,7 +47,7 @@ jobs:
             GIT_SSH_COMMAND='ssh -i /root/.ssh/id_rsa' git pull origin develop
 
             echo "Installing dependencies..."
-            npm i
+            npm install
 
             echo "Building application..."
             npm run build
