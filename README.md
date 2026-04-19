@@ -1,4 +1,4 @@
-# Orion Solutions — Website (2026 Rebuild).
+# Orion eSolutions — Website (2026 Rebuild).
 
 Production-ready Next.js 15 website for [orionesolutions.com](https://www.orionesolutions.com), with a built-in CMS admin panel for daily content management.
 
