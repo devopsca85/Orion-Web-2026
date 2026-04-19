@@ -12,7 +12,12 @@ interface Props {
 export default async function CountryOfficesPage({ searchParams }: Props) {
   const session = await auth()
   const { saved } = await searchParams
-  const offices = await prisma.countryOffice.findMany({ orderBy: [{ sortOrder: 'asc' }, { country: 'asc' }] })
+  let offices: Awaited<ReturnType<typeof prisma.countryOffice.findMany>> = []
+  try {
+    offices = await prisma.countryOffice.findMany({ orderBy: [{ sortOrder: 'asc' }, { country: 'asc' }] })
+  } catch {
+    // table may not exist yet — run prisma db push on the server
+  }
 
   return (
     <>

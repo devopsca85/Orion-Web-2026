@@ -12,9 +12,14 @@ interface Props {
 export default async function FooterLinksPage({ searchParams }: Props) {
   const session = await auth()
   const { saved } = await searchParams
-  const links = await prisma.footerLink.findMany({
-    orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }, { label: 'asc' }],
-  })
+  let links: Awaited<ReturnType<typeof prisma.footerLink.findMany>> = []
+  try {
+    links = await prisma.footerLink.findMany({
+      orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }, { label: 'asc' }],
+    })
+  } catch {
+    // table may not exist yet — run prisma db push on the server
+  }
 
   const groups = Array.from(new Set(links.map((l) => l.group)))
 
