@@ -1,16 +1,20 @@
 name: Deploy via Git Pull
+
 on:
   push:
     branches:
       - develop
   workflow_dispatch:
+
 concurrency:
   group: web26-deploy
   cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: SSH into Server & Deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -19,23 +23,36 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          timeout: 120s
-          command_timeout: 20m
-          script_stop: true
+
+          timeout: 30m
+          command_timeout: 30m
+          script_stop: false
+
           script: |
             set -euo pipefail
+            export NVM_DIR="/root/.nvm"
+            source "$NVM_DIR/nvm.sh"
+
             APP_DIR="/var/www/web26.customerdemourl.com"
+
             echo "Switching to project directory..."
             cd "${APP_DIR}"
+
             command -v git >/dev/null 2>&1 || { echo "git not found"; exit 1; }
+
             echo "Fixing git safe directory..."
             git config --global --add safe.directory ${APP_DIR}
+
             echo "Pulling latest code..."
             GIT_SSH_COMMAND='ssh -i /root/.ssh/id_rsa' git pull origin develop
+
             echo "Installing dependencies..."
-            /root/.nvm/versions/node/v24.15.0/bin/npm i
+            npm i
+
             echo "Building application..."
-            /root/.nvm/versions/node/v24.15.0/bin/npm run build
+            npm run build
+
             echo "Restarting PM2..."
-            /root/.nvm/versions/node/v24.15.0/bin/pm2 restart web26.customerdemourl.com
+            pm2 restart web26.customerdemourl.com
+
             echo "Deployment completed!"
