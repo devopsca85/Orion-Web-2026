@@ -504,6 +504,39 @@ model NavItem {
   @@map("nav_items")
 }
 
+/// Country / regional office cards shown in footer
+model CountryOffice {
+  id        String   @id @default(cuid())
+  country   String   @db.VarChar(100)
+  flag      String?  @db.VarChar(10)
+  address   String?  @db.VarChar(500)
+  phone     String?  @db.VarChar(50)
+  email     String?  @db.VarChar(150)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("country_offices")
+}
+
+/// Footer navigation links grouped by section (e.g. Services, Company, Legal)
+model FooterLink {
+  id        String   @id @default(cuid())
+  label     String   @db.VarChar(100)
+  href      String   @db.VarChar(255)
+  group     String   @db.VarChar(80)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  openInNew Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, group, sortOrder])
+  @@map("footer_links")
+}
+
 /// Admin-managed IP block list — checked by API routes before processing requests
 model BlockedIp {
   id        String   @id @default(cuid())
