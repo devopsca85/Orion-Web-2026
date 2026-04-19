@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle, AlertCircle, Send } from 'lucide-react';
+import { CheckCircle, AlertCircle, Send, Calendar } from 'lucide-react';
 import { contactSchema, type ContactFormData } from '@/lib/validations';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -52,7 +52,11 @@ const inputClass = (hasError: boolean) =>
       : 'border-gray-200 bg-white focus:border-primary focus:ring-primary-100'
   );
 
-export function ContactForm() {
+interface ContactFormProps {
+  calendlyUrl?: string;
+}
+
+export function ContactForm({ calendlyUrl }: ContactFormProps) {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const loadedAt = useRef(Date.now());
@@ -80,6 +84,11 @@ export function ContactForm() {
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body.message || 'Something went wrong. Please try again.');
+      }
+
+      if (calendlyUrl) {
+        window.location.href = calendlyUrl;
+        return;
       }
 
       setStatus('success');
@@ -113,6 +122,13 @@ export function ContactForm() {
         <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
           <p>{errorMessage}</p>
+        </div>
+      )}
+
+      {calendlyUrl && (
+        <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          <Calendar className="h-4 w-4 flex-shrink-0" />
+          After submitting, you&rsquo;ll be redirected to book a call with us.
         </div>
       )}
 
@@ -191,9 +207,9 @@ export function ContactForm() {
         loading={isSubmitting}
         className="w-full justify-center"
         size="lg"
-        icon={<Send className="h-5 w-5" />}
+        icon={calendlyUrl ? <Calendar className="h-5 w-5" /> : <Send className="h-5 w-5" />}
       >
-        {isSubmitting ? 'Sending…' : 'Send Message'}
+        {isSubmitting ? 'Sending…' : calendlyUrl ? 'Send & Book a Call' : 'Send Message'}
       </Button>
     </form>
   );

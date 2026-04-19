@@ -47,6 +47,22 @@ export async function saveBrandingSettings(formData: FormData) {
   redirect('/admin/branding?saved=1')
 }
 
+export async function saveContactSettings(formData: FormData) {
+  await requireAdmin()
+  const keys = ['contact.calendlyUrl']
+  for (const key of keys) {
+    const value = (formData.get(key) as string) || ''
+    await prisma.siteSetting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    })
+  }
+  revalidateTag('site-settings')
+  revalidatePath('/contact')
+  redirect('/admin/contact-settings?saved=1')
+}
+
 export async function saveHomeSettings(formData: FormData) {
   await requireAdmin()
   const keys = [

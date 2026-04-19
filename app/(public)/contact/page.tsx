@@ -6,6 +6,7 @@ import { ContactForm } from '@/components/forms/ContactForm';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
 import { SITE_CONFIG } from '@/lib/constants';
 import { generateMetadata as genMeta } from '@/lib/seo';
+import { getSetting } from '@/lib/settings';
 
 export const metadata: Metadata = genMeta({
   title: 'Contact Us',
@@ -42,7 +43,9 @@ const contactInfo = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const calendlyUrl = await getSetting('contact.calendlyUrl', '');
+
   return (
     <>
       <BreadcrumbSchema
@@ -68,7 +71,7 @@ export default function ContactPage() {
                 <p className="mb-6 text-gray-600">
                   Fill in the form and one of our team members will follow up within one business day.
                 </p>
-                <ContactForm />
+                <ContactForm calendlyUrl={calendlyUrl || undefined} />
               </div>
             </div>
 

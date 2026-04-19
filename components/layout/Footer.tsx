@@ -3,7 +3,8 @@ import { LogoImg } from '@/components/ui/LogoImg';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
-import { SITE_CONFIG, FOOTER_LINKS } from '@/lib/constants';
+import { SITE_CONFIG } from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
 
 interface BrandingData {
   logoUrl: string
@@ -20,8 +21,27 @@ interface FooterProps {
   branding?: BrandingData
 }
 
-export function Footer({ branding }: FooterProps = {}) {
+async function getFooterData() {
+  try {
+    const [offices, links] = await Promise.all([
+      prisma.countryOffice.findMany({
+        where: { active: true },
+        orderBy: [{ sortOrder: 'asc' }, { country: 'asc' }],
+      }),
+      prisma.footerLink.findMany({
+        where: { active: true },
+        orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }],
+      }),
+    ])
+    return { offices, links }
+  } catch {
+    return { offices: [], links: [] }
+  }
+}
+
+export async function Footer({ branding }: FooterProps = {}) {
   const currentYear = new Date().getFullYear();
+  const { offices, links } = await getFooterData();
 
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
   const logoAlt = branding?.logoAlt || 'Orion Solutions';
@@ -41,11 +61,67 @@ export function Footer({ branding }: FooterProps = {}) {
   };
   const footerCopyright = branding?.footerCopyright || '';
 
+  // Group footer links by their group field
+  const linkGroups = links.reduce<Record<string, typeof links>>((acc, link) => {
+    if (!acc[link.group]) acc[link.group] = [];
+    acc[link.group].push(link);
+    return acc;
+  }, {});
+
+  const hasDbLinks = links.length > 0;
+
   return (
     <footer className="bg-orion-slate text-gray-300">
+      {/* Country offices strip */}
+      {offices.length > 0 && (
+        <div className="border-b border-white/10">
+          <Container>
+            <div className="py-10">
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-6">
+                Our Global Offices
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {offices.map((office) => (
+                  <div
+                    key={office.id}
+                    className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-1.5"
+                  >
+                    <p className="text-sm font-semibold text-white flex items-center gap-2">
+                      {office.flag && <span>{office.flag}</span>}
+                      {office.country}
+                    </p>
+                    {office.address && (
+                      <p className="text-xs text-gray-400 leading-relaxed">{office.address}</p>
+                    )}
+                    {office.phone && (
+                      <a
+                        href={`tel:${office.phone.replace(/\D/g, '')}`}
+                        className="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition-colors"
+                      >
+                        <Phone className="h-3 w-3 flex-shrink-0" />
+                        {office.phone}
+                      </a>
+                    )}
+                    {office.email && (
+                      <a
+                        href={`mailto:${office.email}`}
+                        className="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 transition-colors"
+                      >
+                        <Mail className="h-3 w-3 flex-shrink-0" />
+                        {office.email}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Container>
+        </div>
+      )}
+
       {/* Main footer */}
       <Container>
-        <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5 lg:py-20">
+        <div className={`grid gap-12 py-16 md:grid-cols-2 lg:py-20 ${hasDbLinks ? 'lg:grid-cols-5' : 'lg:grid-cols-5'}`}>
           {/* Brand column */}
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
@@ -109,53 +185,87 @@ export function Footer({ branding }: FooterProps = {}) {
             </div>
           </div>
 
-          {/* Services */}
-          <div>
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
-              Services
-            </h3>
-            <ul className="space-y-3">
-              {FOOTER_LINKS.services.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Industries */}
-          <div>
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
-              Industries
-            </h3>
-            <ul className="space-y-3">
-              {FOOTER_LINKS.industries.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
-              Company
-            </h3>
-            <ul className="space-y-3">
-              {FOOTER_LINKS.company.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Dynamic DB link groups (or fallback to hardcoded) */}
+          {hasDbLinks ? (
+            Object.entries(linkGroups).slice(0, 3).map(([group, groupLinks]) => (
+              <div key={group}>
+                <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
+                  {group}
+                </h3>
+                <ul className="space-y-3">
+                  {groupLinks.map((link) => (
+                    <li key={link.id}>
+                      <Link
+                        href={link.href}
+                        target={link.openInNew ? '_blank' : undefined}
+                        rel={link.openInNew ? 'noopener noreferrer' : undefined}
+                        className="text-sm transition-colors hover:text-white hover:underline"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <>
+              <div>
+                <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">Services</h3>
+                <ul className="space-y-3">
+                  {[
+                    { label: 'Software Development', href: '/services/software-development' },
+                    { label: 'Cloud Solutions', href: '/services/cloud-solutions' },
+                    { label: 'IT Consulting', href: '/services/it-consulting' },
+                    { label: 'Digital Transformation', href: '/services/digital-transformation' },
+                    { label: 'Cybersecurity', href: '/services/cybersecurity' },
+                  ].map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">Industries</h3>
+                <ul className="space-y-3">
+                  {[
+                    { label: 'Healthcare', href: '/industries/healthcare' },
+                    { label: 'Finance', href: '/industries/finance' },
+                    { label: 'Retail', href: '/industries/retail' },
+                    { label: 'Manufacturing', href: '/industries/manufacturing' },
+                    { label: 'Education', href: '/industries/education' },
+                  ].map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">Company</h3>
+                <ul className="space-y-3">
+                  {[
+                    { label: 'About Us', href: '/about' },
+                    { label: 'Case Studies', href: '/portfolio' },
+                    { label: 'Blog', href: '/blog' },
+                    { label: 'Careers', href: '/careers' },
+                    { label: 'Contact', href: '/contact' },
+                  ].map((link) => (
+                    <li key={link.href}>
+                      <Link href={link.href} className="text-sm transition-colors hover:text-white hover:underline">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
 
           {/* Newsletter */}
           <div>
@@ -180,11 +290,19 @@ export function Footer({ branding }: FooterProps = {}) {
                 : `© ${currentYear} ${SITE_CONFIG.name}. All rights reserved.`}
             </p>
             <div className="flex gap-6">
-              {FOOTER_LINKS.legal.map((link) => (
-                <Link key={link.href} href={link.href} className="transition-colors hover:text-gray-300">
-                  {link.label}
-                </Link>
-              ))}
+              {hasDbLinks ? (
+                links.filter((l) => l.group.toLowerCase() === 'legal').map((link) => (
+                  <Link key={link.id} href={link.href} className="transition-colors hover:text-gray-300">
+                    {link.label}
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <Link href="/privacy-policy" className="transition-colors hover:text-gray-300">Privacy Policy</Link>
+                  <Link href="/terms-of-service" className="transition-colors hover:text-gray-300">Terms of Service</Link>
+                  <Link href="/cookie-policy" className="transition-colors hover:text-gray-300">Cookie Policy</Link>
+                </>
+              )}
             </div>
           </div>
         </Container>

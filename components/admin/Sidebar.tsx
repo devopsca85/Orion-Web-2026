@@ -111,9 +111,17 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    title: 'Footer',
+    items: [
+      { href: '/admin/country-offices', label: 'Country Offices', icon: <Building2 size={16} /> },
+      { href: '/admin/footer-links', label: 'Footer Links', icon: <Layout size={16} /> },
+    ],
+  },
+  {
     title: 'Settings',
     items: [
       { href: '/admin/branding', label: 'Branding', icon: <Palette size={16} /> },
+      { href: '/admin/contact-settings', label: 'Contact Settings', icon: <FormInput size={16} /> },
       { href: '/admin/email-settings', label: 'Email Settings', icon: <Settings size={16} /> },
     ],
   },
