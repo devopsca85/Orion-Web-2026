@@ -47,6 +47,8 @@ export default async function HomePage() {
       'home.hero.bullet1',
       'home.hero.bullet2',
       'home.hero.bullet3',
+      'home.hero.backgroundImage',
+      'home.hero.overlayOpacity',
     ]),
     getFAQs(),
   ]);
@@ -77,6 +79,8 @@ export default async function HomePage() {
           '500+ projects delivered on time and on budget',
           '98% client satisfaction rating',
         ]}
+        backgroundImage={settings['home.hero.backgroundImage'] || undefined}
+        overlayOpacity={settings['home.hero.overlayOpacity'] || '0.65'}
       />
       <ClientLogos />
       <Stats />
