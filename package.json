@@ -18,9 +18,6 @@
     "migrate:wp": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/migrate-from-wp.ts",
     "seed:services": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/seed-services.ts"
   },
-  "overrides": {
-    "quill": ">=2.0.4"
-  },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
