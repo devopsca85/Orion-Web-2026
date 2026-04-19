@@ -42,7 +42,27 @@
       "Bash(sort find *)",
       "Bash(powershell.exe -Command \"Remove-Item -Path 'C:\\\\Users\\\\pstad\\\\Orion-Web-2026\\\\app\\\\\\(admin\\)\\\\admin\\\\login' -Recurse -Force; Write-Host 'Removed'\")",
       "Bash(git -C /c/Users/pstad/Orion-Web-2026 add -A)",
-      "Bash(git -C /c/Users/pstad/Orion-Web-2026 status --short)"
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 status --short)",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 commit -m ' *)",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 push origin develop)",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 add app/\\\\\\(admin\\\\\\)/admin/applications/page.tsx app/\\\\\\(admin\\\\\\)/admin/blog/page.tsx app/\\\\\\(admin\\\\\\)/admin/contacts/page.tsx app/\\\\\\(admin\\\\\\)/admin/services/new/page.tsx)",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 add lib/admin/actions.ts lib/auth.ts components/admin/DeleteForm.tsx components/admin/Sidebar.tsx components/admin/MediaGrid.tsx \"app/\\(admin\\)/admin/team/page.tsx\")",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 add lib/admin/auth-actions.ts \"app/\\(admin\\)/\\(auth\\)/admin/login/LoginForm.tsx\" \"app/\\(admin\\)/\\(auth\\)/admin/login/layout.tsx\" components/admin/Sidebar.tsx \"app/\\(admin\\)/admin/layout.tsx\")",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 add prisma/seed.ts)",
+      "Bash(git -C /c/Users/pstad/Orion-Web-2026 add README.md)",
+      "Bash(mkdir -p /c/Users/pstad/Orion-Web-2026/app/\\\\\\(admin\\\\\\)/admin/pages/\\\\[id\\\\])",
+      "Bash(mkdir -p /c/Users/pstad/Orion-Web-2026/app/\\\\\\(public\\\\\\)/pages/\\\\[slug\\\\])",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git stash *)",
+      "Bash(git commit -m 'fix: remove unused revalidateTag import in page-actions.ts *)",
+      "Bash(git commit -m 'fix: replace ternary-as-statement with if/else in toggleFolder *)",
+      "Bash(git commit -m 'fix: use LogoImg client component in branding page to avoid onError in Server Component *)",
+      "Bash(git commit -m 'fix: allow any https: image source and brevo in CSP *)",
+      "Bash(git commit -m 'fix: remove brightness-0 invert filter so logo renders in original colors *)",
+      "Bash(git commit -m 'feat: match nav style to reference — always-white header, bold dark links, Contact Us in blue *)",
+      "Bash(git commit -m 'fix: remove unused scrolled state after nav style refactor *)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

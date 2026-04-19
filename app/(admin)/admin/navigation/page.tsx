@@ -15,28 +15,22 @@ const TYPE_BADGE: Record<string, string> = {
   link:        'bg-slate-100 text-slate-600',
 }
 
-type NavChild = {
+type NavRow = {
   id: string
   label: string
   href: string
   type: string
   sortOrder: number
   active: boolean
-  children: {
-    id: string
-    label: string
-    href: string
-    type: string
-    sortOrder: number
-    active: boolean
-  }[]
 }
 
-type NavTop = NavChild & { children: NavChild[] }
+type NavChild = NavRow & { children: NavRow[] }
+type NavTop   = NavRow & { children: NavChild[] }
 
 export default async function NavigationAdminPage() {
   const session = await auth()
-  const items: NavTop[] = await prisma.navItem.findMany({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const items = (await prisma.navItem.findMany({
     where: { parentId: null },
     orderBy: { sortOrder: 'asc' },
     include: {
@@ -47,9 +41,9 @@ export default async function NavigationAdminPage() {
         },
       },
     },
-  })
+  })) as unknown as NavTop[]
 
-  function renderRow(item: { id: string; label: string; href: string; type: string; sortOrder: number; active: boolean }, depth: number, isChild: boolean) {
+  function renderRow(item: NavRow, depth: number, isChild: boolean) {
     const deleteAction = deleteNavItem.bind(null, item.id)
     const moveAction = moveToTopLevel.bind(null, item.id)
     return (

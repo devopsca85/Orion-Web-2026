@@ -2,7 +2,17 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+
+async function requireAdmin() {
+  const session = await auth()
+  if (!session) redirect('/admin/login')
+  const role = session.user.role
+  if (role !== 'SUPER_ADMIN' && role !== 'ADMIN' && role !== 'EDITOR') {
+    throw new Error('Insufficient permissions')
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJson(raw: string): any[] {
@@ -19,6 +29,7 @@ function slugify(str: string) {
 }
 
 export async function createProduct(formData: FormData) {
+  await requireAdmin()
   const title = (formData.get('title') as string).trim()
   const slug  = ((formData.get('slug') as string) || '').trim() || slugify(title)
 
@@ -43,6 +54,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(slug: string, formData: FormData) {
+  await requireAdmin()
   await prisma.product.update({
     where: { slug },
     data: {
@@ -65,6 +77,7 @@ export async function updateProduct(slug: string, formData: FormData) {
 }
 
 export async function deleteProduct(slug: string) {
+  await requireAdmin()
   await prisma.product.delete({ where: { slug } })
   revalidatePath('/admin/products')
   revalidatePath('/products')

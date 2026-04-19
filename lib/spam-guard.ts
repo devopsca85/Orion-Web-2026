@@ -56,14 +56,21 @@ export function isTooFast(ts: unknown, minMs = 3_000): boolean {
 
 const SPAM_PATTERNS = [
   /\b(viagra|cialis|casino|poker|lottery|jackpot|click here|buy now|free money|make money fast|work from home|weight loss|diet pills|enlargement|seo service|backlink|adult content)\b/i,
-  /https?:\/\/[^\s]+\s+https?:\/\/[^\s]+/i,  // multiple URLs in one message
-  /(.)\1{9,}/,                                 // 10+ repeated characters in a row
+  /https?:\/\/[^\s]+\s+https?:\/\/[^\s]+/i,
 ]
+
+function hasRepeatedChars(str: string): boolean {
+  let count = 1
+  for (let i = 1; i < str.length; i++) {
+    if (str[i] === str[i - 1]) { if (++count >= 10) return true } else { count = 1 }
+  }
+  return false
+}
 
 /** Returns true if any field contains obvious spam patterns. */
 export function hasSpamContent(...texts: (string | null | undefined)[]): boolean {
-  const combined = texts.filter(Boolean).join(' ')
-  return SPAM_PATTERNS.some((p) => p.test(combined))
+  const combined = texts.filter(Boolean).join(' ').slice(0, 10_000)
+  return SPAM_PATTERNS.some((p) => p.test(combined)) || hasRepeatedChars(combined)
 }
 
 /** Single-call guard: returns an error response or null if clean. */
