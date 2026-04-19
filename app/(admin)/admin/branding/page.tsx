@@ -22,6 +22,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
     'logo.alt',
     'brand.primaryColor',
     'brand.secondaryColor',
+    'brand.navColor',
     'brand.companyName',
     'brand.tagline',
     'brand.footerCopyright',
