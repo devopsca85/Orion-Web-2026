@@ -4,7 +4,6 @@ import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram } from 'luc
 import { Container } from '@/components/ui/Container';
 import { NewsletterForm } from '@/components/ui/NewsletterForm';
 import { SITE_CONFIG } from '@/lib/constants';
-import { prisma } from '@/lib/prisma';
 
 interface BrandingData {
   logoUrl: string
@@ -17,31 +16,31 @@ interface BrandingData {
   footerCopyright: string
 }
 
+interface OfficeData {
+  id: string
+  country: string
+  flag: string | null
+  address: string | null
+  phone: string | null
+  email: string | null
+}
+
+interface LinkData {
+  id: string
+  label: string
+  href: string
+  group: string
+  openInNew: boolean
+}
+
 interface FooterProps {
   branding?: BrandingData
+  offices?: OfficeData[]
+  links?: LinkData[]
 }
 
-async function getFooterData() {
-  try {
-    const [offices, links] = await Promise.all([
-      prisma.countryOffice.findMany({
-        where: { active: true },
-        orderBy: [{ sortOrder: 'asc' }, { country: 'asc' }],
-      }),
-      prisma.footerLink.findMany({
-        where: { active: true },
-        orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }],
-      }),
-    ])
-    return { offices, links }
-  } catch {
-    return { offices: [], links: [] }
-  }
-}
-
-export async function Footer({ branding }: FooterProps = {}) {
+export function Footer({ branding, offices = [], links = [] }: FooterProps) {
   const currentYear = new Date().getFullYear();
-  const { offices, links } = await getFooterData();
 
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
   const logoAlt = branding?.logoAlt || 'Orion Solutions';
@@ -61,14 +60,14 @@ export async function Footer({ branding }: FooterProps = {}) {
   };
   const footerCopyright = branding?.footerCopyright || '';
 
-  // Group footer links by their group field
-  const linkGroups = links.reduce<Record<string, typeof links>>((acc, link) => {
+  const linkGroups = links.reduce<Record<string, LinkData[]>>((acc, link) => {
     if (!acc[link.group]) acc[link.group] = [];
     acc[link.group].push(link);
     return acc;
   }, {});
 
   const hasDbLinks = links.length > 0;
+  const legalLinks = links.filter((l) => l.group.toLowerCase() === 'legal');
 
   return (
     <footer className="bg-orion-slate text-gray-300">
@@ -121,7 +120,7 @@ export async function Footer({ branding }: FooterProps = {}) {
 
       {/* Main footer */}
       <Container>
-        <div className={`grid gap-12 py-16 md:grid-cols-2 lg:py-20 ${hasDbLinks ? 'lg:grid-cols-5' : 'lg:grid-cols-5'}`}>
+        <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5 lg:py-20">
           {/* Brand column */}
           <div className="lg:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
@@ -139,7 +138,6 @@ export async function Footer({ branding }: FooterProps = {}) {
             <p className="mb-6 text-sm leading-relaxed text-gray-400">
               Transforming businesses through innovative technology solutions. Trusted by 150+ enterprises worldwide.
             </p>
-            {/* Contact info */}
             <ul className="space-y-3 text-sm">
               <li>
                 <a href={`mailto:${email}`} className="flex items-center gap-2 transition-colors hover:text-white">
@@ -163,7 +161,6 @@ export async function Footer({ branding }: FooterProps = {}) {
               </li>
             </ul>
 
-            {/* Social */}
             <div className="mt-6 flex gap-3">
               {[
                 { href: social.linkedin, icon: Linkedin, label: 'LinkedIn' },
@@ -185,29 +182,32 @@ export async function Footer({ branding }: FooterProps = {}) {
             </div>
           </div>
 
-          {/* Dynamic DB link groups (or fallback to hardcoded) */}
+          {/* Link columns — DB-driven or hardcoded fallback */}
           {hasDbLinks ? (
-            Object.entries(linkGroups).slice(0, 3).map(([group, groupLinks]) => (
-              <div key={group}>
-                <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
-                  {group}
-                </h3>
-                <ul className="space-y-3">
-                  {groupLinks.map((link) => (
-                    <li key={link.id}>
-                      <Link
-                        href={link.href}
-                        target={link.openInNew ? '_blank' : undefined}
-                        rel={link.openInNew ? 'noopener noreferrer' : undefined}
-                        className="text-sm transition-colors hover:text-white hover:underline"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
+            Object.entries(linkGroups)
+              .filter(([group]) => group.toLowerCase() !== 'legal')
+              .slice(0, 3)
+              .map(([group, groupLinks]) => (
+                <div key={group}>
+                  <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
+                    {group}
+                  </h3>
+                  <ul className="space-y-3">
+                    {groupLinks.map((link) => (
+                      <li key={link.id}>
+                        <Link
+                          href={link.href}
+                          target={link.openInNew ? '_blank' : undefined}
+                          rel={link.openInNew ? 'noopener noreferrer' : undefined}
+                          className="text-sm transition-colors hover:text-white hover:underline"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
           ) : (
             <>
               <div>
@@ -290,8 +290,8 @@ export async function Footer({ branding }: FooterProps = {}) {
                 : `© ${currentYear} ${SITE_CONFIG.name}. All rights reserved.`}
             </p>
             <div className="flex gap-6">
-              {hasDbLinks ? (
-                links.filter((l) => l.group.toLowerCase() === 'legal').map((link) => (
+              {legalLinks.length > 0 ? (
+                legalLinks.map((link) => (
                   <Link key={link.id} href={link.href} className="transition-colors hover:text-gray-300">
                     {link.label}
                   </Link>

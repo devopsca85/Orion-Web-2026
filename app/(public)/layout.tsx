@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
 import { getNavLinks } from '@/lib/navigation'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
+import { prisma } from '@/lib/prisma'
 
 function safeColor(val: string | undefined, fallback: string): string {
   return /^#[0-9a-fA-F]{3,8}$/.test((val ?? '').trim()) ? val!.trim() : fallback
@@ -16,8 +17,26 @@ function hexToRgbChannels(hex: string): string {
   return `${r} ${g} ${b}`
 }
 
+async function getFooterData() {
+  try {
+    const [offices, links] = await Promise.all([
+      prisma.countryOffice.findMany({
+        where: { active: true },
+        orderBy: [{ sortOrder: 'asc' }, { country: 'asc' }],
+      }),
+      prisma.footerLink.findMany({
+        where: { active: true },
+        orderBy: [{ group: 'asc' }, { sortOrder: 'asc' }],
+      }),
+    ])
+    return { offices, links }
+  } catch {
+    return { offices: [], links: [] }
+  }
+}
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [settings, navLinks] = await Promise.all([
+  const [settings, navLinks, footerData] = await Promise.all([
     getSettings([
       'logo.url',
       'logo.alt',
@@ -40,6 +59,7 @@ export default async function PublicLayout({ children }: { children: React.React
       'brand.navBgColor',
     ]),
     getNavLinks(),
+    getFooterData(),
   ])
 
   const primaryColor   = safeColor(settings['brand.primaryColor'],   '#1e3a8a')
@@ -78,7 +98,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <main id="main-content" className="flex-1">
         {children}
       </main>
-      <Footer branding={branding} />
+      <Footer branding={branding} offices={footerData.offices} links={footerData.links} />
     </>
   )
 }
