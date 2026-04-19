@@ -16,7 +16,12 @@ const inputClass =
 export default async function EditCountryOfficePage({ params }: Props) {
   const session = await auth()
   const { id } = await params
-  const office = await prisma.countryOffice.findUnique({ where: { id } })
+  let office: Awaited<ReturnType<typeof prisma.countryOffice.findUnique>> = null
+  try {
+    office = await prisma.countryOffice.findUnique({ where: { id } })
+  } catch {
+    notFound()
+  }
   if (!office) notFound()
 
   const update = updateCountryOffice.bind(null, id)

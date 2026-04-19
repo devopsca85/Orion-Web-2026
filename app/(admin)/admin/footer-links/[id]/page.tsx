@@ -16,7 +16,12 @@ const inputClass =
 export default async function EditFooterLinkPage({ params }: Props) {
   const session = await auth()
   const { id } = await params
-  const link = await prisma.footerLink.findUnique({ where: { id } })
+  let link: Awaited<ReturnType<typeof prisma.footerLink.findUnique>> = null
+  try {
+    link = await prisma.footerLink.findUnique({ where: { id } })
+  } catch {
+    notFound()
+  }
   if (!link) notFound()
 
   const update = updateFooterLink.bind(null, id)
