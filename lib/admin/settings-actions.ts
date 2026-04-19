@@ -18,6 +18,7 @@ export async function saveBrandingSettings(formData: FormData) {
     { key: 'brand.primaryColor', value: (formData.get('brand.primaryColor') as string) || '#1e3a8a' },
     { key: 'brand.secondaryColor', value: (formData.get('brand.secondaryColor') as string) || '#f97316' },
     { key: 'brand.navColor',       value: (formData.get('brand.navColor')       as string) || '#ffffff' },
+    { key: 'brand.navBgColor',     value: (formData.get('brand.navBgColor')     as string) || '#1e3a8a' },
     { key: 'brand.companyName', value: (formData.get('brand.companyName') as string) || '' },
     { key: 'brand.tagline', value: (formData.get('brand.tagline') as string) || '' },
     { key: 'brand.footerCopyright', value: (formData.get('brand.footerCopyright') as string) || '' },

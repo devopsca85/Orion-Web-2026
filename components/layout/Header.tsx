@@ -72,7 +72,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
   const navItems = (navLinks ?? NAV_LINKS).filter((l) => l.label !== 'Contact Us')
 
   return (
-    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-[var(--brand-primary)] border-b border-black/20 shadow-lg">
+    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 bg-[var(--brand-nav-bg)] border-b border-black/20 shadow-lg">
 
       {/* ─── Desktop bar ──────────────────────────────────────────── */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">

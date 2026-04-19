@@ -9,8 +9,10 @@
     --brand-primary-rgb: 30 58 138;
     --brand-secondary:     #f97316;
     --brand-secondary-rgb: 249 115 22;
-    --brand-nav:     #ffffff;
-    --brand-nav-rgb: 255 255 255;
+    --brand-nav:        #ffffff;
+    --brand-nav-rgb:    255 255 255;
+    --brand-nav-bg:     #1e3a8a;
+    --brand-nav-bg-rgb: 30 58 138;
     scroll-behavior: smooth;
   }
 
