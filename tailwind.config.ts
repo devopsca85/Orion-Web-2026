@@ -11,8 +11,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // DEFAULT uses CSS variables so brand colors from /admin/branding apply site-wide.
+        // Opacity modifiers (bg-primary/10 etc.) work via the <alpha-value> token.
         primary: {
-          50: '#eff6ff',
+          50:  '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
           300: '#93c5fd',
@@ -23,10 +25,10 @@ const config: Config = {
           800: '#1e40af',
           900: '#1e3a8a',
           950: '#172554',
-          DEFAULT: '#1d4ed8',
+          DEFAULT: 'rgb(var(--brand-primary-rgb) / <alpha-value>)',
         },
         secondary: {
-          50: '#fff7ed',
+          50:  '#fff7ed',
           100: '#ffedd5',
           200: '#fed7aa',
           300: '#fdba74',
@@ -36,14 +38,17 @@ const config: Config = {
           700: '#c2410c',
           800: '#9a3412',
           900: '#7c2d12',
-          DEFAULT: '#f97316',
+          DEFAULT: 'rgb(var(--brand-secondary-rgb) / <alpha-value>)',
+        },
+        nav: {
+          DEFAULT: 'rgb(var(--brand-nav-rgb) / <alpha-value>)',
         },
         orion: {
-          navy: '#1e3a8a',
-          orange: '#f97316',
-          slate: '#1e293b',
-          gray: '#64748b',
-          light: '#f8fafc',
+          navy:   'rgb(var(--brand-primary-rgb))',
+          orange: 'rgb(var(--brand-secondary-rgb))',
+          slate:  '#1e293b',
+          gray:   '#64748b',
+          light:  '#f8fafc',
         },
       },
       fontFamily: {

@@ -8,6 +8,14 @@ function safeColor(val: string | undefined, fallback: string): string {
   return /^#[0-9a-fA-F]{3,8}$/.test((val ?? '').trim()) ? val!.trim() : fallback
 }
 
+function hexToRgbChannels(hex: string): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `${r} ${g} ${b}`
+}
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [settings, navLinks] = await Promise.all([
     getSettings([
@@ -61,8 +69,8 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <>
-      {/* Inject brand colors as CSS variables — updated on save, no rebuild needed */}
-      <style>{`:root{--brand-primary:${primaryColor};--brand-secondary:${secondaryColor};--brand-nav:${navColor}}`}</style>
+      {/* Inject brand colors — hex + RGB channels so Tailwind opacity modifiers work */}
+      <style>{`:root{--brand-primary:${primaryColor};--brand-primary-rgb:${hexToRgbChannels(primaryColor)};--brand-secondary:${secondaryColor};--brand-secondary-rgb:${hexToRgbChannels(secondaryColor)};--brand-nav:${navColor};--brand-nav-rgb:${hexToRgbChannels(navColor)}}`}</style>
       <TrackPageView />
       <Header branding={branding} navLinks={navLinks} />
       <main id="main-content" className="flex-1">
