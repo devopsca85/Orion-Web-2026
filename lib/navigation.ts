@@ -7,7 +7,25 @@ type DbNavItem = {
   type: string; sortOrder: number; cardDesc: string | null; logoUrl: string | null
 }
 
-function buildNavFromDb(items: DbNavItem[]): NavLink[] {
+async function getPublishedProducts(): Promise<NavLinkProductMega['items']> {
+  try {
+    const rows = await prisma.product.findMany({
+      where: { published: true },
+      orderBy: { sortOrder: 'asc' },
+      select: { slug: true, title: true, tagline: true, logoUrl: true },
+    })
+    return rows.map(p => ({
+      label: p.title,
+      href: `/products/${p.slug}`,
+      description: p.tagline ?? '',
+      logoUrl: p.logoUrl ?? '/assets/images/logo.png',
+    }))
+  } catch {
+    return []
+  }
+}
+
+async function buildNavFromDb(items: DbNavItem[]): Promise<NavLink[]> {
   const byParent = new Map<string | null, DbNavItem[]>()
   for (const item of items) {
     const key = item.parentId
@@ -15,6 +33,9 @@ function buildNavFromDb(items: DbNavItem[]): NavLink[] {
     byParent.get(key)!.push(item)
   }
   const topLevel = byParent.get(null) ?? []
+
+  const dbProducts = await getPublishedProducts()
+
   return topLevel.map((item): NavLink => {
     if (item.type === 'mega') {
       const groups = byParent.get(item.id) ?? []
@@ -27,15 +48,14 @@ function buildNavFromDb(items: DbNavItem[]): NavLink[] {
       } satisfies NavLinkMega
     }
     if (item.type === 'productMega') {
-      const products = byParent.get(item.id) ?? []
-      return {
-        label: item.label, href: item.href, productMega: true,
-        items: products.map(p => ({
-          label: p.label, href: p.href,
-          description: p.cardDesc ?? '',
-          logoUrl: p.logoUrl ?? '/assets/images/logo.png',
-        }))
-      } satisfies NavLinkProductMega
+      const items = dbProducts.length > 0
+        ? dbProducts
+        : (byParent.get(item.id) ?? []).map(p => ({
+            label: p.label, href: p.href,
+            description: p.cardDesc ?? '',
+            logoUrl: p.logoUrl ?? '/assets/images/logo.png',
+          }))
+      return { label: item.label, href: item.href, productMega: true, items } satisfies NavLinkProductMega
     }
     if (item.type === 'dropdown') {
       const kids = byParent.get(item.id) ?? []

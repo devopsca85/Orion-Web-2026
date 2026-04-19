@@ -57,6 +57,7 @@ export default async function PublicLayout({ children }: { children: React.React
       'brand.secondaryColor',
       'brand.navColor',
       'brand.navBgColor',
+      'brand.footerBgColor',
     ]),
     getNavLinks(),
     getFooterData(),
@@ -66,6 +67,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const secondaryColor = safeColor(settings['brand.secondaryColor'],  '#f97316')
   const navColor       = safeColor(settings['brand.navColor'],        '#ffffff')
   const navBgColor     = safeColor(settings['brand.navBgColor'],      '#1e3a8a')
+  const footerBgColor  = safeColor(settings['brand.footerBgColor'],   '#1e293b')
 
   const branding = {
     logoUrl: settings['logo.url'] || '',
@@ -92,7 +94,7 @@ export default async function PublicLayout({ children }: { children: React.React
   return (
     <>
       {/* Inject brand colors — hex + RGB channels so Tailwind opacity modifiers work */}
-      <style>{`:root{--brand-primary:${primaryColor};--brand-primary-rgb:${hexToRgbChannels(primaryColor)};--brand-secondary:${secondaryColor};--brand-secondary-rgb:${hexToRgbChannels(secondaryColor)};--brand-nav:${navColor};--brand-nav-rgb:${hexToRgbChannels(navColor)};--brand-nav-bg:${navBgColor};--brand-nav-bg-rgb:${hexToRgbChannels(navBgColor)}}`}</style>
+      <style>{`:root{--brand-primary:${primaryColor};--brand-primary-rgb:${hexToRgbChannels(primaryColor)};--brand-secondary:${secondaryColor};--brand-secondary-rgb:${hexToRgbChannels(secondaryColor)};--brand-nav:${navColor};--brand-nav-rgb:${hexToRgbChannels(navColor)};--brand-nav-bg:${navBgColor};--brand-nav-bg-rgb:${hexToRgbChannels(navBgColor)};--brand-footer-bg:${footerBgColor}}`}</style>
       <TrackPageView />
       <Header branding={branding} navLinks={navLinks} />
       <main id="main-content" className="flex-1">

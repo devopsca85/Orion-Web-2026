@@ -24,6 +24,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
     'brand.secondaryColor',
     'brand.navColor',
     'brand.navBgColor',
+    'brand.footerBgColor',
     'brand.companyName',
     'brand.tagline',
     'brand.footerCopyright',
@@ -140,6 +141,12 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
               name="brand.navBgColor"
               label="Nav Background Color"
               defaultValue={settings['brand.navBgColor'] || '#1e3a8a'}
+            />
+
+            <ColorPicker
+              name="brand.footerBgColor"
+              label="Footer Background Color"
+              defaultValue={settings['brand.footerBgColor'] || '#1e293b'}
             />
 
             <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">

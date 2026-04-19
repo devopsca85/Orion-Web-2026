@@ -70,7 +70,7 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
   const legalLinks = links.filter((l) => l.group.toLowerCase() === 'legal');
 
   return (
-    <footer className="bg-orion-slate text-gray-300">
+    <footer className="text-gray-300" style={{ backgroundColor: 'var(--brand-footer-bg)' }}>
       {/* Country offices strip */}
       {offices.length > 0 && (
         <div className="border-b border-white/10">
