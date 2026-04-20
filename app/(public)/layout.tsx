@@ -4,6 +4,7 @@ import { getSettings } from '@/lib/settings'
 import { getNavLinks } from '@/lib/navigation'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
 import { prisma } from '@/lib/prisma'
+import { getPageSections } from '@/lib/page-sections'
 
 function safeColor(val: string | undefined, fallback: string): string {
   return /^#[0-9a-fA-F]{3,8}$/.test((val ?? '').trim()) ? val!.trim() : fallback
@@ -37,7 +38,7 @@ async function getFooterData() {
 }
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [settings, navLinks, footerData] = await Promise.all([
+  const [settings, navLinks, footerData, footerSections] = await Promise.all([
     getSettings([
       'logo.url',
       'logo.alt',
@@ -62,6 +63,7 @@ export default async function PublicLayout({ children }: { children: React.React
     ]),
     getNavLinks(),
     getFooterData(),
+    getPageSections('footer'),
   ])
 
   const primaryColor   = safeColor(settings['brand.primaryColor'],   '#1e3a8a')
@@ -101,7 +103,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <main id="main-content" className="flex-1">
         {children}
       </main>
-      <Footer branding={branding} offices={footerData.offices} links={footerData.links} />
+      <Footer branding={branding} offices={footerData.offices} links={footerData.links} sections={footerSections} />
     </>
   )
 }

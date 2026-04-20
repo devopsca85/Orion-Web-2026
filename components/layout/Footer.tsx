@@ -33,13 +33,24 @@ interface LinkData {
   openInNew: boolean
 }
 
+interface SectionConfig {
+  key: string
+  visible: boolean
+}
+
 interface FooterProps {
   branding?: BrandingData
   offices?: OfficeData[]
   links?: LinkData[]
+  sections?: SectionConfig[]
 }
 
-export function Footer({ branding, offices = [], links = [] }: FooterProps) {
+export function Footer({ branding, offices = [], links = [], sections }: FooterProps) {
+  // Build visibility map; if no sections config, everything is visible by default
+  const visibleKeys = sections
+    ? new Set(sections.filter((s) => s.visible).map((s) => s.key))
+    : null
+  const show = (key: string) => !visibleKeys || visibleKeys.has(key)
   const currentYear = new Date().getFullYear();
 
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png';
@@ -72,7 +83,7 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
   return (
     <footer className="text-gray-300" style={{ backgroundColor: 'var(--brand-footer-bg)' }}>
       {/* Country offices strip */}
-      {offices.length > 0 && (
+      {show('countries') && offices.length > 0 && (
         <div className="border-b border-white/10">
           <Container>
             <div className="py-10">
@@ -119,7 +130,7 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
       )}
 
       {/* Main footer */}
-      <Container>
+      {(show('links') || show('newsletter')) && <Container>
         <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5 lg:py-20">
           {/* Brand column */}
           <div className="lg:col-span-1">
@@ -183,7 +194,7 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
           </div>
 
           {/* Link columns — DB-driven or hardcoded fallback */}
-          {hasDbLinks ? (
+          {show('links') && (hasDbLinks ? (
             Object.entries(linkGroups)
               .filter(([group]) => group.toLowerCase() !== 'legal')
               .slice(0, 3)
@@ -265,23 +276,25 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
                 </ul>
               </div>
             </>
-          )}
+          ))}
 
           {/* Newsletter */}
-          <div>
-            <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
-              Stay Updated
-            </h3>
-            <p className="mb-4 text-sm text-gray-400">
-              Subscribe to our newsletter for the latest insights on technology and digital transformation.
-            </p>
-            <NewsletterForm />
-          </div>
+          {show('newsletter') && (
+            <div>
+              <h3 className="mb-5 text-sm font-semibold uppercase tracking-widest text-white">
+                Stay Updated
+              </h3>
+              <p className="mb-4 text-sm text-gray-400">
+                Subscribe to our newsletter for the latest insights on technology and digital transformation.
+              </p>
+              <NewsletterForm />
+            </div>
+          )}
         </div>
-      </Container>
+      </Container>}
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10">
+      {show('bottombar') && <div className="border-t border-white/10">
         <Container>
           <div className="flex flex-col items-center justify-between gap-4 py-6 text-xs text-gray-500 sm:flex-row">
             <p>
@@ -306,7 +319,7 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
             </div>
           </div>
         </Container>
-      </div>
+      </div>}
     </footer>
   );
 }

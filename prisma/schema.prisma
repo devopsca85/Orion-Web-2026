@@ -547,6 +547,22 @@ model BlockedIp {
   @@map("blocked_ips")
 }
 
+/// Home and footer section visibility / order managed from admin
+model PageSection {
+  id         String   @id @default(cuid())
+  page       String   @db.VarChar(50)
+  sectionKey String   @db.VarChar(80)
+  label      String   @db.VarChar(150)
+  sortOrder  Int      @default(0)
+  visible    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([page, sectionKey])
+  @@index([page, sortOrder])
+  @@map("page_sections")
+}
+
 /// Visitor page views — powers the analytics dashboard
 model PageView {
   id        String   @id @default(cuid())

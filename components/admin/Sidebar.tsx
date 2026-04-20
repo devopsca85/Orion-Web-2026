@@ -57,6 +57,7 @@ const navGroups: NavGroup[] = [
     title: 'Pages',
     items: [
       { href: '/admin/home', label: 'Home Page', icon: <Home size={16} /> },
+      { href: '/admin/home/sections', label: 'Section Layout', icon: <Layers size={16} /> },
       { href: '/admin/pages', label: 'Custom Pages', icon: <Layout size={16} /> },
       { href: '/admin/navigation', label: 'Navigation', icon: <Navigation size={16} /> },
     ],
@@ -113,6 +114,7 @@ const navGroups: NavGroup[] = [
   {
     title: 'Footer',
     items: [
+      { href: '/admin/footer/sections', label: 'Footer Layout', icon: <Layers size={16} /> },
       { href: '/admin/country-offices', label: 'Country Offices', icon: <Building2 size={16} /> },
       { href: '/admin/footer-links', label: 'Footer Links', icon: <Layout size={16} /> },
     ],
