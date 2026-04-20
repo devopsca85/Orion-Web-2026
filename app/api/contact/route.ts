@@ -4,6 +4,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { isHoneypot, hasSpamContent, isBlockedIp, getIp } from '@/lib/spam-guard';
 import { buildEmailHtml, sendResendEmail } from '@/lib/email';
+import { getSetting } from '@/lib/settings';
 
 const RATE_LIMIT_MAP = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -58,7 +59,7 @@ async function sendEmail(data: {
   service?: string;
   message: string;
 }): Promise<void> {
-  const toEmail = process.env.CONTACT_EMAIL || SITE_CONFIG.email;
+  const toEmail = await getSetting('email.contact_to', '') || process.env.CONTACT_EMAIL || SITE_CONFIG.email;
   const rows = [
     { label: 'Name',    value: data.name,    href: undefined },
     { label: 'Email',   value: data.email,   href: `mailto:${data.email}` },

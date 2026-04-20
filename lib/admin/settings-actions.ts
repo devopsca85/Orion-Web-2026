@@ -64,6 +64,27 @@ export async function saveContactSettings(formData: FormData) {
   redirect('/admin/contact-settings?saved=1')
 }
 
+export async function saveCalendlyLinks(links: { variable: string; url: string }[]) {
+  await requireAdmin()
+  await prisma.siteSetting.deleteMany({ where: { key: { startsWith: 'calendly.' } } })
+  await prisma.siteSetting.deleteMany({ where: { key: 'contact.calendlyUrl' } })
+  const clean = links.filter((l) => l.variable.trim() && l.url.trim())
+  if (clean.length > 0) {
+    await prisma.$transaction(
+      clean.map((l) =>
+        prisma.siteSetting.create({
+          data: {
+            key: `calendly.${l.variable.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-')}`,
+            value: l.url.trim(),
+          },
+        })
+      )
+    )
+  }
+  revalidateTag('site-settings')
+  revalidatePath('/contact')
+}
+
 export async function saveHomeSettings(formData: FormData) {
   await requireAdmin()
   const keys = [

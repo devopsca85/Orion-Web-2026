@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from '@/lib/constants'
+import { getSettings } from '@/lib/settings'
 
 /** Escape user-supplied strings before embedding in email HTML. */
 export function escapeHtml(str: string | null | undefined): string {
@@ -61,14 +62,15 @@ export function buildEmailHtml(opts: {
   </div>`
 }
 
-/** Send an email via Resend. Throws if RESEND_API_KEY is missing in production. */
+/** Send an email via Resend. Uses DB-saved settings, falls back to env vars. */
 export async function sendResendEmail(opts: {
   to: string
   replyTo?: string
   subject: string
   html: string
 }): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY
+  const s = await getSettings(['email.resend_api_key', 'email.from_name', 'email.from_email'])
+  const apiKey = s['email.resend_api_key'] || process.env.RESEND_API_KEY
   if (!apiKey) {
     if (process.env.NODE_ENV === 'development') {
       console.log('[Email] Dev mode — skipping send:', opts.subject)
@@ -76,8 +78,9 @@ export async function sendResendEmail(opts: {
     }
     throw new Error('Email service not configured')
   }
+  const fromName  = s['email.from_name']  || SITE_CONFIG.name
+  const fromEmail = s['email.from_email'] || `noreply@${new URL(SITE_CONFIG.url).hostname}`
   const { Resend } = await import('resend')
   const resend = new Resend(apiKey)
-  const from = `${SITE_CONFIG.name} <noreply@${new URL(SITE_CONFIG.url).hostname}>`
-  await resend.emails.send({ from, ...opts })
+  await resend.emails.send({ from: `${fromName} <${fromEmail}>`, ...opts })
 }

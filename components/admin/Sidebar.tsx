@@ -123,7 +123,7 @@ const navGroups: NavGroup[] = [
     title: 'Settings',
     items: [
       { href: '/admin/branding', label: 'Branding', icon: <Palette size={16} /> },
-      { href: '/admin/contact-settings', label: 'Contact Settings', icon: <FormInput size={16} /> },
+      { href: '/admin/contact-settings', label: 'Calendly Settings', icon: <FormInput size={16} /> },
       { href: '/admin/email-settings', label: 'Email Settings', icon: <Settings size={16} /> },
     ],
   },
