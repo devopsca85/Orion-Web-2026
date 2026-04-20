@@ -86,8 +86,9 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
       setStatus('idle');
 
       let recaptchaToken = 'bypass';
-      if (recaptchaSiteKey && typeof window !== 'undefined' && (window as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha) {
-        const gr = (window as { grecaptcha: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gr = recaptchaSiteKey ? (window as any).grecaptcha : null
+      if (recaptchaSiteKey && gr) {
         recaptchaToken = await new Promise<string>((resolve) => {
           gr.ready(() => gr.execute(recaptchaSiteKey, { action: 'contact' }).then(resolve))
         })
