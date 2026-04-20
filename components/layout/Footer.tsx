@@ -76,14 +76,14 @@ export function Footer({ branding, offices = [], links = [] }: FooterProps) {
         <div className="border-b border-white/10">
           <Container>
             <div className="py-10">
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-6">
-                Our Global Offices
+              <h3 className="text-base font-bold text-white mb-6">
+                Countries
               </h3>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {offices.map((office) => (
                   <div
                     key={office.id}
-                    className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-1.5"
+                    className="rounded-xl bg-white/10 border border-white/10 p-4 space-y-1.5"
                   >
                     <p className="text-sm font-semibold text-white flex items-center gap-2">
                       {office.flag && <span>{office.flag}</span>}
