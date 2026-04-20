@@ -4,18 +4,20 @@ import { updateCountryOffice } from '@/lib/admin/country-office-actions'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, CheckCircle } from 'lucide-react'
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ saved?: string }>
 }
 
 const inputClass =
   'block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500'
 
-export default async function EditCountryOfficePage({ params }: Props) {
+export default async function EditCountryOfficePage({ params, searchParams }: Props) {
   const session = await auth()
   const { id } = await params
+  const { saved } = await searchParams
   let office: Awaited<ReturnType<typeof prisma.countryOffice.findUnique>> = null
   try {
     office = await prisma.countryOffice.findUnique({ where: { id } })
@@ -34,6 +36,13 @@ export default async function EditCountryOfficePage({ params }: Props) {
           <ChevronLeft size={16} />
           Back to Country Offices
         </Link>
+
+        {saved === '1' && (
+          <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 mb-6 text-sm font-medium">
+            <CheckCircle size={16} className="shrink-0" />
+            Country office saved successfully.
+          </div>
+        )}
 
         <form action={update} className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">

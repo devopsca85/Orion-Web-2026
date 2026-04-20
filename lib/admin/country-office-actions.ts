@@ -12,10 +12,11 @@ async function requireAdmin() {
 
 export async function createCountryOffice(formData: FormData) {
   await requireAdmin()
+  const flag = (formData.get('flag') as string).trim() || null
   await prisma.countryOffice.create({
     data: {
       country: (formData.get('country') as string) || '',
-      flag: (formData.get('flag') as string) || null,
+      flag: flag ? flag.slice(0, 512) : null,
       address: (formData.get('address') as string) || null,
       phone: (formData.get('phone') as string) || null,
       email: (formData.get('email') as string) || null,
@@ -25,16 +26,18 @@ export async function createCountryOffice(formData: FormData) {
   })
   revalidatePath('/admin/country-offices')
   revalidatePath('/', 'layout')
+  revalidatePath('/admin/country-offices')
   redirect('/admin/country-offices?saved=1')
 }
 
 export async function updateCountryOffice(id: string, formData: FormData) {
   await requireAdmin()
+  const flag = (formData.get('flag') as string).trim() || null
   await prisma.countryOffice.update({
     where: { id },
     data: {
       country: (formData.get('country') as string) || '',
-      flag: (formData.get('flag') as string) || null,
+      flag: flag ? flag.slice(0, 512) : null,
       address: (formData.get('address') as string) || null,
       phone: (formData.get('phone') as string) || null,
       email: (formData.get('email') as string) || null,
@@ -44,7 +47,7 @@ export async function updateCountryOffice(id: string, formData: FormData) {
   })
   revalidatePath('/admin/country-offices')
   revalidatePath('/', 'layout')
-  redirect(`/admin/country-offices?saved=1`)
+  redirect(`/admin/country-offices/${id}?saved=1`)
 }
 
 export async function deleteCountryOffice(id: string) {
