@@ -1,5 +1,5 @@
 'use server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -38,12 +38,15 @@ export async function saveEmailSettings(formData: FormData) {
     })
   })
   await Promise.all(ops)
+  revalidateTag('site-settings')
   revalidatePath('/admin/email-settings')
   redirect('/admin/email-settings?saved=1')
 }
 
 export async function getEmailSettings(): Promise<Record<string, string>> {
-  const rows = await prisma.siteSetting.findMany({ where: { key: { startsWith: 'email.' } } })
+  const rows = await prisma.siteSetting.findMany({
+    where: { key: { in: [...EMAIL_KEYS] } },
+  })
   return Object.fromEntries(rows.map((r) => [r.key, r.value]))
 }
 
