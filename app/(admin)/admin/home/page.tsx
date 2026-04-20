@@ -30,6 +30,8 @@ export default async function HomeAdminPage({ searchParams }: Props) {
     'home.hero.bullet3',
     'home.hero.backgroundImage',
     'home.hero.overlayOpacity',
+    'home.hero.height',
+    'home.hero.imagePosition',
   ])
 
   return (
@@ -55,6 +57,8 @@ export default async function HomeAdminPage({ searchParams }: Props) {
               <HeroImageInput
                 defaultUrl={settings['home.hero.backgroundImage'] || ''}
                 defaultOpacity={settings['home.hero.overlayOpacity'] || '0.65'}
+                defaultHeight={settings['home.hero.height'] || '100vh'}
+                defaultPosition={settings['home.hero.imagePosition'] || 'center center'}
               />
             </div>
 

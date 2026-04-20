@@ -17,6 +17,8 @@ interface HeroProps {
   variant?: 'home' | 'page';
   backgroundImage?: string;
   overlayOpacity?: string;
+  height?: string;
+  imagePosition?: string;
 }
 
 export function Hero({
@@ -30,16 +32,20 @@ export function Hero({
   variant = 'home',
   backgroundImage,
   overlayOpacity = '0.65',
+  height,
+  imagePosition = 'center center',
 }: HeroProps) {
   const isHome = variant === 'home';
   const opacity = parseFloat(overlayOpacity || '0.65');
+  const sectionStyle = height ? { minHeight: height } : undefined;
 
   return (
     <section
       className={cn(
         'relative flex items-center overflow-hidden bg-primary',
-        isHome ? 'min-h-screen' : 'min-h-[420px] md:min-h-[520px]'
+        !height && (isHome ? 'min-h-screen' : 'min-h-[420px] md:min-h-[520px]')
       )}
+      style={sectionStyle}
       aria-label="Hero"
     >
       {/* Background image (if set) */}
@@ -50,7 +56,8 @@ export function Hero({
             src={backgroundImage}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: imagePosition }}
           />
           <div
             className="absolute inset-0 bg-primary"

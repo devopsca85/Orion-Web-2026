@@ -50,6 +50,8 @@ export default async function HomePage() {
       'home.hero.bullet3',
       'home.hero.backgroundImage',
       'home.hero.overlayOpacity',
+      'home.hero.height',
+      'home.hero.imagePosition',
     ]),
     getFAQs(),
     getPageSections('home'),
@@ -85,6 +87,8 @@ export default async function HomePage() {
     ],
     backgroundImage: settings['home.hero.backgroundImage'] || undefined,
     overlayOpacity: settings['home.hero.overlayOpacity'] || '0.65',
+    height: settings['home.hero.height'] || undefined,
+    imagePosition: settings['home.hero.imagePosition'] || 'center center',
   }
 
   const sectionMap = {
