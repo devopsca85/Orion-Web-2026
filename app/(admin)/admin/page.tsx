@@ -11,13 +11,24 @@ import {
   Plus,
   ShieldCheck,
   BarChart2,
+  Globe,
 } from 'lucide-react'
+
+const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
+function countryFlag(code: string): string {
+  return [...code.toUpperCase()].map((c) => String.fromCodePoint(0x1f1e0 + c.charCodeAt(0) - 65)).join('')
+}
+function countryName(code: string): string {
+  try { return displayNames.of(code) ?? code } catch { return code }
+}
 
 export default async function AdminDashboard() {
   const session = await auth()
 
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
+
+  const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
   const [
     totalPosts,
@@ -27,6 +38,7 @@ export default async function AdminDashboard() {
     todayVisitors,
     recentContacts,
     recentPosts,
+    topCountries,
   ] = await Promise.all([
     prisma.blogPost.count(),
     prisma.portfolioItem.count(),
@@ -41,6 +53,13 @@ export default async function AdminDashboard() {
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { author: { select: { name: true } } },
+    }),
+    prisma.pageView.groupBy({
+      by: ['country'],
+      where: { createdAt: { gte: since30d }, bot: false, country: { not: null } },
+      _count: { country: true },
+      orderBy: { _count: { country: 'desc' } },
+      take: 5,
     }),
   ])
 
@@ -168,6 +187,42 @@ export default async function AdminDashboard() {
           >
             <Mail size={15} /> View Contacts
           </Link>
+        </div>
+
+        {/* Top Countries */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between p-5 border-b border-slate-100">
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <Globe size={16} className="text-slate-400" /> Top Countries <span className="text-xs text-slate-400 font-normal">(last 30 days)</span>
+            </h3>
+            <Link href="/admin/analytics" className="text-xs text-indigo-600 hover:underline">Full analytics</Link>
+          </div>
+          <div className="p-5">
+            {topCountries.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-4">
+                No visitor location data yet. Country data populates once real visitor traffic arrives.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {(() => {
+                  const max = topCountries[0]._count.country
+                  return topCountries.map((row) => (
+                    <div key={row.country} className="flex items-center gap-3">
+                      <span className="text-base w-6 text-center shrink-0">{countryFlag(row.country!)}</span>
+                      <span className="text-sm text-slate-700 w-32 shrink-0">{countryName(row.country!)}</span>
+                      <div className="flex-1 bg-slate-100 rounded-full h-2">
+                        <div
+                          className="bg-indigo-500 h-2 rounded-full"
+                          style={{ width: `${Math.round((row._count.country / max) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-slate-500 w-10 text-right shrink-0">{row._count.country.toLocaleString()}</span>
+                    </div>
+                  ))
+                })()}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
