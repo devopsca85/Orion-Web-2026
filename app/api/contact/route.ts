@@ -31,8 +31,13 @@ function checkRateLimit(key: string): boolean {
 }
 
 async function verifyRecaptcha(token: string): Promise<boolean> {
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY || await getSetting('recaptcha.secret_key', '');
-  if (!secretKey) return true; // reCAPTCHA not configured — allow submission
+  const [secretKey, siteKey] = await Promise.all([
+    Promise.resolve(process.env.RECAPTCHA_SECRET_KEY || '').then(v => v || getSetting('recaptcha.secret_key', '')),
+    getSetting('recaptcha.site_key', ''),
+  ]);
+  // Only verify when BOTH keys are configured — without a site key the frontend
+  // cannot generate a real token, so verification would always fail.
+  if (!secretKey || !siteKey) return true;
 
   try {
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
