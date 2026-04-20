@@ -58,7 +58,8 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
   }
 
   function copyPath(p: string) {
-    navigator.clipboard.writeText(p)
+    const full = `${window.location.origin}${p}`
+    navigator.clipboard.writeText(full)
     setCopied(p)
     setTimeout(() => setCopied(null), 2000)
   }
@@ -147,7 +148,7 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
           <span className="truncate block" title={file.path}>{file.path}</span>
         </td>
         <td className="px-4 py-2.5 text-center">
-          <button onClick={() => copyPath(file.path)} title={isCopied ? 'Copied!' : 'Copy path'} className="inline-flex items-center gap-1 text-slate-400 hover:text-indigo-600 transition-colors">
+          <button onClick={() => copyPath(file.path)} title={isCopied ? 'Copied!' : 'Copy full URL'} className="inline-flex items-center gap-1 text-slate-400 hover:text-indigo-600 transition-colors">
             {isCopied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
           </button>
         </td>
@@ -339,16 +340,37 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
             <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-slate-800 truncate text-sm">{preview.name}</p>
-                <p className="text-xs text-slate-400 font-mono truncate mt-0.5">{preview.path}</p>
+                <p className="text-xs text-slate-400 font-mono truncate mt-0.5">{window.location.origin}{preview.path}</p>
               </div>
+              <a href={preview.path} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0">
+                Open
+              </a>
               <button onClick={() => copyPath(preview.path)} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors shrink-0">
-                {copied === preview.path ? <><Check size={12} className="text-green-500" /> Copied</> : <><Copy size={12} /> Copy path</>}
+                {copied === preview.path ? <><Check size={12} className="text-green-500" /> Copied</> : <><Copy size={12} /> Copy URL</>}
               </button>
               <button onClick={() => setPreview(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"><X size={18} /></button>
             </div>
             <div className="flex-1 flex items-center justify-center p-6 bg-[#f8f8f8] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview.path} alt={preview.name} className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-md" />
+              <img
+                src={`${preview.path}?v=${Date.now()}`}
+                alt={preview.name}
+                className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-md"
+                onError={(e) => {
+                  const img = e.currentTarget
+                  img.style.display = 'none'
+                  const msg = img.nextElementSibling as HTMLElement | null
+                  if (msg) msg.style.display = 'flex'
+                }}
+              />
+              <div style={{ display: 'none' }} className="flex-col items-center gap-3 text-slate-500 text-sm">
+                <p>Preview unavailable.</p>
+                <a href={preview.path} target="_blank" rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline text-xs">
+                  Open file directly →
+                </a>
+              </div>
             </div>
             <div className="px-5 py-2.5 border-t border-slate-100 flex items-center justify-between">
               <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-semibold uppercase ${extBadge[preview.ext.replace('.','').toLowerCase()] ?? 'bg-slate-100 text-slate-500'}`}>{preview.ext.replace('.', '')}</span>
