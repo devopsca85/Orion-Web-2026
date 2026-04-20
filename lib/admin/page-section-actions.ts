@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 
 async function requireAdmin() {
   const session = await auth()
@@ -23,6 +23,5 @@ export async function saveSectionLayout(page: 'home' | 'footer', sections: Secti
       })
     )
   )
-  revalidatePath('/', 'layout')
-  if (page === 'home') revalidatePath('/')
+  revalidateTag('page-sections')
 }

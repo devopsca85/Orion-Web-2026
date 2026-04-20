@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { unstable_cache } from 'next/cache'
 
 export type SectionConfig = {
   key: string
@@ -30,7 +31,7 @@ export const FOOTER_SECTION_DEFAULTS = [
   { key: 'bottombar',   label: 'Bottom Bar' },
 ]
 
-export async function getPageSections(page: 'home' | 'footer'): Promise<SectionConfig[]> {
+async function fetchPageSections(page: 'home' | 'footer'): Promise<SectionConfig[]> {
   const defaults = page === 'home' ? HOME_SECTION_DEFAULTS : FOOTER_SECTION_DEFAULTS
   try {
     const rows = await prisma.pageSection.findMany({
@@ -47,7 +48,6 @@ export async function getPageSections(page: 'home' | 'footer'): Promise<SectionC
       sortOrder: r.sortOrder,
       visible: r.visible,
     }))
-    // Append any defaults not yet persisted (new sections added after initial save)
     defaults.forEach((d, i) => {
       if (!dbMap.has(d.key)) {
         result.push({ key: d.key, label: d.label, sortOrder: 1000 + i, visible: true })
@@ -58,3 +58,9 @@ export async function getPageSections(page: 'home' | 'footer'): Promise<SectionC
     return defaults.map((s, i) => ({ ...s, sortOrder: i, visible: true }))
   }
 }
+
+export const getPageSections = unstable_cache(
+  fetchPageSections,
+  ['page-sections'],
+  { tags: ['page-sections'], revalidate: false }
+)

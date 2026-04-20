@@ -15,6 +15,7 @@ export function SortableSectionList({ page, initialSections }: Props) {
   const [sections, setSections] = useState<Section[]>(initialSections)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const [overIdx, setOverIdx] = useState<number | null>(null)
   const dragItemRef = useRef<number | null>(null)
@@ -62,10 +63,13 @@ export function SortableSectionList({ page, initialSections }: Props) {
 
   async function handleSave() {
     setSaving(true)
+    setError(null)
     try {
       await saveSectionLayout(page, sections)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Save failed — check the server logs.')
     } finally {
       setSaving(false)
     }
@@ -148,6 +152,9 @@ export function SortableSectionList({ page, initialSections }: Props) {
         <p className="text-xs text-slate-400">
           Changes apply to the live site immediately after saving.
         </p>
+        {error && (
+          <p className="text-xs text-red-600 font-medium">{error}</p>
+        )}
       </div>
     </div>
   )
