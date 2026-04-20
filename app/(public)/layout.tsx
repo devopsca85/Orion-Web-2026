@@ -10,7 +10,8 @@ function safeColor(val: string | undefined, fallback: string): string {
 }
 
 function hexToRgbChannels(hex: string): string {
-  const h = hex.replace('#', '')
+  let h = hex.replace('#', '')
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('')
   const r = parseInt(h.slice(0, 2), 16)
   const g = parseInt(h.slice(2, 4), 16)
   const b = parseInt(h.slice(4, 6), 16)
@@ -94,7 +95,7 @@ export default async function PublicLayout({ children }: { children: React.React
   return (
     <>
       {/* Inject brand colors — hex + RGB channels so Tailwind opacity modifiers work */}
-      <style>{`:root{--brand-primary:${primaryColor};--brand-primary-rgb:${hexToRgbChannels(primaryColor)};--brand-secondary:${secondaryColor};--brand-secondary-rgb:${hexToRgbChannels(secondaryColor)};--brand-nav:${navColor};--brand-nav-rgb:${hexToRgbChannels(navColor)};--brand-nav-bg:${navBgColor};--brand-nav-bg-rgb:${hexToRgbChannels(navBgColor)};--brand-footer-bg:${footerBgColor}}`}</style>
+      <style suppressHydrationWarning>{`:root{--brand-primary:${primaryColor};--brand-primary-rgb:${hexToRgbChannels(primaryColor)};--brand-secondary:${secondaryColor};--brand-secondary-rgb:${hexToRgbChannels(secondaryColor)};--brand-nav:${navColor};--brand-nav-rgb:${hexToRgbChannels(navColor)};--brand-nav-bg:${navBgColor};--brand-nav-bg-rgb:${hexToRgbChannels(navBgColor)};--brand-footer-bg:${footerBgColor}}`}</style>
       <TrackPageView />
       <Header branding={branding} navLinks={navLinks} />
       <main id="main-content" className="flex-1">

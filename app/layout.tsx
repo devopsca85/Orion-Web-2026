@@ -87,7 +87,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <style>{`
+        <style suppressHydrationWarning>{`
           :root {
             --brand-primary: ${primaryColor};
             --brand-secondary: ${secondaryColor};
