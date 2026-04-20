@@ -25,6 +25,7 @@ const EMAIL_KEYS = [
   'email.smtp_secure',
   'recaptcha.site_key',
   'recaptcha.secret_key',
+  'recaptcha.disabled',
 ]
 
 export async function saveEmailSettings(formData: FormData) {

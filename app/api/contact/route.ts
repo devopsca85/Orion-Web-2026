@@ -31,6 +31,10 @@ function checkRateLimit(key: string): boolean {
 }
 
 async function verifyRecaptcha(token: string): Promise<boolean> {
+  // Admin can disable reCAPTCHA entirely from Email Settings
+  const disabled = await getSetting('recaptcha.disabled', '');
+  if (disabled === 'true') return true;
+
   const secretKey = process.env.RECAPTCHA_SECRET_KEY || await getSetting('recaptcha.secret_key', '');
   const siteKey   = await getSetting('recaptcha.site_key', '');
   // Only verify when both keys are configured
@@ -45,11 +49,20 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
       body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
     });
     const data = await res.json();
-    // Accept score >= 0.3 (lenient) — pure bots score 0.0–0.1
-    return data.success === true && (data.score ?? 1) >= 0.3;
-  } catch {
+    console.log('[reCAPTCHA] verify response:', JSON.stringify(data));
+    if (data.success !== true) {
+      console.warn('[reCAPTCHA] Failed — error-codes:', data['error-codes']);
+      return false;
+    }
+    const score = data.score ?? 1;
+    if (score < 0.3) {
+      console.warn('[reCAPTCHA] Score too low:', score);
+      return false;
+    }
+    return true;
+  } catch (err) {
     // Google unreachable — fail open so legitimate users aren't blocked
-    console.warn('[reCAPTCHA] Verification request failed — allowing submission');
+    console.warn('[reCAPTCHA] Verification request threw — allowing submission:', err);
     return true;
   }
 }

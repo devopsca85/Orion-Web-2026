@@ -126,7 +126,14 @@ export default async function EmailSettingsPage({ searchParams }: Props) {
               <h2 className="text-base font-semibold text-slate-800 flex items-center gap-2"><ShieldCheck size={16} /> reCAPTCHA v3</h2>
               <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 hover:underline">Get keys →</a>
             </div>
-            <p className="text-xs text-slate-400">Protects contact forms from spam bots. Leave blank to disable — honeypot and rate-limiting still apply.</p>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <input type="checkbox" name="recaptcha.disabled" id="recaptcha_disabled" value="true" defaultChecked={s['recaptcha.disabled'] === 'true'} className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+              <label htmlFor="recaptcha_disabled" className="text-sm text-slate-700">
+                <span className="font-medium">Disable reCAPTCHA</span>
+                <span className="text-slate-400 ml-1">— forms work without verification (honeypot + rate-limit still active)</span>
+              </label>
+            </div>
+            <p className="text-xs text-slate-400">When enabled, enter both keys and make sure your domain is registered at <a href="https://www.google.com/recaptcha/admin" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">google.com/recaptcha/admin</a>.</p>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Site Key <span className="text-slate-400 font-normal">(public)</span></label>
