@@ -16,7 +16,7 @@ export default async function FooterSectionsPage() {
         <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-700">
           <Info size={16} className="shrink-0 mt-0.5" />
           <span>
-            Drag to reorder footer sections. Hide sections you don't want to display.
+            Drag to reorder footer sections. Hide sections you don&apos;t want to display.
             Changes apply to the live site immediately after saving.
           </span>
         </div>

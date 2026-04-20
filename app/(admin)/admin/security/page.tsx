@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { runSecurityAudit, SecurityRule, RuleSeverity } from '@/lib/security-audit'
-import { ShieldCheck, ShieldAlert, ShieldX, AlertTriangle } from 'lucide-react'
+import { ShieldCheck, ShieldX, AlertTriangle } from 'lucide-react'
 
 const SEVERITY_COLORS: Record<RuleSeverity, string> = {
   critical: 'bg-red-100 text-red-700',
