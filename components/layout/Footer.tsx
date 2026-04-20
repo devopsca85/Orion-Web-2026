@@ -104,7 +104,11 @@ export async function Footer({ branding, offices = [], links = [] }: FooterProps
                     {offices.map((office) => (
                       <div key={office.id} className="rounded-xl bg-white/10 border border-white/10 p-4 space-y-1.5">
                         <p className="text-sm font-semibold text-white flex items-center gap-2">
-                          {office.flag && <span>{office.flag}</span>}
+                          {office.flag && (
+                            office.flag.startsWith('http') || office.flag.startsWith('/')
+                              ? <img src={office.flag} alt={office.country} className="h-5 w-7 object-cover rounded-sm shrink-0" />
+                              : <span>{office.flag}</span>
+                          )}
                           {office.country}
                         </p>
                         {office.address && (

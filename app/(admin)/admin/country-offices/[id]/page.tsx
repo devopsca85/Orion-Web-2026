@@ -50,9 +50,9 @@ export default async function EditCountryOfficePage({ params }: Props) {
               </div>
               <div>
                 <label htmlFor="flag" className="block text-sm font-medium text-slate-700 mb-1">
-                  Flag Emoji
+                  Flag Logo URL
                 </label>
-                <input id="flag" name="flag" type="text" defaultValue={office.flag ?? ''} className={inputClass} />
+                <input id="flag" name="flag" type="url" defaultValue={office.flag ?? ''} placeholder="https://cdn.example.com/flags/in.png" className={inputClass} />
               </div>
             </div>
 

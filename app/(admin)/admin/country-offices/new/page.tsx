@@ -34,9 +34,9 @@ export default async function NewCountryOfficePage() {
               </div>
               <div>
                 <label htmlFor="flag" className="block text-sm font-medium text-slate-700 mb-1">
-                  Flag Emoji
+                  Flag Logo URL
                 </label>
-                <input id="flag" name="flag" type="text" placeholder="🇮🇳" className={inputClass} />
+                <input id="flag" name="flag" type="url" placeholder="https://cdn.example.com/flags/in.png" className={inputClass} />
               </div>
             </div>
 

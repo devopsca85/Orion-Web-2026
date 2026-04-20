@@ -508,7 +508,7 @@ model NavItem {
 model CountryOffice {
   id        String   @id @default(cuid())
   country   String   @db.VarChar(100)
-  flag      String?  @db.VarChar(10)
+  flag      String?  @db.VarChar(512)
   address   String?  @db.VarChar(500)
   phone     String?  @db.VarChar(50)
   email     String?  @db.VarChar(150)
