@@ -32,11 +32,7 @@ function checkRateLimit(key: string): boolean {
 
 async function verifyRecaptcha(token: string): Promise<boolean> {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secretKey) {
-    // Skip verification in development
-    if (process.env.NODE_ENV === 'development') return true;
-    return false;
-  }
+  if (!secretKey) return true; // reCAPTCHA not configured — allow submission
 
   try {
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
