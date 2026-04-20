@@ -62,13 +62,21 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
   const [errorMessage, setErrorMessage] = useState('');
   const loadedAt = useRef(Date.now());
 
+  const grecaptchaReady = useRef<Promise<void> | null>(null)
+
   useEffect(() => {
     if (!recaptchaSiteKey) return
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
-    script.async = true
-    document.head.appendChild(script)
-    return () => { document.head.removeChild(script) }
+    // Expose a promise that resolves when grecaptcha is fully initialised
+    grecaptchaReady.current = new Promise<void>((resolve) => {
+      const script = document.createElement('script')
+      script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
+      script.async = true
+      script.onload = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(window as any).grecaptcha.ready(resolve)
+      }
+      document.head.appendChild(script)
+    })
   }, [recaptchaSiteKey])
 
   const {
@@ -86,12 +94,16 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
       setStatus('idle');
 
       let recaptchaToken = 'bypass';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const gr = recaptchaSiteKey ? (window as any).grecaptcha : null
-      if (recaptchaSiteKey && gr) {
-        recaptchaToken = await new Promise<string>((resolve) => {
-          gr.ready(() => gr.execute(recaptchaSiteKey, { action: 'contact' }).then(resolve))
-        })
+      if (recaptchaSiteKey) {
+        // Wait for the script to finish loading, then execute
+        if (grecaptchaReady.current) await grecaptchaReady.current
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gr = (window as any).grecaptcha
+        if (gr) {
+          recaptchaToken = await new Promise<string>((resolve) => {
+            gr.ready(() => gr.execute(recaptchaSiteKey, { action: 'contact' }).then(resolve))
+          })
+        }
       }
 
       const hpEl = document.querySelector<HTMLInputElement>('input[name="_hp"]')
