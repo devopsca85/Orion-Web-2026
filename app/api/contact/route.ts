@@ -31,7 +31,7 @@ function checkRateLimit(key: string): boolean {
 }
 
 async function verifyRecaptcha(token: string): Promise<boolean> {
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY || await getSetting('recaptcha.secret_key', '');
   if (!secretKey) return true; // reCAPTCHA not configured — allow submission
 
   try {

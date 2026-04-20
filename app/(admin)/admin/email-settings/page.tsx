@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { getEmailSettings, saveEmailSettings } from '@/lib/admin/email-settings-actions'
-import { CheckCircle, AlertCircle, Mail, Zap, Send } from 'lucide-react'
+import { CheckCircle, AlertCircle, Mail, Zap, Send, ShieldCheck } from 'lucide-react'
 
 interface Props { searchParams: Promise<{ saved?: string; tested?: string; error?: string }> }
 
@@ -116,6 +116,25 @@ export default async function EmailSettingsPage({ searchParams }: Props) {
               <div className="sm:col-span-2 flex items-center gap-2">
                 <input type="checkbox" name="email.smtp_secure" id="smtp_secure" defaultChecked={s['email.smtp_secure'] === 'true'} className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
                 <label htmlFor="smtp_secure" className="text-sm text-slate-700">Use TLS (port 465)</label>
+              </div>
+            </div>
+          </div>
+
+          {/* reCAPTCHA */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-start justify-between">
+              <h2 className="text-base font-semibold text-slate-800 flex items-center gap-2"><ShieldCheck size={16} /> reCAPTCHA v3</h2>
+              <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 hover:underline">Get keys →</a>
+            </div>
+            <p className="text-xs text-slate-400">Protects contact forms from spam bots. Leave blank to disable — honeypot and rate-limiting still apply.</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Site Key <span className="text-slate-400 font-normal">(public)</span></label>
+                <input name="recaptcha.site_key" defaultValue={s['recaptcha.site_key'] || ''} placeholder="6Lc…" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Secret Key <span className="text-slate-400 font-normal">(private)</span></label>
+                <input name="recaptcha.secret_key" type="password" defaultValue={s['recaptcha.secret_key'] || ''} placeholder="6Lc…" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
             </div>
           </div>

@@ -44,7 +44,10 @@ const contactInfo = [
 ];
 
 export default async function ContactPage() {
-  const calendlyUrl = await getSetting('contact.calendlyUrl', '');
+  const [calendlyUrl, recaptchaSiteKey] = await Promise.all([
+    getSetting('contact.calendlyUrl', ''),
+    getSetting('recaptcha.site_key', ''),
+  ]);
 
   return (
     <>
@@ -71,7 +74,7 @@ export default async function ContactPage() {
                 <p className="mb-6 text-gray-600">
                   Fill in the form and one of our team members will follow up within one business day.
                 </p>
-                <ContactForm calendlyUrl={calendlyUrl || undefined} />
+                <ContactForm calendlyUrl={calendlyUrl || undefined} recaptchaSiteKey={recaptchaSiteKey || undefined} />
               </div>
             </div>
 

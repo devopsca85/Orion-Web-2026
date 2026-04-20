@@ -54,12 +54,22 @@ const inputClass = (hasError: boolean) =>
 
 interface ContactFormProps {
   calendlyUrl?: string;
+  recaptchaSiteKey?: string;
 }
 
-export function ContactForm({ calendlyUrl }: ContactFormProps) {
+export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps) {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const loadedAt = useRef(Date.now());
+
+  useEffect(() => {
+    if (!recaptchaSiteKey) return
+    const script = document.createElement('script')
+    script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
+    script.async = true
+    document.head.appendChild(script)
+    return () => { document.head.removeChild(script) }
+  }, [recaptchaSiteKey])
 
   const {
     register,
@@ -74,11 +84,20 @@ export function ContactForm({ calendlyUrl }: ContactFormProps) {
   const onSubmit = async (data: ContactFormData) => {
     try {
       setStatus('idle');
+
+      let recaptchaToken = 'bypass';
+      if (recaptchaSiteKey && typeof window !== 'undefined' && (window as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha) {
+        const gr = (window as { grecaptcha: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha
+        recaptchaToken = await new Promise<string>((resolve) => {
+          gr.ready(() => gr.execute(recaptchaSiteKey, { action: 'contact' }).then(resolve))
+        })
+      }
+
       const hpEl = document.querySelector<HTMLInputElement>('input[name="_hp"]')
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, _hp: hpEl?.value ?? '', _ts: loadedAt.current }),
+        body: JSON.stringify({ ...data, recaptchaToken, _hp: hpEl?.value ?? '', _ts: loadedAt.current }),
       });
 
       if (!response.ok) {
