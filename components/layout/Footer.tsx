@@ -140,7 +140,7 @@ export async function Footer({ branding, offices = [], links = [] }: FooterProps
           if (!showLinks && !showNewsletter) return null
           return (
             <Container key="main-body">
-              <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5 lg:py-20">
+              <div className="grid gap-12 py-10 md:grid-cols-2 lg:grid-cols-5 lg:py-12">
                 {/* Brand column — always present with main body */}
                 <div className="lg:col-span-1">
                   <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
