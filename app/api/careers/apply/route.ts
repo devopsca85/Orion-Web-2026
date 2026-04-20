@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const _hp         = formData.get('_hp') as string | null
   const _ts         = formData.get('_ts') as string | null
 
-  const blocked = spamGuard(req, 'careers-apply', {
+  const blocked = await spamGuard(req, 'careers-apply', {
     _hp, _ts,
     texts: [name, coverLetter],
     rateLimit: { max: 3, windowMs: 60_000 },

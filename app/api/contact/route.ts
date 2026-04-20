@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { contactSchema } from '@/lib/validations';
 import { SITE_CONFIG } from '@/lib/constants';
 import { db } from '@/lib/db';
-import { isHoneypot, hasSpamContent } from '@/lib/spam-guard';
+import { isHoneypot, hasSpamContent, isBlockedIp, getIp } from '@/lib/spam-guard';
 import { buildEmailHtml, sendResendEmail } from '@/lib/email';
 
 const RATE_LIMIT_MAP = new Map<string, { count: number; resetTime: number }>();
@@ -80,6 +80,12 @@ async function sendEmail(data: {
 }
 
 export async function POST(req: NextRequest) {
+  // IP block list
+  const ip = getIp(req)
+  if (await isBlockedIp(ip)) {
+    return NextResponse.json({ message: 'Access denied.' }, { status: 403 })
+  }
+
   // Rate limiting
   const rateLimitKey = getRateLimitKey(req);
   if (!checkRateLimit(rateLimitKey)) {

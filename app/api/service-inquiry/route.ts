@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
   const { name, email, phone, message, service, _hp, _ts } = body
 
-  const blocked = spamGuard(req, 'service-inquiry', {
+  const blocked = await spamGuard(req, 'service-inquiry', {
     _hp, _ts,
     texts: [name, message],
     rateLimit: { max: 5, windowMs: 60_000 },

@@ -104,7 +104,7 @@ export function hasSpamContent(...texts: (string | null | undefined)[]): boolean
 }
 
 /** Single-call guard: returns an error response or null if clean. */
-export function spamGuard(
+export async function spamGuard(
   req: Request,
   namespace: string,
   { _hp, _ts, texts = [], rateLimit }: {
@@ -113,9 +113,12 @@ export function spamGuard(
     texts?: (string | null | undefined)[]
     rateLimit?: { max: number; windowMs: number }
   }
-): { blocked: true; status: number; message: string } | null {
+): Promise<{ blocked: true; status: number; message: string } | null> {
   const ip = getIp(req)
 
+  if (await isBlockedIp(ip)) {
+    return { blocked: true, status: 403, message: 'Access denied.' }
+  }
   if (!checkRateLimit(namespace, ip, rateLimit ?? { max: 5, windowMs: 60_000 })) {
     return { blocked: true, status: 429, message: 'Too many requests. Please wait a minute and try again.' }
   }

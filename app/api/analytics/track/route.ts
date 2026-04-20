@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getIp } from '@/lib/spam-guard'
+import { getIp, isBlockedIp } from '@/lib/spam-guard'
 
 const BOT_RE = /bot|crawler|spider|slurp|googlebot|bingbot|yandexbot|duckduckbot|baiduspider|facebookexternalhit|semrush|ahrefsbot|mj12bot/i
 
@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
     const ip     = getIp(req)
     const ua     = req.headers.get('user-agent') ?? ''
     const isBot  = BOT_RE.test(ua)
+
+    if (await isBlockedIp(ip)) return new NextResponse(null, { status: 204 })
 
     const path     = String(body.path     ?? '/').slice(0, 500)
     const referrer = String(body.referrer ?? '').slice(0, 500) || null

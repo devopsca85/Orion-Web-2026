@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
   const { formId, data, _hp, _ts } = body
 
-  const blocked = spamGuard(req, `form-${formId}`, {
+  const blocked = await spamGuard(req, `form-${formId}`, {
     _hp, _ts,
     texts: Object.values(data ?? {}).map((v) => String(v ?? '')),
     rateLimit: { max: 5, windowMs: 60_000 },

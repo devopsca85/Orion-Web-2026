@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
   }
 
   const anyBody = body as Record<string, unknown> | null
-  const blocked = spamGuard(req, 'newsletter', {
+  const blocked = await spamGuard(req, 'newsletter', {
     _hp: anyBody?._hp,
     _ts: anyBody?._ts,
     rateLimit: { max: 3, windowMs: 60_000 },

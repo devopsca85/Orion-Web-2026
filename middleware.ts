@@ -1,7 +1,18 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
+import { getIp, isBlockedIp } from '@/lib/spam-guard'
 
-export default auth((req) => {
+export const runtime = 'nodejs'
+
+export default auth(async (req) => {
+  // Block IPs at the edge before any page or API route is reached
+  const ip = getIp(req)
+  if (ip !== 'unknown' && ip !== '127.0.0.1') {
+    if (await isBlockedIp(ip)) {
+      return new NextResponse('Access denied.', { status: 403 })
+    }
+  }
+
   const { pathname } = req.nextUrl
   const isAdminPath = pathname.startsWith('/admin')
   const isLoginPage = pathname === '/admin/login'
