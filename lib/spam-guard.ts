@@ -39,11 +39,19 @@ if (typeof setInterval !== 'undefined') {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 export function getIp(req: Request): string {
-  const raw = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim()
-    || req.headers.get('x-real-ip')
-    || 'unknown'
-  // Unwrap IPv4-mapped IPv6 (::ffff:1.2.3.4 → 1.2.3.4)
-  return raw.replace(/^::ffff:/i, '')
+  // Check headers in priority order — covers Cloudflare, Nginx, and generic proxies
+  const raw =
+    req.headers.get('cf-connecting-ip') ||                              // Cloudflare
+    req.headers.get('true-client-ip') ||                                // Cloudflare Enterprise
+    req.headers.get('x-client-ip') ||
+    (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() ||  // Standard proxy
+    req.headers.get('x-real-ip') ||                                     // Nginx proxy_pass
+    req.headers.get('x-forwarded') ||
+    'unknown'
+
+  // Unwrap IPv4-mapped IPv6 (::ffff:1.2.3.4 → 1.2.3.4) and strip IPv6 localhost
+  const ip = raw.trim().replace(/^::ffff:/i, '')
+  return ip === '::1' ? '127.0.0.1' : ip
 }
 
 // ── IP block list (1-minute in-process cache) ─────────────────────────────────
