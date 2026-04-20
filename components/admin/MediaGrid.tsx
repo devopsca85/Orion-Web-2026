@@ -27,7 +27,7 @@ const extBadge: Record<string, string> = {
   mov:  'bg-indigo-50 text-indigo-600',
 }
 
-export function MediaGrid({ files }: { files: MediaFile[] }) {
+export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allFolders?: string[] }) {
   const router = useRouter()
   const [expanded, setExpanded]         = useState<Set<string>>(new Set())
   const [copied, setCopied]             = useState<string | null>(null)
@@ -40,7 +40,10 @@ export function MediaGrid({ files }: { files: MediaFile[] }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const activeUploadFolder = useRef<string>('')
 
-  const folders = Array.from(new Set(files.map((f) => f.folder))).sort()
+  const folders = Array.from(new Set([
+    ...allFolders,
+    ...files.map((f) => f.folder).filter(Boolean),
+  ])).sort()
   const query   = search.trim().toLowerCase()
   const filtered = query
     ? files.filter((f) => f.name.toLowerCase().includes(query) || f.path.toLowerCase().includes(query))
