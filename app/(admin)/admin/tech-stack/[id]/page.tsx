@@ -7,7 +7,7 @@ import { ChevronLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
 const ic = 'block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500'
-const categories = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'Other']
+const TECH_CATEGORIES = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'Other']
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -19,6 +19,8 @@ export default async function EditTechStackPage({ params }: Props) {
   if (!item) notFound()
   const action = updateTechStack.bind(null, id)
 
+  const selectedCategories = item.category.split(',').map((c) => c.trim())
+
   return (
     <>
       <AdminTopBar title="Edit Technology" user={session!.user} />
@@ -27,16 +29,19 @@ export default async function EditTechStackPage({ params }: Props) {
         <form action={action} className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
             <h2 className="font-semibold text-slate-800 border-b border-slate-100 pb-3">Technology Details</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">Name <span className="text-red-500">*</span></label>
-                <input id="name" name="name" type="text" required defaultValue={item.name} className={ic} />
-              </div>
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                <select id="category" name="category" defaultValue={item.category} className={ic}>
-                  {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">Name <span className="text-red-500">*</span></label>
+              <input id="name" name="name" type="text" required defaultValue={item.name} className={ic} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Categories <span className="text-xs text-slate-400 font-normal">(select one or more)</span></label>
+              <div className="grid grid-cols-3 gap-2">
+                {TECH_CATEGORIES.map((c) => (
+                  <label key={c} className="flex items-center gap-2 cursor-pointer text-sm text-slate-700 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-lg px-3 py-2 transition-colors">
+                    <input type="checkbox" name="category" value={c} defaultChecked={selectedCategories.includes(c)} className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                    {c}
+                  </label>
+                ))}
               </div>
             </div>
             <div>

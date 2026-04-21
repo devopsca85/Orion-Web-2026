@@ -66,27 +66,26 @@ export default async function EditTestimonialPage({ params }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">
-                  Job Title <span className="text-red-500">*</span>
+                  Job Title <span className="text-slate-400 text-xs font-normal">(optional)</span>
                 </label>
-                <input id="title" name="title" type="text" required defaultValue={testimonial.title} className={inputClass} />
+                <input id="title" name="title" type="text" defaultValue={testimonial.title} className={inputClass} />
               </div>
               <div>
                 <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-1">
-                  Company <span className="text-red-500">*</span>
+                  Company <span className="text-slate-400 text-xs font-normal">(optional)</span>
                 </label>
-                <input id="company" name="company" type="text" required defaultValue={testimonial.company} className={inputClass} />
+                <input id="company" name="company" type="text" defaultValue={testimonial.company} className={inputClass} />
               </div>
             </div>
 
             <div>
               <label htmlFor="quote" className="block text-sm font-medium text-slate-700 mb-1">
-                Quote <span className="text-red-500">*</span>
+                Quote <span className="text-slate-400 text-xs font-normal">(optional)</span>
               </label>
               <textarea
                 id="quote"
                 name="quote"
                 rows={5}
-                required
                 defaultValue={testimonial.quote}
                 className={inputClass + ' resize-y'}
               />

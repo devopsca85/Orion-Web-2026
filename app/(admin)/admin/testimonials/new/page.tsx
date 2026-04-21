@@ -48,27 +48,26 @@ export default async function NewTestimonialPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">
-                  Job Title <span className="text-red-500">*</span>
+                  Job Title <span className="text-slate-400 text-xs font-normal">(optional)</span>
                 </label>
-                <input id="title" name="title" type="text" required placeholder="CTO" className={inputClass} />
+                <input id="title" name="title" type="text" placeholder="CTO" className={inputClass} />
               </div>
               <div>
                 <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-1">
-                  Company <span className="text-red-500">*</span>
+                  Company <span className="text-slate-400 text-xs font-normal">(optional)</span>
                 </label>
-                <input id="company" name="company" type="text" required placeholder="Acme Corp" className={inputClass} />
+                <input id="company" name="company" type="text" placeholder="Acme Corp" className={inputClass} />
               </div>
             </div>
 
             <div>
               <label htmlFor="quote" className="block text-sm font-medium text-slate-700 mb-1">
-                Quote <span className="text-red-500">*</span>
+                Quote <span className="text-slate-400 text-xs font-normal">(optional)</span>
               </label>
               <textarea
                 id="quote"
                 name="quote"
                 rows={5}
-                required
                 placeholder="What did they say about working with you?"
                 className={inputClass + ' resize-y'}
               />

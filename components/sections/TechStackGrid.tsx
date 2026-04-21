@@ -29,8 +29,12 @@ async function getGrouped() {
     if (rows.length === 0) return fallback;
     const map = new Map<string, typeof rows>();
     for (const r of rows) {
-      if (!map.has(r.category)) map.set(r.category, []);
-      map.get(r.category)!.push(r);
+      // category may be comma-separated (e.g. "Frontend,Backend")
+      const cats = r.category.split(',').map((c) => c.trim()).filter(Boolean);
+      for (const cat of cats) {
+        if (!map.has(cat)) map.set(cat, []);
+        map.get(cat)!.push(r);
+      }
     }
     return [...map.entries()].map(([category, items]) => ({ category, items }));
   } catch {

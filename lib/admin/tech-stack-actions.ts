@@ -16,7 +16,7 @@ export async function createTechStack(formData: FormData) {
     data: {
       name: (formData.get('name') as string) || '',
       logoUrl: (formData.get('logoUrl') as string) || '',
-      category: (formData.get('category') as string) || 'Other',
+      category: (formData.getAll('category') as string[]).join(',') || 'Other',
       sortOrder: parseInt((formData.get('sortOrder') as string) || '0'),
       active: formData.get('active') === 'on',
     },
@@ -33,7 +33,7 @@ export async function updateTechStack(id: string, formData: FormData) {
     data: {
       name: (formData.get('name') as string) || '',
       logoUrl: (formData.get('logoUrl') as string) || '',
-      category: (formData.get('category') as string) || 'Other',
+      category: (formData.getAll('category') as string[]).join(',') || 'Other',
       sortOrder: parseInt((formData.get('sortOrder') as string) || '0'),
       active: formData.get('active') === 'on',
     },
