@@ -118,11 +118,6 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
         throw new Error(body.message || 'Something went wrong. Please try again.');
       }
 
-      if (calendlyUrl) {
-        window.location.href = calendlyUrl;
-        return;
-      }
-
       setStatus('success');
       reset();
     } catch (err) {
@@ -139,9 +134,22 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
         <p className="mb-6 text-gray-600">
           Thank you for reaching out. One of our team members will be in touch within one business day.
         </p>
-        <Button variant="outline" onClick={() => setStatus('idle')}>
-          Send another message
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          {calendlyUrl && (
+            <a
+              href={calendlyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-secondary-600"
+            >
+              <Calendar className="h-4 w-4" />
+              Book Intro Call
+            </a>
+          )}
+          <Button variant="outline" onClick={() => setStatus('idle')}>
+            Send another message
+          </Button>
+        </div>
       </div>
     );
   }
@@ -160,7 +168,7 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
       {calendlyUrl && (
         <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
           <Calendar className="h-4 w-4 flex-shrink-0" />
-          After submitting, you&rsquo;ll be redirected to book a call with us.
+          After submitting, you&rsquo;ll be able to book an intro call with our team.
         </div>
       )}
 
@@ -239,9 +247,9 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
         loading={isSubmitting}
         className="w-full justify-center"
         size="lg"
-        icon={calendlyUrl ? <Calendar className="h-5 w-5" /> : <Send className="h-5 w-5" />}
+        icon={<Send className="h-5 w-5" />}
       >
-        {isSubmitting ? 'Sending…' : calendlyUrl ? 'Send & Book a Call' : 'Send Message'}
+        {isSubmitting ? 'Sending…' : 'Send Message'}
       </Button>
     </form>
   );
