@@ -106,6 +106,7 @@ export async function Footer({ branding, offices = [], links = [] }: FooterProps
                         <p className="text-sm font-semibold text-white flex items-center gap-2">
                           {office.flag && (
                             office.flag.startsWith('http') || office.flag.startsWith('/')
+                              /* eslint-disable-next-line @next/next/no-img-element */
                               ? <img src={office.flag} alt={office.country} className="h-5 w-7 object-cover rounded-sm shrink-0" />
                               : <span>{office.flag}</span>
                           )}

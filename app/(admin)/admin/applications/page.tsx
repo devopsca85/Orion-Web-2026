@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { ApplicationStatus } from '@prisma/client'
 import Link from 'next/link'
-import { Eye, Download, Trash2, CheckCircle } from 'lucide-react'
+import { Eye, Download, CheckCircle } from 'lucide-react'
 import { DeleteApplicationButton } from '@/components/admin/DeleteApplicationButton'
 
 const statusColors: Record<string, string> = {

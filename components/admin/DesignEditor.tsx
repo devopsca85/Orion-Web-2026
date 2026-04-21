@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Palette, Type, Layout, Code2, Save, Eye, RefreshCw, Copy, Check } from 'lucide-react'
+import { Palette, Type, Layout, Code2, Save, Eye, Copy, Check } from 'lucide-react'
 import { saveDesignSettings } from '@/lib/admin/design-actions'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const GOOGLE_FONTS = [
+const GOOGLE_FONTS: { label: string; value: string; disabled?: boolean }[] = [
   { label: '— Default (Inter / System) —', value: '' },
   { label: 'Inter', value: 'Inter' },
   { label: 'Poppins', value: 'Poppins' },
@@ -204,7 +204,6 @@ interface Props {
 
 export function DesignEditor({ settings }: Props) {
   const [tab, setTab] = useState<Tab>('colors')
-  const [saving, setSaving] = useState(false)
   const [copied, setCopied] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -377,7 +376,7 @@ export function DesignEditor({ settings }: Props) {
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
                   {GOOGLE_FONTS.map((f) => (
-                    <option key={f.label} value={f.value} disabled={(f as any).disabled}>{f.label}</option>
+                    <option key={f.label} value={f.value} disabled={f.disabled}>{f.label}</option>
                   ))}
                 </select>
                 {fontBody && (
@@ -397,7 +396,7 @@ export function DesignEditor({ settings }: Props) {
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
                   {GOOGLE_FONTS.map((f) => (
-                    <option key={`h-${f.label}`} value={f.value} disabled={(f as any).disabled}>{f.label}</option>
+                    <option key={`h-${f.label}`} value={f.value} disabled={f.disabled}>{f.label}</option>
                   ))}
                 </select>
                 {fontHeading && (

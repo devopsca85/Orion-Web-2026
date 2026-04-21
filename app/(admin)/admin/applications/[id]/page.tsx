@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, CheckCircle, Download, Eye, Linkedin, Globe } from 'lucide-react'
-import { updateApplication, deleteApplication } from '@/lib/admin/application-actions'
+import { updateApplication } from '@/lib/admin/application-actions'
 import { ApplicationStatus } from '@prisma/client'
 import { DeleteApplicationButton } from '@/components/admin/DeleteApplicationButton'
 
