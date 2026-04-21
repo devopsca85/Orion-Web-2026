@@ -88,21 +88,21 @@ export async function saveCalendlyLinks(links: { variable: string; url: string }
 export async function saveHomeSettings(formData: FormData) {
   await requireAdmin()
   const keys = [
-    'home.hero.eyebrow',
-    'home.hero.title',
-    'home.hero.highlight',
-    'home.hero.description',
-    'home.hero.primaryCtaLabel',
-    'home.hero.primaryCtaHref',
-    'home.hero.secondaryCtaLabel',
-    'home.hero.secondaryCtaHref',
-    'home.hero.bullet1',
-    'home.hero.bullet2',
-    'home.hero.bullet3',
-    'home.hero.backgroundImage',
-    'home.hero.overlayOpacity',
-    'home.hero.height',
-    'home.hero.imagePosition',
+    // Hero
+    'home.hero.eyebrow', 'home.hero.title', 'home.hero.highlight', 'home.hero.description',
+    'home.hero.primaryCtaLabel', 'home.hero.primaryCtaHref',
+    'home.hero.secondaryCtaLabel', 'home.hero.secondaryCtaHref',
+    'home.hero.bullet1', 'home.hero.bullet2', 'home.hero.bullet3',
+    'home.hero.backgroundImage', 'home.hero.overlayOpacity', 'home.hero.height', 'home.hero.imagePosition',
+    // Section headers
+    'home.services.eyebrow', 'home.services.title', 'home.services.description',
+    'home.portfolio.eyebrow', 'home.portfolio.title', 'home.portfolio.description',
+    'home.blog.eyebrow', 'home.blog.title', 'home.blog.description',
+    'home.features.eyebrow', 'home.features.title', 'home.features.description',
+    // CTA
+    'home.cta.title', 'home.cta.description',
+    'home.cta.primaryLabel', 'home.cta.primaryHref',
+    'home.cta.secondaryLabel', 'home.cta.secondaryHref',
   ]
 
   for (const key of keys) {
@@ -117,4 +117,22 @@ export async function saveHomeSettings(formData: FormData) {
   revalidateTag('site-settings')
   revalidatePath('/')
   redirect('/admin/home?saved=1')
+}
+
+export async function saveHomeStats(formData: FormData) {
+  await requireAdmin()
+  const entries = Array.from({ length: 6 }, (_, i) => ({
+    label: (formData.get(`stat.${i + 1}.label`) as string) || '',
+    value: (formData.get(`stat.${i + 1}.value`) as string) || '',
+    sortOrder: i,
+  })).filter((e) => e.label || e.value)
+
+  await prisma.siteStat.deleteMany()
+  if (entries.length > 0) {
+    await prisma.siteStat.createMany({ data: entries })
+  }
+
+  revalidateTag('site-settings')
+  revalidatePath('/')
+  redirect('/admin/home/stats?saved=1')
 }

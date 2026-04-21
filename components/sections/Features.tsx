@@ -43,9 +43,17 @@ const features = [
 
 interface FeaturesProps {
   className?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }
 
-export function Features({ className }: FeaturesProps) {
+export function Features({
+  className,
+  eyebrow = 'Why Orion Solutions',
+  title = 'We Deliver Results, Not Just Deliverables',
+  description = 'Many technology firms promise transformation. We engineer it — with the expertise, processes, and accountability that turn ambitious goals into measurable business outcomes.',
+}: FeaturesProps) {
   return (
     <Section className={cn('bg-white', className)}>
       <Container>
@@ -53,13 +61,13 @@ export function Features({ className }: FeaturesProps) {
           {/* Left — text */}
           <div>
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-secondary">
-              Why Orion Solutions
+              {eyebrow}
             </p>
             <h2 className="mb-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              We Deliver Results, Not Just Deliverables
+              {title}
             </h2>
             <p className="mb-8 text-lg leading-relaxed text-gray-600">
-              Many technology firms promise transformation. We engineer it — with the expertise, processes, and accountability that turn ambitious goals into measurable business outcomes.
+              {description}
             </p>
             <div className="grid gap-6 sm:grid-cols-2">
               {features.slice(0, 4).map((feature) => {
