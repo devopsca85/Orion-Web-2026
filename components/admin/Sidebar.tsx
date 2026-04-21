@@ -31,6 +31,7 @@ import {
   Settings,
   BarChart2,
   ShieldCheck,
+  Send,
 } from 'lucide-react'
 
 interface NavItem {
@@ -102,6 +103,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: '/admin/contacts', label: 'Contacts', icon: <Mail size={16} /> },
       { href: '/admin/subscribers', label: 'Subscribers', icon: <Bell size={16} /> },
+      { href: '/admin/newsletter', label: 'Send Newsletter', icon: <Send size={16} /> },
     ],
   },
   {
