@@ -42,7 +42,7 @@ export default async function CountryOfficesPage({ searchParams }: Props) {
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
           {offices.length === 0 ? (
             <div className="px-6 py-12 text-center text-slate-400 text-sm">
               No offices yet. Click &ldquo;Add Office&rdquo; to create one.
@@ -61,29 +61,37 @@ export default async function CountryOfficesPage({ searchParams }: Props) {
               <tbody className="divide-y divide-slate-100">
                 {offices.map((office) => {
                   const deleteAction = deleteCountryOffice.bind(null, office.id)
+                  const flagIsUrl = office.flag && (office.flag.startsWith('http') || office.flag.startsWith('/'))
                   return (
                     <tr key={office.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-800">
-                        <span className="mr-2">{office.flag}</span>
-                        {office.country}
+                        <div className="flex items-center gap-2">
+                          {office.flag && (
+                            flagIsUrl
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              ? <img src={office.flag} alt="" className="h-5 w-7 object-cover rounded-sm shrink-0" />
+                              : <span>{office.flag}</span>
+                          )}
+                          {office.country}
+                        </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 hidden md:table-cell max-w-xs truncate">
+                      <td className="px-4 py-3 text-slate-500 hidden md:table-cell max-w-[200px] truncate">
                         {office.address || '—'}
                       </td>
-                      <td className="px-4 py-3 text-slate-500 hidden sm:table-cell">
+                      <td className="px-4 py-3 text-slate-500 hidden lg:table-cell">
                         <div>{office.phone || '—'}</div>
                         <div className="text-xs text-slate-400">{office.email || ''}</div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 hidden sm:table-cell">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${office.active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
                           {office.active ? 'Active' : 'Hidden'}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2 justify-end">
+                      <td className="px-4 py-3 w-28">
+                        <div className="flex items-center gap-2">
                           <Link
                             href={`/admin/country-offices/${office.id}`}
-                            className="flex items-center gap-1 text-slate-600 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg text-sm bg-slate-50 hover:bg-indigo-50 transition-colors"
+                            className="flex items-center gap-1 text-slate-600 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg text-sm bg-slate-50 hover:bg-indigo-50 border border-slate-200 transition-colors whitespace-nowrap"
                           >
                             <Pencil size={13} /> Edit
                           </Link>
