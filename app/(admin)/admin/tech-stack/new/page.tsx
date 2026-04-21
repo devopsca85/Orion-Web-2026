@@ -6,7 +6,7 @@ import { ChevronLeft } from 'lucide-react'
 
 const ic = 'block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500'
 
-export const TECH_CATEGORIES = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'Other']
+const TECH_CATEGORIES = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'Other']
 
 export default async function NewTechStackPage() {
   const session = await auth()
