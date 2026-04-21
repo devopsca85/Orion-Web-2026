@@ -293,7 +293,7 @@ export function DesignEditor({ settings }: Props) {
           </a>
           <button
             type="submit"
-            disabled={saving}
+            disabled={false}
             className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-60 transition-colors shadow-sm"
           >
             <Save size={14} /> Save Changes
