@@ -72,7 +72,7 @@ export async function PortfolioGrid({
     });
     dbItems = rows.map((r) => ({
       ...r,
-      metrics: (r.metrics as Metric[]) ?? [],
+      metrics: (r.metrics as unknown as Metric[]) ?? [],
     }));
   } catch { /* fall back */ }
 
