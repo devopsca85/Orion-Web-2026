@@ -16,15 +16,28 @@ export async function POST(req: NextRequest) {
     const path     = String(body.path     ?? '/').slice(0, 500)
     const referrer = String(body.referrer ?? '').slice(0, 500) || null
 
-    // Lazy-load geoip to avoid importing the 40 MB database at module init
-    let country: string | null = null
-    let city:    string | null = null
-    if (ip !== 'unknown' && ip !== '127.0.0.1' && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
+    // Prefer platform-injected geo headers (Cloudflare / Vercel) — these work in serverless
+    let country: string | null =
+      req.headers.get('cf-ipcountry') ||          // Cloudflare (most reliable)
+      req.headers.get('x-vercel-ip-country') ||   // Vercel Edge
+      null
+    // Normalise: Cloudflare sends 'XX' for unknown
+    if (country === 'XX' || country === 'T1') country = null
+
+    let city: string | null =
+      req.headers.get('x-vercel-ip-city') ||      // Vercel (URL-encoded)
+      null
+    if (city) {
+      try { city = decodeURIComponent(city) } catch { /* keep raw */ }
+    }
+
+    // Fall back to geoip-lite when running locally (no platform headers)
+    if (!country && ip !== 'unknown' && ip !== '127.0.0.1' && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
       try {
         const geoip = (await import('geoip-lite')).default
         const geo   = geoip.lookup(ip)
         country = geo?.country ?? null
-        city    = geo?.city    ?? null
+        city    = city ?? geo?.city ?? null
       } catch { /* geoip optional */ }
     }
 
