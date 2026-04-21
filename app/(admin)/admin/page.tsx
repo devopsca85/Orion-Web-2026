@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { runSecurityAudit } from '@/lib/security-audit'
+import { WorldMapWidget } from '@/components/admin/WorldMapWidget'
 import Link from 'next/link'
 import {
   FileText,
@@ -11,7 +12,6 @@ import {
   Plus,
   ShieldCheck,
   BarChart2,
-  Globe,
 } from 'lucide-react'
 
 const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
@@ -59,9 +59,18 @@ export default async function AdminDashboard() {
       where: { createdAt: { gte: since30d }, bot: false, country: { not: null } },
       _count: { country: true },
       orderBy: { _count: { country: 'desc' } },
-      take: 5,
+      take: 20,
     }),
   ])
+
+  // Fall back to all-time if last 30d has no country data
+  const topCountriesRaw = topCountries.length > 0 ? topCountries : await prisma.pageView.groupBy({
+    by: ['country'],
+    where: { bot: false, country: { not: null } },
+    _count: { country: true },
+    orderBy: { _count: { country: 'desc' } },
+    take: 20,
+  })
 
   const audit = runSecurityAudit()
 
@@ -189,41 +198,16 @@ export default async function AdminDashboard() {
           </Link>
         </div>
 
-        {/* Top Countries */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between p-5 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-              <Globe size={16} className="text-slate-400" /> Top Countries <span className="text-xs text-slate-400 font-normal">(last 30 days)</span>
-            </h3>
-            <Link href="/admin/analytics" className="text-xs text-indigo-600 hover:underline">Full analytics</Link>
-          </div>
-          <div className="p-5">
-            {topCountries.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-4">
-                No visitor location data yet. Country data populates once real visitor traffic arrives.
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {(() => {
-                  const max = topCountries[0]._count.country
-                  return topCountries.map((row) => (
-                    <div key={row.country} className="flex items-center gap-3">
-                      <span className="text-base w-6 text-center shrink-0">{countryFlag(row.country!)}</span>
-                      <span className="text-sm text-slate-700 w-32 shrink-0">{countryName(row.country!)}</span>
-                      <div className="flex-1 bg-slate-100 rounded-full h-2">
-                        <div
-                          className="bg-indigo-500 h-2 rounded-full"
-                          style={{ width: `${Math.round((row._count.country / max) * 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-slate-500 w-10 text-right shrink-0">{row._count.country.toLocaleString()}</span>
-                    </div>
-                  ))
-                })()}
-              </div>
-            )}
-          </div>
-        </div>
+        {/* World Map — Global Reach */}
+        <WorldMapWidget
+          countries={topCountriesRaw.map((row) => ({
+            code: row.country!,
+            name: countryName(row.country!),
+            flag: countryFlag(row.country!),
+            visits: row._count.country,
+          }))}
+          totalCountries={topCountriesRaw.length}
+        />
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Recent Contacts */}
