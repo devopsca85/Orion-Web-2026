@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { SITE_CONFIG } from '@/lib/constants';
 import { spamGuard } from '@/lib/spam-guard';
-import { escapeHtml } from '@/lib/email';
+import { escapeHtml, sendResendEmail } from '@/lib/email';
 
 const subscribeSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -26,28 +26,15 @@ function generateUnsubscribeUrl(email: string): string | null {
 }
 
 async function sendConfirmationEmail(email: string, token: string, name?: string): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
   const confirmUrl = `${SITE_CONFIG.url}/api/newsletter/confirm?token=${token}`;
   const unsubscribeUrl = generateUnsubscribeUrl(email);
-
-  if (!apiKey) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Newsletter] Confirmation email would be sent:', { email, confirmUrl, unsubscribeUrl });
-      return;
-    }
-    throw new Error('Email service not configured');
-  }
-
-  const { Resend } = await import('resend');
-  const resend = new Resend(apiKey);
 
   const safeName = name ? escapeHtml(name) : '';
   const safeSiteName = escapeHtml(SITE_CONFIG.name);
   const safeConfirmUrl = encodeURI(confirmUrl);
   const year = new Date().getFullYear();
 
-  await resend.emails.send({
-    from: `${SITE_CONFIG.name} <noreply@${new URL(SITE_CONFIG.url).hostname}>`,
+  await sendResendEmail({
     to: email,
     subject: `Confirm your subscription to ${SITE_CONFIG.name} Insights`,
     html: `

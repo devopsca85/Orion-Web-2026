@@ -42,18 +42,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'No subscribers in the selected segment.' }, { status: 400 })
   }
 
-  const s = await getSettings(['email.resend_api_key', 'email.from_name', 'email.from_email'])
-  const apiKey = s['email.resend_api_key'] || process.env.RESEND_API_KEY
-  if (!apiKey) {
-    return NextResponse.json({ message: 'Email API key not configured in Email Settings.' }, { status: 500 })
-  }
-
+  const s = await getSettings(['email.provider', 'email.resend_api_key', 'email.brevo_api_key', 'email.from_name', 'email.from_email'])
+  const provider  = s['email.provider'] || 'resend'
   const fromName  = s['email.from_name']  || SITE_CONFIG.name
   const fromEmail = s['email.from_email'] || `noreply@${new URL(SITE_CONFIG.url).hostname}`
   const year = new Date().getFullYear()
 
-  const { Resend } = await import('resend')
-  const resend = new Resend(apiKey)
+  const resendKey = s['email.resend_api_key'] || process.env.RESEND_API_KEY
+  const brevoKey  = s['email.brevo_api_key']  || process.env.BREVO_API_KEY
+
+  if (provider === 'brevo' && !brevoKey) {
+    return NextResponse.json({ message: 'Brevo API key not configured in Email Settings.' }, { status: 500 })
+  }
+  if (provider !== 'brevo' && !resendKey) {
+    return NextResponse.json({ message: 'Resend API key not configured in Email Settings.' }, { status: 500 })
+  }
+
+  const resend = provider !== 'brevo' ? (await import('resend')).Resend && new (await import('resend')).Resend(resendKey!) : null
 
   let sent = 0
   let failed = 0
@@ -76,16 +81,31 @@ export async function POST(req: NextRequest) {
       </div>
     `
     try {
-      await resend.emails.send({
-        from: `${fromName} <${fromEmail}>`,
-        to: sub.email,
-        subject,
-        html: personalizedHtml,
-        headers: {
-          'List-Unsubscribe': `<${encodeURI(unsubUrl)}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      })
+      if (provider === 'brevo') {
+        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: { 'api-key': brevoKey!, 'content-type': 'application/json' },
+          body: JSON.stringify({
+            sender: { name: fromName, email: fromEmail },
+            to: [{ email: sub.email, name: sub.name || undefined }],
+            subject,
+            htmlContent: personalizedHtml,
+            headers: { 'List-Unsubscribe': `<${encodeURI(unsubUrl)}>` },
+          }),
+        })
+        if (!res.ok) throw new Error(`Brevo ${res.status}`)
+      } else {
+        await resend!.emails.send({
+          from: `${fromName} <${fromEmail}>`,
+          to: sub.email,
+          subject,
+          html: personalizedHtml,
+          headers: {
+            'List-Unsubscribe': `<${encodeURI(unsubUrl)}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+        })
+      }
       sent++
     } catch (err) {
       console.error(`[Newsletter] Failed to send to ${sub.email}:`, err)

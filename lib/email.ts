@@ -62,24 +62,61 @@ export function buildEmailHtml(opts: {
   </div>`
 }
 
-/** Send an email via Resend. Uses DB-saved settings, falls back to env vars. */
+/** Send an email using the configured provider (Resend or Brevo). Falls back to env vars. */
 export async function sendResendEmail(opts: {
   to: string
   replyTo?: string
   subject: string
   html: string
 }): Promise<void> {
-  const s = await getSettings(['email.resend_api_key', 'email.from_name', 'email.from_email'])
+  const s = await getSettings([
+    'email.provider',
+    'email.resend_api_key',
+    'email.brevo_api_key',
+    'email.from_name',
+    'email.from_email',
+  ])
+  const provider  = s['email.provider'] || 'resend'
+  const fromName  = s['email.from_name']  || SITE_CONFIG.name
+  const fromEmail = s['email.from_email'] || `noreply@${new URL(SITE_CONFIG.url).hostname}`
+
+  if (provider === 'brevo') {
+    const apiKey = s['email.brevo_api_key'] || process.env.BREVO_API_KEY
+    if (!apiKey) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Email/Brevo] Dev mode — skipping send:', opts.subject)
+        return
+      }
+      throw new Error('Brevo API key not configured')
+    }
+    const body: Record<string, unknown> = {
+      sender: { name: fromName, email: fromEmail },
+      to: [{ email: opts.to }],
+      subject: opts.subject,
+      htmlContent: opts.html,
+    }
+    if (opts.replyTo) body.replyTo = { email: opts.replyTo }
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': apiKey, 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const err = await res.text()
+      throw new Error(`Brevo send failed: ${res.status} — ${err}`)
+    }
+    return
+  }
+
+  // Default: Resend
   const apiKey = s['email.resend_api_key'] || process.env.RESEND_API_KEY
   if (!apiKey) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Email] Dev mode — skipping send:', opts.subject)
+      console.log('[Email/Resend] Dev mode — skipping send:', opts.subject)
       return
     }
-    throw new Error('Email service not configured')
+    throw new Error('Resend API key not configured')
   }
-  const fromName  = s['email.from_name']  || SITE_CONFIG.name
-  const fromEmail = s['email.from_email'] || `noreply@${new URL(SITE_CONFIG.url).hostname}`
   const { Resend } = await import('resend')
   const resend = new Resend(apiKey)
   await resend.emails.send({ from: `${fromName} <${fromEmail}>`, ...opts })

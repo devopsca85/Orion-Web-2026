@@ -1,15 +1,14 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
-import { getEmailSettings, saveEmailSettings } from '@/lib/admin/email-settings-actions'
-import { CheckCircle, AlertCircle, Mail, Zap, Send, ShieldCheck } from 'lucide-react'
+import { getEmailSettings, saveEmailSettings, testEmailSettings } from '@/lib/admin/email-settings-actions'
+import { CheckCircle, AlertCircle, Mail, Zap, Send, ShieldCheck, FlaskConical } from 'lucide-react'
 
-interface Props { searchParams: Promise<{ saved?: string; tested?: string; error?: string }> }
+interface Props { searchParams: Promise<{ saved?: string; tested?: string; error?: string; 'tested-to'?: string }> }
 
 export default async function EmailSettingsPage({ searchParams }: Props) {
   const session = await auth()
   const { saved, tested, error } = await searchParams
   const s = await getEmailSettings()
-
   const provider = s['email.provider'] || 'resend'
 
   return (
@@ -23,12 +22,17 @@ export default async function EmailSettingsPage({ searchParams }: Props) {
         )}
         {tested === '1' && (
           <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl px-4 py-3 text-sm font-medium">
-            <Mail size={16} /> Test email sent successfully.
+            <CheckCircle size={16} /> Test email sent successfully — check your inbox.
           </div>
         )}
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-medium">
-            <AlertCircle size={16} /> {error === 'send-failed' ? 'Failed to send test email. Check your API key.' : error === 'no-key' ? 'API key is required.' : 'Test email address is required.'}
+            <AlertCircle size={16} /> {
+              error === 'send-failed' ? `Failed to send test email. Check your ${provider === 'brevo' ? 'Brevo' : 'Resend'} API key and From Email address.`
+              : error === 'no-key' ? `No ${provider === 'brevo' ? 'Brevo' : 'Resend'} API key saved. Save your settings first.`
+              : error === 'no-email' ? 'Enter a recipient email address to test.'
+              : 'Something went wrong.'
+            }
           </div>
         )}
 
@@ -148,6 +152,40 @@ export default async function EmailSettingsPage({ searchParams }: Props) {
 
           <div className="px-6 py-4 flex justify-end gap-3 bg-slate-50 rounded-b-xl">
             <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">Save Settings</button>
+          </div>
+        </form>
+
+        {/* Test email connection */}
+        <form action={testEmailSettings} className="bg-white rounded-xl border border-slate-200">
+          <div className="p-6">
+            <h2 className="text-base font-semibold text-slate-800 mb-1 flex items-center gap-2">
+              <FlaskConical size={16} /> Test Email Connection
+            </h2>
+            <p className="text-sm text-slate-500 mb-4">
+              Send a test email using your saved <span className="font-medium capitalize">{provider === 'brevo' ? 'Brevo' : provider === 'smtp' ? 'SMTP' : 'Resend'}</span> settings to verify the connection is working.
+            </p>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Send test to</label>
+                <input
+                  name="test_to"
+                  type="email"
+                  defaultValue={s['email.contact_to'] || ''}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+              >
+                <Send size={14} /> Send Test Email
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-slate-400">
+              Make sure you&apos;ve <strong>saved your settings</strong> before testing. The test uses the API key and From Email currently saved in the database.
+            </p>
           </div>
         </form>
       </div>
