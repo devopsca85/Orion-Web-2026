@@ -40,6 +40,7 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   experimental: {
     cpus: 1,
+    nodeMiddleware: true,
   },
   images: {
     formats: ['image/avif', 'image/webp'],

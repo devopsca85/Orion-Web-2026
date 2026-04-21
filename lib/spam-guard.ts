@@ -58,6 +58,7 @@ export function getIp(req: Request): string {
 
 let _blockedSet: Set<string> = new Set()
 let _blockedExpiry = 0
+const BLOCKED_CACHE_TTL = 5_000 // 5 seconds — fast enough for newly-blocked IPs
 
 export async function isBlockedIp(ip: string): Promise<boolean> {
   const now = Date.now()
@@ -66,8 +67,12 @@ export async function isBlockedIp(ip: string): Promise<boolean> {
       const { prisma } = await import('@/lib/prisma')
       const rows = await prisma.blockedIp.findMany({ select: { ip: true } })
       _blockedSet    = new Set(rows.map((r) => r.ip))
-      _blockedExpiry = now + 60_000
-    } catch { /* keep stale cache on DB error */ }
+      _blockedExpiry = now + BLOCKED_CACHE_TTL
+    } catch (err) {
+      console.error('[isBlockedIp] Failed to load blocked IPs from DB:', err)
+      // Keep stale set; reset expiry so we retry next request
+      _blockedExpiry = 0
+    }
   }
   return _blockedSet.has(ip)
 }
