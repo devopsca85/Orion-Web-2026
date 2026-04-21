@@ -1,0 +1,17 @@
+export const DESIGN_KEYS = [
+  'brand.primaryColor',
+  'brand.secondaryColor',
+  'brand.navColor',
+  'brand.navBgColor',
+  'brand.footerBgColor',
+  'brand.headingColor',
+  'brand.bodyTextColor',
+  'brand.linkColor',
+  'css.fontHeading',
+  'css.fontBody',
+  'css.fontHeadingWeight',
+  'css.borderRadius',
+  'css.containerMaxWidth',
+  'css.sectionPadding',
+  'css.custom',
+]

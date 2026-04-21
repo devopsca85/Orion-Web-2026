@@ -4,30 +4,13 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidateTag, revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { DESIGN_KEYS } from '@/lib/admin/design-keys'
 
 async function requireAdmin() {
   const session = await auth()
   if (!session) redirect('/admin/login')
   if (!['SUPER_ADMIN', 'ADMIN'].includes(session.user.role)) throw new Error('Admins only')
 }
-
-export const DESIGN_KEYS = [
-  'brand.primaryColor',
-  'brand.secondaryColor',
-  'brand.navColor',
-  'brand.navBgColor',
-  'brand.footerBgColor',
-  'brand.headingColor',
-  'brand.bodyTextColor',
-  'brand.linkColor',
-  'css.fontHeading',
-  'css.fontBody',
-  'css.fontHeadingWeight',
-  'css.borderRadius',
-  'css.containerMaxWidth',
-  'css.sectionPadding',
-  'css.custom',
-]
 
 export async function saveDesignSettings(formData: FormData) {
   await requireAdmin()
