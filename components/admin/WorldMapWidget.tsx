@@ -158,7 +158,7 @@ export function WorldMapWidget({ countries, totalCountries }: WorldMapWidgetProp
           {/* Map */}
           <div
             className="relative flex-1 bg-slate-900 overflow-hidden"
-            style={{ minHeight: 260 }}
+            style={{ height: 120 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setHovered(null)}
           >
@@ -248,23 +248,17 @@ export function WorldMapWidget({ countries, totalCountries }: WorldMapWidgetProp
                   top: Math.max(mousePos.y - 36, 8),
                 }}
               >
-                <span className="mr-1.5">{hovered.flag}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`https://flagcdn.com/w20/${hovered.code.toLowerCase()}.png`} alt="" className="inline-block w-4 h-3 object-cover rounded-sm mr-1.5 align-middle" />
                 <span className="font-medium">{hovered.name}</span>
                 <span className="text-indigo-300 ml-2">{hovered.visits.toLocaleString()} visits</span>
               </div>
             )}
 
             {/* Legend */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-3 text-xs text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-indigo-500" /> Low
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-3 h-3 rounded-full bg-indigo-400" /> Med
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block w-4 h-4 rounded-full bg-indigo-300" /> High
-              </span>
+            <div className="absolute bottom-1.5 left-2 flex items-center gap-2 text-[10px] text-slate-500">
+              <span className="flex items-center gap-0.5"><span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-500" /> Low</span>
+              <span className="flex items-center gap-0.5"><span className="inline-block w-2 h-2 rounded-full bg-indigo-400" /> High</span>
             </div>
           </div>
 
@@ -283,7 +277,8 @@ export function WorldMapWidget({ countries, totalCountries }: WorldMapWidgetProp
                       onMouseLeave={() => setHovered(null)}
                     >
                       <span className="text-xs font-medium text-slate-400 w-4 text-right shrink-0">{i + 1}</span>
-                      <span className="text-base leading-none">{c.flag}</span>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`https://flagcdn.com/w20/${c.code.toLowerCase()}.png`} alt={c.code} className="w-5 h-3.5 object-cover rounded-sm shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className="text-xs text-slate-700 font-medium truncate">{c.name}</span>
