@@ -18,7 +18,7 @@ export const industries: Industry[] = [
     title: 'Financial Services',
     shortDescription: 'Secure, compliant, and scalable technology for banks, fintechs, and insurers.',
     description:
-      'Financial institutions face mounting pressure to modernize legacy systems, meet evolving regulatory requirements, and deliver seamless digital experiences. Orion Solutions brings deep domain expertise in financial technology — from core banking modernization to AI-powered risk analytics.',
+      'Financial institutions face mounting pressure to modernize legacy systems, meet evolving regulatory requirements, and deliver seamless digital experiences. Orion eSolutions brings deep domain expertise in financial technology — from core banking modernization to AI-powered risk analytics.',
     icon: 'Landmark',
     challenges: [
       'Legacy core banking systems that slow innovation',
@@ -43,14 +43,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Financial Services Technology Solutions',
     metaDescription:
-      'Orion Solutions delivers secure, compliant fintech solutions — core banking modernization, open banking APIs, fraud detection, and cloud migration for financial institutions.',
+      'Orion eSolutions delivers secure, compliant fintech solutions — core banking modernization, open banking APIs, fraud detection, and cloud migration for financial institutions.',
   },
   {
     slug: 'healthcare',
     title: 'Healthcare & Life Sciences',
     shortDescription: 'HIPAA-compliant digital health solutions that improve patient outcomes.',
     description:
-      'Healthcare organizations need technology that is not just powerful, but safe, interoperable, and compliant. Orion Solutions designs and builds clinical systems, patient engagement platforms, and healthcare analytics solutions that meet the strict demands of HIPAA, HL7 FHIR, and other standards.',
+      'Healthcare organizations need technology that is not just powerful, but safe, interoperable, and compliant. Orion eSolutions designs and builds clinical systems, patient engagement platforms, and healthcare analytics solutions that meet the strict demands of HIPAA, HL7 FHIR, and other standards.',
     icon: 'HeartPulse',
     challenges: [
       'Fragmented data across disparate EHR and EMR systems',
@@ -75,14 +75,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Healthcare Technology Solutions',
     metaDescription:
-      'Orion Solutions builds HIPAA-compliant healthcare platforms — EHR integration, telehealth apps, clinical analytics, and patient engagement solutions for providers and payers.',
+      'Orion eSolutions builds HIPAA-compliant healthcare platforms — EHR integration, telehealth apps, clinical analytics, and patient engagement solutions for providers and payers.',
   },
   {
     slug: 'retail-ecommerce',
     title: 'Retail & E-Commerce',
     shortDescription: 'Scalable commerce platforms and personalized customer experiences that drive revenue.',
     description:
-      'Retail is being redefined by digital-first consumers, omnichannel expectations, and supply chain complexity. Orion Solutions helps retailers build the commerce infrastructure they need to compete — from high-performance e-commerce platforms to AI-driven personalization and inventory intelligence.',
+      'Retail is being redefined by digital-first consumers, omnichannel expectations, and supply chain complexity. Orion eSolutions helps retailers build the commerce infrastructure they need to compete — from high-performance e-commerce platforms to AI-driven personalization and inventory intelligence.',
     icon: 'ShoppingCart',
     challenges: [
       'Handling traffic spikes during peak shopping seasons',
@@ -107,14 +107,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Retail & E-Commerce Technology Solutions',
     metaDescription:
-      'Orion Solutions builds scalable retail technology — headless commerce platforms, AI personalization, inventory intelligence, and omnichannel experiences that drive growth.',
+      'Orion eSolutions builds scalable retail technology — headless commerce platforms, AI personalization, inventory intelligence, and omnichannel experiences that drive growth.',
   },
   {
     slug: 'manufacturing',
     title: 'Manufacturing & Industrial',
     shortDescription: 'Smart manufacturing, IoT, and digital operations for Industry 4.0.',
     description:
-      'Manufacturing is undergoing a digital revolution driven by IoT, automation, and data. Orion Solutions helps manufacturers connect their shop floors to the cloud, implement predictive maintenance, optimize supply chains, and build the operational intelligence they need to compete in an Industry 4.0 world.',
+      'Manufacturing is undergoing a digital revolution driven by IoT, automation, and data. Orion eSolutions helps manufacturers connect their shop floors to the cloud, implement predictive maintenance, optimize supply chains, and build the operational intelligence they need to compete in an Industry 4.0 world.',
     icon: 'Factory',
     challenges: [
       'Unplanned equipment downtime and reactive maintenance',
@@ -139,14 +139,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Manufacturing Technology Solutions — Industry 4.0',
     metaDescription:
-      'Orion Solutions powers smart manufacturing with IoT, predictive maintenance, MES integration, and supply chain analytics for Industry 4.0 transformation.',
+      'Orion eSolutions powers smart manufacturing with IoT, predictive maintenance, MES integration, and supply chain analytics for Industry 4.0 transformation.',
   },
   {
     slug: 'government-public-sector',
     title: 'Government & Public Sector',
     shortDescription: 'Secure, citizen-centric digital government solutions built for trust and compliance.',
     description:
-      'Government agencies face the dual challenge of modernizing aging systems while maintaining the highest standards of security, accessibility, and compliance. Orion Solutions has experience delivering mission-critical technology for federal, state, and local government clients — always with security-first design and accessibility (WCAG 2.1 AA) built in.',
+      'Government agencies face the dual challenge of modernizing aging systems while maintaining the highest standards of security, accessibility, and compliance. Orion eSolutions has experience delivering mission-critical technology for federal, state, and local government clients — always with security-first design and accessibility (WCAG 2.1 AA) built in.',
     icon: 'Building2',
     challenges: [
       'Legacy mainframe and monolithic system modernization',
@@ -171,14 +171,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Government & Public Sector IT Solutions',
     metaDescription:
-      'Orion Solutions delivers secure, compliant digital government solutions — FedRAMP-compliant cloud, legacy modernization, citizen portals, and accessible services.',
+      'Orion eSolutions delivers secure, compliant digital government solutions — FedRAMP-compliant cloud, legacy modernization, citizen portals, and accessible services.',
   },
   {
     slug: 'education',
     title: 'Education & EdTech',
     shortDescription: 'Digital learning platforms and campus technology that transform educational outcomes.',
     description:
-      'Educational institutions are reimagining how they deliver learning in a hybrid world. Orion Solutions builds scalable, accessible digital learning platforms, student information systems, and campus technology solutions that improve outcomes for students, faculty, and administrators alike.',
+      'Educational institutions are reimagining how they deliver learning in a hybrid world. Orion eSolutions builds scalable, accessible digital learning platforms, student information systems, and campus technology solutions that improve outcomes for students, faculty, and administrators alike.',
     icon: 'GraduationCap',
     challenges: [
       'Delivering consistent learning experiences across in-person and remote students',
@@ -203,14 +203,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Education Technology Solutions & EdTech',
     metaDescription:
-      'Orion Solutions builds accessible, FERPA-compliant digital learning platforms, student data systems, and campus technology for universities and K-12 institutions.',
+      'Orion eSolutions builds accessible, FERPA-compliant digital learning platforms, student data systems, and campus technology for universities and K-12 institutions.',
   },
   {
     slug: 'telecommunications',
     title: 'Telecommunications',
     shortDescription: 'BSS/OSS modernization and network analytics for telcos navigating digital disruption.',
     description:
-      'Telecommunications companies are racing to deploy 5G, manage network complexity, and deliver new digital services while reducing costs. Orion Solutions helps telcos modernize their BSS/OSS stacks, build real-time network analytics platforms, and create compelling digital customer experiences.',
+      'Telecommunications companies are racing to deploy 5G, manage network complexity, and deliver new digital services while reducing costs. Orion eSolutions helps telcos modernize their BSS/OSS stacks, build real-time network analytics platforms, and create compelling digital customer experiences.',
     icon: 'Wifi',
     challenges: [
       'Legacy BSS/OSS systems slowing service innovation',
@@ -235,14 +235,14 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Telecommunications Technology Solutions',
     metaDescription:
-      'Orion Solutions modernizes telco BSS/OSS systems, builds 5G-ready analytics platforms, and creates digital customer experiences that reduce churn and drive ARPU growth.',
+      'Orion eSolutions modernizes telco BSS/OSS systems, builds 5G-ready analytics platforms, and creates digital customer experiences that reduce churn and drive ARPU growth.',
   },
   {
     slug: 'energy-utilities',
     title: 'Energy & Utilities',
     shortDescription: 'Smart grid, renewable energy, and operational technology solutions for a sustainable future.',
     description:
-      'The energy sector is undergoing its greatest transformation in a century. Orion Solutions helps utilities and energy companies navigate the transition to renewable energy, modernize their grid infrastructure, and build the real-time operational intelligence needed to manage increasingly complex energy systems.',
+      'The energy sector is undergoing its greatest transformation in a century. Orion eSolutions helps utilities and energy companies navigate the transition to renewable energy, modernize their grid infrastructure, and build the real-time operational intelligence needed to manage increasingly complex energy systems.',
     icon: 'Zap',
     challenges: [
       'Aging grid infrastructure and operational technology modernization',
@@ -267,7 +267,7 @@ export const industries: Industry[] = [
     ],
     metaTitle: 'Energy & Utilities Technology Solutions',
     metaDescription:
-      'Orion Solutions builds smart grid platforms, renewable energy management systems, and NERC CIP-compliant OT/IT cybersecurity solutions for utilities and energy companies.',
+      'Orion eSolutions builds smart grid platforms, renewable energy management systems, and NERC CIP-compliant OT/IT cybersecurity solutions for utilities and energy companies.',
   },
 ];
 

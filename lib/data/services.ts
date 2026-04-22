@@ -36,7 +36,7 @@ export const services: Service[] = [
     technologies: ['React', 'Next.js', 'Node.js', 'Python', 'Java', '.NET', 'TypeScript', 'PostgreSQL', 'MongoDB'],
     metaTitle: 'Custom Software Development Services',
     metaDescription:
-      'Orion Solutions builds scalable, high-performance custom software — web apps, mobile apps, APIs, and enterprise platforms tailored to your business.',
+      'Orion eSolutions builds scalable, high-performance custom software — web apps, mobile apps, APIs, and enterprise platforms tailored to your business.',
   },
   {
     slug: 'cloud-solutions',
@@ -62,7 +62,7 @@ export const services: Service[] = [
     technologies: ['AWS', 'Azure', 'GCP', 'Terraform', 'Kubernetes', 'Docker', 'Helm', 'ArgoCD'],
     metaTitle: 'Cloud Solutions & Migration Services',
     metaDescription:
-      'Expert cloud migration, optimization, and management on AWS, Azure, and GCP. Orion Solutions helps you build resilient, cost-efficient cloud infrastructure.',
+      'Expert cloud migration, optimization, and management on AWS, Azure, and GCP. Orion eSolutions helps you build resilient, cost-efficient cloud infrastructure.',
   },
   {
     slug: 'it-consulting',
@@ -88,14 +88,14 @@ export const services: Service[] = [
     technologies: ['TOGAF', 'ITIL', 'COBIT', 'Agile', 'SAFe', 'PRINCE2'],
     metaTitle: 'IT Consulting & Technology Strategy',
     metaDescription:
-      'Strategic IT consulting from Orion Solutions. We help businesses align technology investments with goals through assessment, roadmapping, and expert advisory.',
+      'Strategic IT consulting from Orion eSolutions. We help businesses align technology investments with goals through assessment, roadmapping, and expert advisory.',
   },
   {
     slug: 'digital-transformation',
     title: 'Digital Transformation',
     shortDescription: 'End-to-end digital transformation to modernize operations and unlock new value.',
     description:
-      'Digital transformation is more than technology — it is a fundamental shift in how your organization operates and delivers value. Orion Solutions guides you through the entire journey: strategy, process re-engineering, technology implementation, and change management.',
+      'Digital transformation is more than technology — it is a fundamental shift in how your organization operates and delivers value. Orion eSolutions guides you through the entire journey: strategy, process re-engineering, technology implementation, and change management.',
     icon: 'Zap',
     features: [
       'Digital transformation strategy and visioning',
@@ -114,7 +114,7 @@ export const services: Service[] = [
     technologies: ['AI/ML', 'RPA', 'Power Platform', 'Salesforce', 'SAP', 'ServiceNow', 'Low-code/No-code'],
     metaTitle: 'Digital Transformation Services',
     metaDescription:
-      'Orion Solutions accelerates digital transformation — from strategy through execution. Automate processes, modernize experiences, and drive data-driven growth.',
+      'Orion eSolutions accelerates digital transformation — from strategy through execution. Automate processes, modernize experiences, and drive data-driven growth.',
   },
   {
     slug: 'cybersecurity',
@@ -140,14 +140,14 @@ export const services: Service[] = [
     technologies: ['SIEM', 'EDR', 'Zero Trust', 'MFA', 'WAF', 'ZTNA', 'CrowdStrike', 'Microsoft Defender'],
     metaTitle: 'Cybersecurity Services & Solutions',
     metaDescription:
-      'Orion Solutions provides end-to-end cybersecurity — penetration testing, security architecture, SOC, and compliance to protect your business from evolving threats.',
+      'Orion eSolutions provides end-to-end cybersecurity — penetration testing, security architecture, SOC, and compliance to protect your business from evolving threats.',
   },
   {
     slug: 'data-analytics',
     title: 'Data & Analytics',
     shortDescription: 'Turn raw data into actionable insights with modern BI and analytics solutions.',
     description:
-      'Data is your most valuable asset — if you can access and understand it. Orion Solutions helps you build modern data platforms, implement business intelligence tools, and leverage machine learning to uncover insights that drive smarter business decisions.',
+      'Data is your most valuable asset — if you can access and understand it. Orion eSolutions helps you build modern data platforms, implement business intelligence tools, and leverage machine learning to uncover insights that drive smarter business decisions.',
     icon: 'BarChart3',
     features: [
       'Data platform and data warehouse design',
@@ -166,7 +166,7 @@ export const services: Service[] = [
     technologies: ['Snowflake', 'BigQuery', 'Databricks', 'Apache Spark', 'dbt', 'Looker', 'Power BI', 'Python', 'SQL'],
     metaTitle: 'Data & Analytics Solutions',
     metaDescription:
-      'Orion Solutions builds modern data platforms, BI dashboards, and ML solutions that transform raw data into actionable insights for smarter business decisions.',
+      'Orion eSolutions builds modern data platforms, BI dashboards, and ML solutions that transform raw data into actionable insights for smarter business decisions.',
   },
 ];
 

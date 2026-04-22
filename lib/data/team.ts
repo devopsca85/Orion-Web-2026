@@ -31,7 +31,7 @@ export const leadership: TeamMember[] = [
   {
     name: 'Samira Al-Hassan',
     role: 'VP of Business Development',
-    bio: 'Samira leads Orion Solutions\' growth strategy, building relationships with enterprise clients and technology partners to expand our reach and service offerings.',
+    bio: 'Samira leads Orion eSolutions\' growth strategy, building relationships with enterprise clients and technology partners to expand our reach and service offerings.',
     avatar: '/assets/images/team/samira.jpg',
     linkedin: 'https://www.linkedin.com/in/',
   },

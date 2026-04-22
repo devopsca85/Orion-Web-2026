@@ -5,7 +5,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Terms of Service',
-  description: 'Orion Solutions Terms of Service — the terms and conditions governing use of our website and services.',
+  description: 'Orion eSolutions Terms of Service — the terms and conditions governing use of our website and services.',
   path: '/terms-of-service',
   noIndex: false,
 });
@@ -26,7 +26,7 @@ export default function TermsPage() {
         <Container size="md">
           <div className="prose prose-gray max-w-none">
             <p className="lead text-lg text-gray-600">
-              Please read these Terms of Service (&ldquo;Terms&rdquo;) carefully before using the website located at {SITE_CONFIG.url} operated by {SITE_CONFIG.name} (&ldquo;Orion Solutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;).
+              Please read these Terms of Service (&ldquo;Terms&rdquo;) carefully before using the website located at {SITE_CONFIG.url} operated by {SITE_CONFIG.name} (&ldquo;Orion eSolutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;).
             </p>
 
             <h2>1. Acceptance of Terms</h2>
@@ -47,7 +47,7 @@ export default function TermsPage() {
             <p>The website and its original content, features, and functionality are owned by {SITE_CONFIG.name} and are protected by intellectual property laws. Our trademarks and trade dress may not be used in connection with any product or service without our prior written consent.</p>
 
             <h2>4. Services</h2>
-            <p>Any technology services provided by Orion Solutions are governed by separate service agreements, statements of work, or contracts entered into between Orion Solutions and the client. These Terms do not constitute a service agreement.</p>
+            <p>Any technology services provided by Orion eSolutions are governed by separate service agreements, statements of work, or contracts entered into between Orion eSolutions and the client. These Terms do not constitute a service agreement.</p>
 
             <h2>5. Disclaimer of Warranties</h2>
             <p>Our website is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without any warranties of any kind, express or implied. We do not warrant that the website will be uninterrupted, error-free, or free of viruses or other harmful components.</p>

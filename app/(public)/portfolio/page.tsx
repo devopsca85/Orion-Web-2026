@@ -13,7 +13,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 export const metadata: Metadata = genMeta({
   title: 'Portfolio & Case Studies',
   description:
-    'Explore Orion Solutions case studies — real-world technology transformations across financial services, healthcare, retail, and manufacturing.',
+    'Explore Orion eSolutions case studies — real-world technology transformations across financial services, healthcare, retail, and manufacturing.',
   path: '/portfolio',
   keywords: ['case studies', 'client success', 'technology portfolio', 'enterprise projects'],
 });
@@ -109,7 +109,7 @@ export default function PortfolioPage() {
 
       <CTA
         title="Ready to Write Your Success Story?"
-        description="Join 150+ enterprises that have transformed their technology with Orion Solutions."
+        description="Join 150+ enterprises that have transformed their technology with Orion eSolutions."
         primaryCta={{ label: 'Get a Free Consultation', href: '/contact' }}
       />
     </>

@@ -5,7 +5,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Privacy Policy',
-  description: 'Orion Solutions Privacy Policy — how we collect, use, and protect your personal information.',
+  description: 'Orion eSolutions Privacy Policy — how we collect, use, and protect your personal information.',
   path: '/privacy-policy',
   noIndex: false,
 });
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         <Container size="md">
           <div className="prose prose-gray max-w-none">
             <p className="lead text-lg text-gray-600">
-              {SITE_CONFIG.name} (&ldquo;Orion Solutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit {SITE_CONFIG.url} or interact with our services.
+              {SITE_CONFIG.name} (&ldquo;Orion eSolutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit {SITE_CONFIG.url} or interact with our services.
             </p>
 
             <h2>1. Information We Collect</h2>

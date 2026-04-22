@@ -13,7 +13,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 export const metadata: Metadata = genMeta({
   title: 'Services',
   description:
-    'Comprehensive technology services from Orion Solutions: software development, cloud solutions, IT consulting, digital transformation, cybersecurity, and data analytics.',
+    'Comprehensive technology services from Orion eSolutions: software development, cloud solutions, IT consulting, digital transformation, cybersecurity, and data analytics.',
   path: '/services',
   keywords: ['IT services', 'technology services', 'managed services'],
 });

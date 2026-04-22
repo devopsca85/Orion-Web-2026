@@ -10,7 +10,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Our Culture',
-  description: 'What it is like to work at Orion Solutions — our values, team culture, inclusion initiatives, and what makes us a place where great technologists thrive.',
+  description: 'What it is like to work at Orion eSolutions — our values, team culture, inclusion initiatives, and what makes us a place where great technologists thrive.',
   path: '/about/culture',
 });
 
@@ -41,7 +41,7 @@ export default function CulturePage() {
 
       <PageHero
         title="Our Culture"
-        description="We believe culture is not a perk — it is the foundation of everything we build. Here is what working at Orion Solutions actually looks like."
+        description="We believe culture is not a perk — it is the foundation of everything we build. Here is what working at Orion eSolutions actually looks like."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }, { label: 'Culture' }]}
       />
 

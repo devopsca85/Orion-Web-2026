@@ -105,7 +105,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
                     name="logo.alt"
                     type="text"
                     defaultValue={settings['logo.alt'] || ''}
-                    placeholder="Orion Solutions"
+                    placeholder="Orion eSolutions"
                     className={inputClass}
                   />
                 </div>
@@ -169,7 +169,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
                 name="brand.companyName"
                 type="text"
                 defaultValue={settings['brand.companyName'] || ''}
-                placeholder="Orion Solutions"
+                placeholder="Orion eSolutions"
                 className={inputClass}
               />
             </div>
@@ -200,7 +200,7 @@ export default async function BrandingAdminPage({ searchParams }: Props) {
                 name="brand.footerCopyright"
                 type="text"
                 defaultValue={settings['brand.footerCopyright'] || ''}
-                placeholder="© 2026 Orion Solutions. All rights reserved."
+                placeholder="© 2026 Orion eSolutions. All rights reserved."
                 className={inputClass}
               />
             </div>

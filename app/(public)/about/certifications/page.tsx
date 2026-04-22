@@ -10,7 +10,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Certifications & Compliance',
-  description: 'Orion Solutions holds ISO 27001, SOC 2 Type II, ISO 9001, and CMMI Level 3 certifications. Learn how our compliance posture protects your data and ensures delivery quality.',
+  description: 'Orion eSolutions holds ISO 27001, SOC 2 Type II, ISO 9001, and CMMI Level 3 certifications. Learn how our compliance posture protects your data and ensures delivery quality.',
   path: '/about/certifications',
 });
 

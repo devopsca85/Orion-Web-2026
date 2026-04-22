@@ -13,9 +13,9 @@ import { SITE_CONFIG } from '@/lib/constants';
 export const metadata: Metadata = genMeta({
   title: 'About Us',
   description:
-    'Orion Solutions is a leading technology partner for enterprises. Learn about our mission, values, leadership team, and the story behind 12+ years of delivering transformative technology solutions.',
+    'Orion eSolutions is a leading technology partner for enterprises. Learn about our mission, values, leadership team, and the story behind 12+ years of delivering transformative technology solutions.',
   path: '/about',
-  keywords: ['about Orion Solutions', 'technology company', 'IT company history'],
+  keywords: ['about Orion eSolutions', 'technology company', 'IT company history'],
 });
 
 const values = [
@@ -56,7 +56,7 @@ export default function AboutPage() {
       />
 
       <PageHero
-        title="About Orion Solutions"
+        title="About Orion eSolutions"
         description="We are a technology partner for forward-thinking enterprises — combining deep technical expertise with a genuine commitment to your success."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]}
       />
@@ -73,10 +73,10 @@ export default function AboutPage() {
                 Technology That Moves Business Forward
               </h2>
               <p className="mb-4 text-lg leading-relaxed text-gray-600">
-                Founded in 2012, Orion Solutions was built on a simple premise: enterprises deserve technology partners who combine world-class engineering with genuine business acumen. Too often, technology firms deliver software without understanding — or caring about — the business outcomes it is meant to produce.
+                Founded in 2012, Orion eSolutions was built on a simple premise: enterprises deserve technology partners who combine world-class engineering with genuine business acumen. Too often, technology firms deliver software without understanding — or caring about — the business outcomes it is meant to produce.
               </p>
               <p className="mb-8 text-lg leading-relaxed text-gray-600">
-                We built Orion Solutions differently. Every engagement starts with a deep understanding of your business goals. Every solution is designed to produce measurable outcomes. And our relationship doesn&apos;t end at go-live.
+                We built Orion eSolutions differently. Every engagement starts with a deep understanding of your business goals. Every solution is designed to produce measurable outcomes. And our relationship doesn&apos;t end at go-live.
               </p>
               <ul className="space-y-3">
                 {[
@@ -95,7 +95,7 @@ export default function AboutPage() {
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-700 p-1">
               <div className="rounded-xl bg-white p-8 space-y-6">
                 {[
-                  { year: '2012', event: 'Orion Solutions founded in San Francisco' },
+                  { year: '2012', event: 'Orion eSolutions founded in San Francisco' },
                   { year: '2015', event: 'Expanded cloud practice with AWS partnership' },
                   { year: '2018', event: 'Opened delivery centers in Europe and Asia-Pacific' },
                   { year: '2021', event: 'Launched AI & Data practice; surpassed 100 enterprise clients' },

@@ -14,7 +14,7 @@ import { formatDate } from '@/lib/utils';
 
 export const metadata: Metadata = genMeta({
   title: 'Resources — Guides, Whitepapers & Webinars',
-  description: 'Free technology resources from Orion Solutions: cloud migration guides, AI reports, cybersecurity whitepapers, webinar recordings, and digital transformation ebooks.',
+  description: 'Free technology resources from Orion eSolutions: cloud migration guides, AI reports, cybersecurity whitepapers, webinar recordings, and digital transformation ebooks.',
   path: '/resources',
   keywords: ['technology resources', 'whitepapers', 'IT guides', 'cloud webinars', 'free download'],
 });
@@ -39,7 +39,7 @@ export default function ResourcesPage() {
 
       <PageHero
         title="Resources & Insights"
-        description="Practical guides, research reports, and on-demand webinars from the Orion Solutions team. Free to download — no strings attached."
+        description="Practical guides, research reports, and on-demand webinars from the Orion eSolutions team. Free to download — no strings attached."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Resources' }]}
       />
 

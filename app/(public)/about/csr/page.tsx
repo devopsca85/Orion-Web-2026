@@ -10,7 +10,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Corporate Social Responsibility',
-  description: 'Orion Solutions is committed to environmental sustainability, STEM education, community investment, and building a more inclusive technology industry.',
+  description: 'Orion eSolutions is committed to environmental sustainability, STEM education, community investment, and building a more inclusive technology industry.',
   path: '/about/csr',
 });
 

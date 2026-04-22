@@ -118,7 +118,7 @@ export default async function PublicLayout({ children }: { children: React.React
 
   const branding = {
     logoUrl: settings['logo.url'] || '',
-    logoAlt: settings['logo.alt'] || 'Orion Solutions',
+    logoAlt: settings['logo.alt'] || 'Orion eSolutions',
     phone: settings['contact.phone'] || '',
     email: settings['contact.email'] || '',
     address: {

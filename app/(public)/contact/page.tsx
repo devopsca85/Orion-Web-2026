@@ -11,9 +11,9 @@ import { getSetting } from '@/lib/settings';
 export const metadata: Metadata = genMeta({
   title: 'Contact Us',
   description:
-    'Get in touch with Orion Solutions. Book a free consultation, ask about our services, or start a project conversation with our team.',
+    'Get in touch with Orion eSolutions. Book a free consultation, ask about our services, or start a project conversation with our team.',
   path: '/contact',
-  keywords: ['contact Orion Solutions', 'IT consulting inquiry', 'free consultation'],
+  keywords: ['contact Orion eSolutions', 'IT consulting inquiry', 'free consultation'],
 });
 
 const contactInfo = [

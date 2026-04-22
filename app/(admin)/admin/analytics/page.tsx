@@ -7,8 +7,8 @@ import { Users, Eye, Globe, TrendingUp, ShieldX, ShieldCheck } from 'lucide-reac
 
 const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
 
-function countryFlag(code: string): string {
-  return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E0 + c.charCodeAt(0) - 65)).join('')
+function flagImg(code: string) {
+  return `https://flagcdn.com/w20/${code.toLowerCase()}.png`
 }
 
 function countryName(code: string | null): string {
@@ -164,7 +164,8 @@ export default async function AnalyticsPage({
                 <p className="text-sm text-slate-400 text-center py-6">No data yet</p>
               ) : topCountries.map(c => (
                 <div key={c.country} className="flex items-center gap-3">
-                  <span className="text-base leading-none">{countryFlag(c.country ?? 'XX')}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={flagImg(c.country ?? 'xx')} alt={c.country ?? ''} className="w-6 h-4 object-cover rounded-sm shrink-0" />
                   <span className="text-sm text-slate-700 flex-1">{countryName(c.country)}</span>
                   <div className="flex items-center gap-2 shrink-0">
                     <div className="w-24 bg-slate-100 rounded-full h-1.5">
@@ -214,7 +215,11 @@ export default async function AnalyticsPage({
                       </td>
                       <td className="px-5 py-3 text-slate-700">
                         {v.country
-                          ? <span title={countryName(v.country)}>{countryFlag(v.country)} {v.country}</span>
+                          ? <span className="flex items-center gap-1.5" title={countryName(v.country)}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={flagImg(v.country!)} alt={v.country!} className="w-5 h-3.5 object-cover rounded-sm shrink-0" />
+                              {v.country}
+                            </span>
                           : <span className="text-slate-400">—</span>
                         }
                       </td>

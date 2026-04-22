@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     'digital transformation',
     'cybersecurity',
     'data analytics',
-    'Orion Solutions',
+    'Orion eSolutions',
   ],
   authors: [{ name: SITE_CONFIG.name, url: SITE_CONFIG.url }],
   creator: SITE_CONFIG.name,

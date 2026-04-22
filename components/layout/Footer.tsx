@@ -62,7 +62,7 @@ export async function Footer({ branding, offices = [], links = [] }: FooterProps
 
   const currentYear = new Date().getFullYear()
   const logoSrc = branding?.logoUrl || '/assets/images/logo.png'
-  const logoAlt = branding?.logoAlt || 'Orion Solutions'
+  const logoAlt = branding?.logoAlt || 'Orion eSolutions'
   const phone   = branding?.phone   || SITE_CONFIG.phone
   const email   = branding?.email   || SITE_CONFIG.email
   const address = {
@@ -144,7 +144,7 @@ export async function Footer({ branding, offices = [], links = [] }: FooterProps
               <div className="grid gap-12 py-10 md:grid-cols-2 lg:grid-cols-5 lg:py-12">
                 {/* Brand column — always present with main body */}
                 <div className="lg:col-span-1">
-                  <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion Solutions Home">
+                  <Link href="/" className="mb-6 flex items-center gap-2" aria-label="Orion eSolutions Home">
                     <LogoImg src={logoSrc} alt={logoAlt} width={140} height={36} className="h-9 w-auto" />
                     <span className="text-lg font-bold text-white hidden" id="footer-logo-fallback">
                       Orion <span className="text-secondary">eSolutions</span>

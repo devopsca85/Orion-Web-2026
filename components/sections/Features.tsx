@@ -50,7 +50,7 @@ interface FeaturesProps {
 
 export function Features({
   className,
-  eyebrow = 'Why Orion Solutions',
+  eyebrow = 'Why Orion eSolutions',
   title = 'We Deliver Results, Not Just Deliverables',
   description = 'Many technology firms promise transformation. We engineer it — with the expertise, processes, and accountability that turn ambitious goals into measurable business outcomes.',
 }: FeaturesProps) {

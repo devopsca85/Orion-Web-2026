@@ -37,7 +37,7 @@ export function LoginForm() {
             <span className="text-3xl font-bold text-indigo-400">.</span>
             <span className="text-3xl font-bold text-white">CMS</span>
           </div>
-          <p className="text-slate-400 text-sm">Orion Solutions Admin Panel</p>
+          <p className="text-slate-400 text-sm">Orion eSolutions Admin Panel</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
@@ -87,7 +87,7 @@ export function LoginForm() {
         </div>
 
         <p className="text-center text-slate-500 text-xs mt-6">
-          Orion Solutions &copy; {new Date().getFullYear()} &mdash; Internal use only
+          Orion eSolutions &copy; {new Date().getFullYear()} &mdash; Internal use only
         </p>
       </div>
     </div>

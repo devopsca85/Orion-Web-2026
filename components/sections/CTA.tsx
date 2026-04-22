@@ -12,7 +12,7 @@ interface CTAProps {
 
 export function CTA({
   title = 'Ready to Transform Your Business?',
-  description = 'Talk to one of our technology experts and discover how Orion Solutions can help you achieve your goals faster.',
+  description = 'Talk to one of our technology experts and discover how Orion eSolutions can help you achieve your goals faster.',
   primaryCta = { label: 'Get a Free Consultation', href: '/contact' },
   secondaryCta,
   variant = 'primary',

@@ -115,7 +115,7 @@ export default async function AdminDashboard() {
             Welcome back, {session?.user.name?.split(' ')[0]}!
           </h2>
           <p className="text-slate-500 text-sm mt-1">
-            Here&apos;s what&apos;s happening with Orion Solutions today.
+            Here&apos;s what&apos;s happening with Orion eSolutions today.
           </p>
         </div>
 

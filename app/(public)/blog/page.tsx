@@ -15,7 +15,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 export const metadata: Metadata = genMeta({
   title: 'Blog & Insights',
   description:
-    'Technology insights, tutorials, and thought leadership from the Orion Solutions engineering and consulting teams. Cloud, AI, security, and digital transformation.',
+    'Technology insights, tutorials, and thought leadership from the Orion eSolutions engineering and consulting teams. Cloud, AI, security, and digital transformation.',
   path: '/blog',
   keywords: ['technology blog', 'IT insights', 'cloud blog', 'digital transformation articles'],
 });
@@ -105,7 +105,7 @@ export default function BlogPage() {
 
       <CTA
         title="Get Insights in Your Inbox"
-        description="Subscribe to our newsletter for monthly technology insights from the Orion Solutions team."
+        description="Subscribe to our newsletter for monthly technology insights from the Orion eSolutions team."
         primaryCta={{ label: 'Subscribe', href: '/contact' }}
         variant="light"
       />

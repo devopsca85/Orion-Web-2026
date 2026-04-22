@@ -12,7 +12,7 @@ import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata: Metadata = genMeta({
   title: 'Technology Partners & Certifications',
-  description: 'Orion Solutions is a certified partner of AWS, Microsoft Azure, Google Cloud, Salesforce, Snowflake, and more. Explore our technology partnerships and industry certifications.',
+  description: 'Orion eSolutions is a certified partner of AWS, Microsoft Azure, Google Cloud, Salesforce, Snowflake, and more. Explore our technology partnerships and industry certifications.',
   path: '/partners',
   keywords: ['AWS partner', 'Microsoft partner', 'Google Cloud partner', 'technology partnerships', 'certifications'],
 });

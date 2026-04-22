@@ -71,7 +71,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 <div className="rounded-xl bg-gray-50 p-5">
                   <p className="text-sm font-semibold text-gray-700 mb-3">What you&apos;ll learn:</p>
                   <ul className="space-y-2">
-                    {['Practical frameworks and actionable steps', 'Real-world examples from enterprise deployments', 'Expert analysis from Orion Solutions practitioners', 'Tools, checklists, and templates included'].map((item) => (
+                    {['Practical frameworks and actionable steps', 'Real-world examples from enterprise deployments', 'Expert analysis from Orion eSolutions practitioners', 'Tools, checklists, and templates included'].map((item) => (
                       <li key={item} className="flex items-center gap-2 text-sm text-gray-600">
                         <span className="h-1.5 w-1.5 rounded-full bg-secondary flex-shrink-0" />
                         {item}

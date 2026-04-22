@@ -10,7 +10,7 @@ import { resources } from '@/lib/data/resources';
 
 export const metadata: Metadata = genMeta({
   title: 'Sitemap',
-  description: 'A complete list of all pages on the Orion Solutions website.',
+  description: 'A complete list of all pages on the Orion eSolutions website.',
   path: '/sitemap-page',
 });
 
@@ -37,7 +37,7 @@ export default function SitemapPage() {
     {
       title: 'About Us',
       links: [
-        { label: 'About Orion Solutions', href: '/about' },
+        { label: 'About Orion eSolutions', href: '/about' },
         { label: 'Our Culture', href: '/about/culture' },
         { label: 'Certifications & Compliance', href: '/about/certifications' },
         { label: 'Corporate Responsibility (CSR)', href: '/about/csr' },
@@ -93,7 +93,7 @@ export default function SitemapPage() {
       <div className="bg-gray-50 py-12">
         <Container size="md">
           <h1 className="text-4xl font-bold text-gray-900">Sitemap</h1>
-          <p className="mt-2 text-gray-500">A complete list of all pages on the Orion Solutions website.</p>
+          <p className="mt-2 text-gray-500">A complete list of all pages on the Orion eSolutions website.</p>
         </Container>
       </div>
       <Section>

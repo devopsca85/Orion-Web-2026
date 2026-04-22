@@ -14,9 +14,9 @@ import Link from 'next/link';
 export const metadata: Metadata = genMeta({
   title: 'Careers',
   description:
-    'Join the Orion Solutions team. We are hiring engineers, consultants, and architects who want to solve complex technology challenges for enterprise clients worldwide.',
+    'Join the Orion eSolutions team. We are hiring engineers, consultants, and architects who want to solve complex technology challenges for enterprise clients worldwide.',
   path: '/careers',
-  keywords: ['IT jobs', 'software engineering jobs', 'technology careers', 'Orion Solutions hiring'],
+  keywords: ['IT jobs', 'software engineering jobs', 'technology careers', 'Orion eSolutions hiring'],
 });
 
 const benefits = [
@@ -50,7 +50,7 @@ export default async function CareersPage() {
       />
 
       <PageHero
-        title="Build Your Career at Orion Solutions"
+        title="Build Your Career at Orion eSolutions"
         description="Join a team of world-class engineers and consultants solving complex technology challenges for leading enterprises. We are growing fast and want you to grow with us."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Careers' }]}
       />

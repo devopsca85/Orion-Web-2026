@@ -81,7 +81,7 @@ export default async function ContactDetailPage({ params }: Props) {
 
             <div className="mt-4">
               <a
-                href={`mailto:${contact.email}?subject=Re: Your inquiry to Orion Solutions`}
+                href={`mailto:${contact.email}?subject=Re: Your inquiry to Orion eSolutions`}
                 className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 <Mail size={15} /> Reply by Email

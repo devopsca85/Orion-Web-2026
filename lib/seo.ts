@@ -35,7 +35,7 @@ export function generateMetadata({
       'IT consulting',
       'digital transformation',
       'cybersecurity',
-      'Orion Solutions',
+      'Orion eSolutions',
       ...keywords,
     ],
     authors: [{ name: SITE_CONFIG.name, url: SITE_CONFIG.url }],

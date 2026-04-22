@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/admin/Sidebar'
 import { signOutAction } from '@/lib/admin/auth-actions'
 
 export const metadata = {
-  title: 'Admin — Orion Solutions CMS',
+  title: 'Admin — Orion eSolutions CMS',
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
