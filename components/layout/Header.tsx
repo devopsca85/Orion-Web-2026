@@ -188,7 +188,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
                   {/* ── Industries simple dropdown ── */}
                   {hasChildren(link) && !isMega(link) && !isProductMega(link) && (
                     <div className={cn(
-                      'absolute left-0 top-full w-72 transition-all duration-200 origin-top-left',
+                      'absolute left-0 top-full w-72 z-40 transition-all duration-200 origin-top-left',
                       isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none',
                     )}>
                       {/* invisible bridge fills gap between button and panel */}
@@ -257,7 +257,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
           <div
             key={link.href}
             className={cn(
-              'hidden lg:block absolute inset-x-0 top-[70px] transition-all duration-200 origin-top',
+              'hidden lg:block absolute inset-x-0 top-[70px] z-40 transition-all duration-200 origin-top',
               isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-3 pointer-events-none',
             )}
           >
@@ -337,7 +337,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
           <div
             key={link.href}
             className={cn(
-              'hidden lg:block absolute inset-x-0 top-[70px] transition-all duration-200 origin-top',
+              'hidden lg:block absolute inset-x-0 top-[70px] z-40 transition-all duration-200 origin-top',
               isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-3 pointer-events-none',
             )}
           >
