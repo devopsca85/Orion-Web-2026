@@ -78,8 +78,6 @@ export function WorldMapWidget({ countries, totalCountries }: WorldMapWidgetProp
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   const maxVisits = countries[0]?.visits ?? 1
-  const visitorSet = new Set(countries.map(c => c.code))
-
   function handleMouseMove(e: React.MouseEvent) {
     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect()
     setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top })

@@ -70,7 +70,7 @@ export default async function HomeAdminPage({ searchParams }: Props) {
         {/* Page Manager banner */}
         <Link href="/admin/home/sections" className="flex items-center justify-between gap-3 mb-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-5 py-4 transition-colors group">
           <div>
-            <p className="font-semibold text-sm">🗂️ Page Manager</p>
+            <p className="font-semibold text-sm">Page Manager</p>
             <p className="text-xs text-indigo-200 mt-0.5">Drag to reorder sections, show/hide, and jump straight to edit any section</p>
           </div>
           <ArrowRight size={18} className="shrink-0 group-hover:translate-x-1 transition-transform" />

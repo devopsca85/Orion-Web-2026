@@ -26,7 +26,7 @@ const navGroups: NavGroup[] = [
   {
     title: 'Pages',
     items: [
-      { href: '/admin/home/sections', label: '🗂️ Page Manager',  icon: <Layers size={16} /> },
+      { href: '/admin/home/sections', label: 'Page Manager',  icon: <Layers size={16} /> },
       { href: '/admin/home',          label: 'Hero & CTA',        icon: <Home size={16} /> },
       { href: '/admin/home/stats',    label: 'Stats Bar',         icon: <BarChart2 size={16} /> },
       { href: '/admin/pages',         label: 'Custom Pages',      icon: <Layout size={16} /> },

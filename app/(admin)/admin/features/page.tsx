@@ -24,7 +24,7 @@ const DEFAULT_FEATURES = [
 
 export default async function FeaturesAdminPage() {
   const session = await auth()
-  let features = await prisma.siteFeature.findMany({ orderBy: { sortOrder: 'asc' } })
+  const features = await prisma.siteFeature.findMany({ orderBy: { sortOrder: 'asc' } })
 
   return (
     <>
