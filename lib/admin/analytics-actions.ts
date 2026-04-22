@@ -20,3 +20,12 @@ export async function unblockIp(ip: string) {
   await prisma.blockedIp.deleteMany({ where: { ip } })
   revalidatePath('/admin/analytics')
 }
+
+export async function clearRecentVisitors() {
+  await requireAdmin()
+  const cutoff = new Date()
+  cutoff.setHours(0, 0, 0, 0) // keep today; delete everything before today
+  await prisma.pageView.deleteMany({ where: { createdAt: { lt: cutoff } } })
+  revalidatePath('/admin')
+  revalidatePath('/admin/analytics')
+}

@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   BarChart2,
 } from 'lucide-react'
+import { ClearVisitorsButton } from '@/components/admin/ClearVisitorsButton'
 
 const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
 function countryFlag(code: string): string {
@@ -160,19 +161,19 @@ export default async function AdminDashboard() {
           </Link>
 
           {/* Visitor analytics */}
-          <Link
-            href="/admin/analytics"
-            className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:border-indigo-200 transition-colors"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-slate-500 font-medium">Visitors Today</span>
               <span className="bg-teal-50 text-teal-600 p-2 rounded-lg">
                 <BarChart2 size={20} />
               </span>
             </div>
-            <p className="text-5xl font-bold text-slate-800">{todayVisitors.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-1">non-bot page views · view full analytics</p>
-          </Link>
+            <Link href="/admin/analytics">
+              <p className="text-5xl font-bold text-slate-800 hover:text-teal-600 transition-colors">{todayVisitors.toLocaleString()}</p>
+            </Link>
+            <p className="text-xs text-slate-400 mt-1 mb-3">non-bot page views · <Link href="/admin/analytics" className="hover:underline">view full analytics</Link></p>
+            <ClearVisitorsButton />
+          </div>
 
         </div>
 
