@@ -98,7 +98,12 @@ export async function BlogGrid({
     dbPosts = rows;
   } catch { /* fall back */ }
 
-  const staticPosts = getFeaturedPosts().slice(0, limit);
+  const staticPosts: PostCardData[] = getFeaturedPosts().slice(0, limit).map(p => ({
+    slug: p.slug, title: p.title, excerpt: p.excerpt, category: p.category,
+    readingTime: p.readingTime, publishedAt: p.publishedAt,
+    imageUrl: null,
+    author: { name: p.author.name },
+  }));
   const posts: PostCardData[] = dbPosts.length > 0 ? dbPosts : staticPosts;
 
   return (
