@@ -3,6 +3,7 @@ import { Clock, ArrowRight } from 'lucide-react';
 import { Container, Section, SectionHeader } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { HorizontalCarousel } from '@/components/ui/HorizontalCarousel';
 import { getFeaturedPosts } from '@/lib/data/blog';
 import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
@@ -110,10 +111,12 @@ export async function BlogGrid({
     <Section className="bg-gray-50">
       <Container>
         <SectionHeader eyebrow={eyebrow} title={title} description={description} />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => <BlogCard key={post.slug} post={post} />)}
+        <div className="px-8">
+          <HorizontalCarousel autoPlayMs={0}>
+            {posts.map((post) => <BlogCard key={post.slug} post={post} />)}
+          </HorizontalCarousel>
         </div>
-        <div className="mt-12 text-center">
+        <div className="mt-10 text-center">
           <Link href="/blog" className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:text-primary-700 transition-colors">
             View all articles <ArrowRight className="h-5 w-5" />
           </Link>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Container, Section, SectionHeader } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
+import { HorizontalCarousel } from '@/components/ui/HorizontalCarousel';
 import { getFeaturedPortfolio } from '@/lib/data/portfolio';
 import { prisma } from '@/lib/prisma';
 
@@ -85,11 +86,13 @@ export async function PortfolioGrid({
     <Section className="bg-white">
       <Container>
         <SectionHeader eyebrow={eyebrow} title={title} description={description} />
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => <PortfolioCard key={item.slug} item={item} />)}
+        <div className="px-8">
+          <HorizontalCarousel autoPlayMs={0}>
+            {items.map((item) => <PortfolioCard key={item.slug} item={item} />)}
+          </HorizontalCarousel>
         </div>
         {!showAll && (
-          <div className="mt-12 text-center">
+          <div className="mt-10 text-center">
             <Link href="/portfolio" className="inline-flex items-center gap-2 text-base font-semibold text-primary hover:text-primary-700 transition-colors">
               View all case studies <ArrowRight className="h-5 w-5" />
             </Link>
