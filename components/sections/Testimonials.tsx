@@ -1,7 +1,6 @@
-import { Quote } from 'lucide-react';
 import { Container, Section, SectionHeader } from '@/components/ui/Container';
-import { Card } from '@/components/ui/Card';
 import { prisma } from '@/lib/prisma';
+import { TestimonialsCarousel } from './TestimonialsCarousel';
 
 const fallback = [
   {
@@ -28,7 +27,31 @@ const fallback = [
     company: 'Healthcare Network',
     rating: 5,
   },
-];
+  {
+    id: '4',
+    quote: "Did you ever try to do 'the impossible' within a time frame of just one week? We got a recommendation from a colleague to call the guys at Orion eSolutions. Now we have our system up and running exactly according to our specifications.",
+    name: 'Peter Fauland',
+    title: null,
+    company: null,
+    rating: 5,
+  },
+  {
+    id: '5',
+    quote: "Amazing job. Very honest, trustworthy and best of all — great at what they do. Hire this team right now, you'll be happy you did. DevOps and Cloud Support.",
+    name: 'Mark',
+    title: null,
+    company: null,
+    rating: 5,
+  },
+  {
+    id: '6',
+    quote: "Orion eSolutions worked with us on a very big deliverable. Throughout the process they communicated regularly and are very knowledgeable about the subject area. DevOps and Cloud Support.",
+    name: 'Tellarc',
+    title: null,
+    company: null,
+    rating: 5,
+  },
+]
 
 async function getTestimonials() {
   try {
@@ -36,15 +59,15 @@ async function getTestimonials() {
       where: { active: true },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
       select: { id: true, name: true, title: true, company: true, quote: true, rating: true },
-    });
-    return rows.length > 0 ? rows : fallback;
+    })
+    return rows.length > 0 ? rows : fallback
   } catch {
-    return fallback;
+    return fallback
   }
 }
 
 export async function Testimonials() {
-  const testimonials = await getTestimonials();
+  const testimonials = await getTestimonials()
 
   return (
     <Section className="bg-gray-50">
@@ -54,31 +77,10 @@ export async function Testimonials() {
           title="Trusted by Industry Leaders"
           description="Don't take our word for it — hear directly from the executives and teams who have partnered with Orion eSolutions."
         />
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <Card key={t.id} padding="lg" className="flex flex-col">
-              <Quote className="mb-4 h-8 w-8 text-secondary/30" />
-              <div className="mb-4 flex gap-0.5">
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <svg key={i} className="h-4 w-4 text-secondary fill-current" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <blockquote className="flex-1 text-sm leading-relaxed text-gray-700 italic mb-6">
-                &ldquo;{t.quote}&rdquo;
-              </blockquote>
-              <div className="border-t border-gray-100 pt-4">
-                <p className="font-semibold text-gray-900">{t.name}</p>
-                <p className="text-sm text-gray-500">
-                  {t.title} · {t.company}
-                </p>
-              </div>
-            </Card>
-          ))}
+        <div className="px-6">
+          <TestimonialsCarousel items={testimonials} />
         </div>
       </Container>
     </Section>
-  );
+  )
 }
