@@ -67,11 +67,17 @@ export default async function HomeAdminPage({ searchParams }: Props) {
           </div>
         )}
 
+        {/* Page Manager banner */}
+        <Link href="/admin/home/sections" className="flex items-center justify-between gap-3 mb-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-5 py-4 transition-colors group">
+          <div>
+            <p className="font-semibold text-sm">🗂️ Page Manager</p>
+            <p className="text-xs text-indigo-200 mt-0.5">Drag to reorder sections, show/hide, and jump straight to edit any section</p>
+          </div>
+          <ArrowRight size={18} className="shrink-0 group-hover:translate-x-1 transition-transform" />
+        </Link>
+
         {/* Quick links */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <Link href="/admin/home/sections" className="flex items-center gap-1.5 text-xs text-indigo-600 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50">
-            <Layout size={12} /> Section Order &amp; Visibility
-          </Link>
           <Link href="/admin/home/stats" className="flex items-center gap-1.5 text-xs text-indigo-600 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50">
             <BarChart2 size={12} /> Edit Stats Bar
           </Link>

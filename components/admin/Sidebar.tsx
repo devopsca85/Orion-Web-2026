@@ -26,11 +26,11 @@ const navGroups: NavGroup[] = [
   {
     title: 'Pages',
     items: [
-      { href: '/admin/home',          label: 'Home Page',     icon: <Home size={16} /> },
-      { href: '/admin/home/sections', label: 'Section Layout',icon: <Layers size={16} /> },
-      { href: '/admin/home/stats',    label: 'Stats Bar',     icon: <BarChart2 size={16} /> },
-      { href: '/admin/pages',         label: 'Custom Pages',  icon: <Layout size={16} /> },
-      { href: '/admin/navigation',    label: 'Navigation',    icon: <Navigation size={16} /> },
+      { href: '/admin/home/sections', label: '🗂️ Page Manager',  icon: <Layers size={16} /> },
+      { href: '/admin/home',          label: 'Hero & CTA',        icon: <Home size={16} /> },
+      { href: '/admin/home/stats',    label: 'Stats Bar',         icon: <BarChart2 size={16} /> },
+      { href: '/admin/pages',         label: 'Custom Pages',      icon: <Layout size={16} /> },
+      { href: '/admin/navigation',    label: 'Navigation',        icon: <Navigation size={16} /> },
     ],
   },
   {
