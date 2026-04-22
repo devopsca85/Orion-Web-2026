@@ -28,11 +28,11 @@ export async function AwardsSection() {
           description="Industry recognition for delivering exceptional technology solutions and client outcomes."
         />
 
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="flex flex-wrap justify-center gap-5">
           {awards.map((award) => (
             <div
               key={award.id}
-              className="flex flex-col items-center text-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col items-center text-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow w-52 flex-shrink-0"
             >
               {award.logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
