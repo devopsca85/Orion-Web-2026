@@ -44,7 +44,7 @@ function CountUp({ value, delay, dark }: { value: string; delay: number; dark: b
   return (
     <span className={cn(
       'block text-4xl font-extrabold tabular-nums tracking-tight md:text-5xl',
-      dark ? 'text-white' : 'text-indigo-600',
+      dark ? 'text-white' : 'text-secondary',
     )}>
       {display}
     </span>
@@ -87,7 +87,7 @@ export function StatsDisplay({ items, dark }: { items: Stat[]; dark: boolean }) 
           <span
             className={cn(
               'mb-5 block h-0.5 rounded-full transition-all duration-700 ease-out',
-              dark ? 'bg-indigo-300' : 'bg-indigo-500',
+              dark ? 'bg-secondary/60' : 'bg-secondary',
               visible ? 'w-8 opacity-100' : 'w-0 opacity-0',
             )}
             style={{ transitionDelay: `${i * 100 + 250}ms` }}
