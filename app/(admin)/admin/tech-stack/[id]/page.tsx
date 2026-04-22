@@ -7,7 +7,7 @@ import { ChevronLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
 const ic = 'block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500'
-const TECH_CATEGORIES = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'Other']
+const TECH_CATEGORIES = ['Frontend', 'Backend', 'Cloud', 'Database', 'DevOps', 'Mobile', 'AI & ML', 'Security', 'QA', 'UX', 'Ecommerce', 'Other']
 
 interface Props { params: Promise<{ id: string }> }
 
