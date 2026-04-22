@@ -8,7 +8,7 @@ import {
   Mail, Bell, UserCheck, UserCog, ImageIcon, LogOut, ChevronDown,
   Layout, Navigation, Palette, Home, Quote, Building2, Layers,
   Trophy, HelpCircle, Code2, GraduationCap, FormInput, Settings,
-  BarChart2, ShieldCheck, Send,
+  BarChart2, ShieldCheck, Send, Lightbulb,
 } from 'lucide-react'
 
 interface NavItem  { href: string; label: string; icon: React.ReactNode }
@@ -36,23 +36,25 @@ const navGroups: NavGroup[] = [
   {
     title: 'Content',
     items: [
-      { href: '/admin/blog',         label: 'Blog Posts',  icon: <FileText size={16} /> },
-      { href: '/admin/portfolio',    label: 'Portfolio',   icon: <Briefcase size={16} /> },
-      { href: '/admin/testimonials', label: 'Testimonials',icon: <Quote size={16} /> },
-      { href: '/admin/team',         label: 'Team',        icon: <Users size={16} /> },
-      { href: '/admin/services',     label: 'Services',    icon: <Wrench size={16} /> },
-      { href: '/admin/products',     label: 'Products',    icon: <Layers size={16} /> },
-      { href: '/admin/resources',    label: 'Resources',   icon: <BookOpen size={16} /> },
+      { href: '/admin/blog',         label: 'Blog Posts',   icon: <FileText size={16} /> },
+      { href: '/admin/case-studies', label: 'Case Studies', icon: <Briefcase size={16} /> },
+      { href: '/admin/portfolio',    label: 'Portfolio',    icon: <Layers size={16} /> },
+      { href: '/admin/testimonials', label: 'Testimonials', icon: <Quote size={16} /> },
+      { href: '/admin/team',         label: 'Team',         icon: <Users size={16} /> },
+      { href: '/admin/services',     label: 'Services',     icon: <Wrench size={16} /> },
+      { href: '/admin/products',     label: 'Products',     icon: <Layers size={16} /> },
+      { href: '/admin/resources',    label: 'Resources',    icon: <BookOpen size={16} /> },
     ],
   },
   {
     title: 'Site Sections',
     items: [
-      { href: '/admin/client-logos',      label: 'Client Logos',      icon: <Building2 size={16} /> },
-      { href: '/admin/tech-stack',        label: 'Tech Stack',         icon: <Code2 size={16} /> },
+      { href: '/admin/features',          label: 'Why Us / Features',  icon: <Lightbulb size={16} /> },
+      { href: '/admin/client-logos',      label: 'Client Logos',       icon: <Building2 size={16} /> },
+      { href: '/admin/tech-stack',        label: 'Tech Stack',          icon: <Code2 size={16} /> },
       { href: '/admin/engagement-models', label: 'Engagement Models',  icon: <Layers size={16} /> },
-      { href: '/admin/awards',            label: 'Awards',             icon: <Trophy size={16} /> },
-      { href: '/admin/faqs',              label: 'FAQs',               icon: <HelpCircle size={16} /> },
+      { href: '/admin/awards',            label: 'Awards',              icon: <Trophy size={16} /> },
+      { href: '/admin/faqs',              label: 'FAQs',                icon: <HelpCircle size={16} /> },
     ],
   },
   {
