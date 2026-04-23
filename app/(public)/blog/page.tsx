@@ -7,10 +7,11 @@ import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { CTA } from '@/components/sections/CTA';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
-import { blogPosts } from '@/lib/data/blog';
+import { blogPosts as staticBlogPosts } from '@/lib/data/blog';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { formatDate } from '@/lib/utils';
 import { SITE_CONFIG } from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = genMeta({
   title: 'Blog & Insights',
@@ -20,9 +21,48 @@ export const metadata: Metadata = genMeta({
   keywords: ['technology blog', 'IT insights', 'cloud blog', 'digital transformation articles'],
 });
 
-const categories = ['All', ...Array.from(new Set(blogPosts.map((p) => p.category)))];
+interface PostCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  readingTime: number;
+  authorName: string;
+  publishedAt: string;
+}
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  let posts: PostCard[] = staticBlogPosts.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt,
+    category: p.category,
+    readingTime: p.readingTime,
+    authorName: p.author.name,
+    publishedAt: p.publishedAt,
+  }));
+
+  try {
+    const dbPosts = await prisma.blogPost.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { createdAt: 'desc' },
+      include: { author: { select: { name: true } } },
+    });
+    if (dbPosts.length > 0) {
+      posts = dbPosts.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt ?? '',
+        category: p.category,
+        readingTime: p.readingTime,
+        authorName: p.author.name,
+        publishedAt: p.publishedAt?.toISOString() ?? p.createdAt.toISOString(),
+      }));
+    }
+  } catch { /* fall back to static */ }
+
+  const categories = ['All', ...Array.from(new Set(posts.map((p) => p.category)))];
+
   return (
     <>
       <BreadcrumbSchema
@@ -40,27 +80,25 @@ export default function BlogPage() {
 
       <Section className="bg-white">
         <Container>
-          {/* Category filter (static for now) */}
           <div className="mb-8 flex flex-wrap gap-2">
             {categories.map((cat) => (
-              <button
+              <span
                 key={cat}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium ${
                   cat === 'All'
                     ? 'border-primary bg-primary text-white'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-primary hover:text-primary'
+                    : 'border-gray-200 bg-white text-gray-600'
                 }`}
               >
                 {cat}
-              </button>
+              </span>
             ))}
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {blogPosts.map((post) => (
+            {posts.map((post) => (
               <article key={post.slug}>
                 <Card hover className="flex h-full flex-col">
-                  {/* Image placeholder */}
                   <div className="mb-4 h-40 overflow-hidden rounded-xl bg-gradient-to-br from-primary to-primary-700">
                     <div className="flex h-full items-center justify-center">
                       <span className="text-4xl font-extrabold text-white/10">{post.category}</span>
@@ -85,7 +123,7 @@ export default function BlogPage() {
 
                   <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{post.author.name}</p>
+                      <p className="text-sm font-medium text-gray-900">{post.authorName}</p>
                       <p className="text-xs text-gray-400">{formatDate(post.publishedAt)}</p>
                     </div>
                     <Link

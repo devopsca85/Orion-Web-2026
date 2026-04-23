@@ -56,6 +56,7 @@ export async function createBlogPost(formData: FormData) {
     },
   })
   revalidatePath('/admin/blog')
+  revalidatePath('/blog')
   redirect('/admin/blog')
 }
 
@@ -92,6 +93,8 @@ export async function updateBlogPost(id: string, formData: FormData) {
     },
   })
   revalidatePath('/admin/blog')
+  revalidatePath('/blog')
+  revalidatePath(`/blog/${newSlug}`)
   redirect('/admin/blog')
 }
 

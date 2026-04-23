@@ -4,7 +4,7 @@ import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { updateBlogPost } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Eye } from 'lucide-react'
 
 const categories = ['Cloud', 'AI & Data', 'Cybersecurity', 'Digital Transformation', 'DevOps']
 
@@ -30,12 +30,21 @@ export default async function EditBlogPostPage({ params }: Props) {
     <>
       <AdminTopBar title="Edit Blog Post" user={session!.user} />
       <div className="p-6 max-w-4xl">
-        <Link
-          href="/admin/blog"
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 mb-5 transition-colors"
-        >
-          <ChevronLeft size={16} /> Back to Blog Posts
-        </Link>
+        <div className="flex items-center justify-between mb-5">
+          <Link
+            href="/admin/blog"
+            className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          >
+            <ChevronLeft size={16} /> Back to Blog Posts
+          </Link>
+          <Link
+            href={`/blog/${post.slug}`}
+            target="_blank"
+            className="flex items-center gap-1.5 text-sm text-emerald-600 hover:text-emerald-800 transition-colors"
+          >
+            <Eye size={15} /> Preview
+          </Link>
+        </div>
 
         <form action={updateWithSlug} className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
