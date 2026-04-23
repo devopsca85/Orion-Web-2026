@@ -38,7 +38,7 @@ export default async function EditAwardPage({ params }: Props) {
               </div>
               <div>
                 <label htmlFor="year" className="block text-sm font-medium text-slate-700 mb-1">Year</label>
-                <input id="year" name="year" type="number" defaultValue={award.year} min={2000} max={currentYear + 1} className={ic} />
+                <input id="year" name="year" type="number" defaultValue={award.year ?? undefined} min={2000} max={currentYear + 1} className={ic} />
               </div>
             </div>
             <div>

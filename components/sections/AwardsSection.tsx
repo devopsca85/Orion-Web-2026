@@ -6,7 +6,7 @@ async function getAwards() {
   try {
     const rows = await prisma.award.findMany({
       where: { active: true },
-      orderBy: [{ sortOrder: 'asc' }, { year: 'desc' }],
+      orderBy: [{ sortOrder: 'asc' }],
       select: { id: true, title: true, issuer: true, year: true, logoUrl: true, description: true },
     });
     return rows;
@@ -42,7 +42,9 @@ export async function AwardsSection() {
                   <Trophy className="h-7 w-7 text-amber-500" />
                 </div>
               )}
-              <p className="text-xs font-medium text-gray-400 mb-1">{award.issuer} · {award.year}</p>
+              <p className="text-xs font-medium text-gray-400 mb-1">
+                {[award.issuer, award.year].filter(Boolean).join(' · ')}
+              </p>
               <h3 className="text-sm font-semibold text-gray-900 leading-snug">{award.title}</h3>
               {award.description && (
                 <p className="mt-2 text-xs text-gray-500 leading-relaxed">{award.description}</p>
