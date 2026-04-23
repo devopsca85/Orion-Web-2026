@@ -37,6 +37,8 @@ export async function createProduct(formData: FormData) {
     data: {
       slug,
       title,
+      tagline:     '',
+      description: '',
       logoUrl:     (formData.get('logoUrl')     as string || '').trim() || null,
       redirectUrl: (formData.get('redirectUrl') as string || '').trim() || null,
       features:    [],
