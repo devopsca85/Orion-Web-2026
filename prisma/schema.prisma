@@ -380,7 +380,7 @@ model Award {
   id          String   @id @default(cuid())
   title       String   @db.VarChar(200)
   issuer      String   @db.VarChar(150)
-  year        Int
+  year        Int?
   logoUrl     String?  @db.VarChar(512)
   description String?  @db.VarChar(500)
   sortOrder   Int      @default(0)

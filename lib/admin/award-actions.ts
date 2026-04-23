@@ -16,7 +16,7 @@ export async function createAward(formData: FormData) {
     data: {
       title: (formData.get('title') as string) || '',
       issuer: (formData.get('issuer') as string) || '',
-      year: parseInt((formData.get('year') as string) || String(new Date().getFullYear())),
+      year: (formData.get('year') as string) ? parseInt(formData.get('year') as string) : null,
       logoUrl: (formData.get('logoUrl') as string) || null,
       description: (formData.get('description') as string) || null,
       sortOrder: parseInt((formData.get('sortOrder') as string) || '0'),
@@ -35,7 +35,7 @@ export async function updateAward(id: string, formData: FormData) {
     data: {
       title: (formData.get('title') as string) || '',
       issuer: (formData.get('issuer') as string) || '',
-      year: parseInt((formData.get('year') as string) || String(new Date().getFullYear())),
+      year: (formData.get('year') as string) ? parseInt(formData.get('year') as string) : null,
       logoUrl: (formData.get('logoUrl') as string) || null,
       description: (formData.get('description') as string) || null,
       sortOrder: parseInt((formData.get('sortOrder') as string) || '0'),
