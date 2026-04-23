@@ -60,8 +60,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Add legacy URL redirects here as needed
-      // { source: '/old-page', destination: '/new-page', permanent: true },
+      { source: '/case-studies', destination: '/portfolio', permanent: true },
+      { source: '/case-studies/:slug*', destination: '/portfolio/:slug*', permanent: true },
     ];
   },
 };

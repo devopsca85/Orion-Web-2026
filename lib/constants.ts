@@ -136,7 +136,7 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Orion Customer Portal', href: '/products/orion-customer-portal', description: 'Self-service portal giving customers 24/7 access to support tickets, invoices, and project status.',                      logoUrl: '/assets/images/logo.png' },
     ],
   },
-  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'Portfolio',    href: '/portfolio' },
   { label: 'Careers',      href: '/careers' },
   { label: 'Blog',         href: '/blog' },
   { label: 'Contact Us',   href: '/contact' },
@@ -166,7 +166,6 @@ export const FOOTER_LINKS = {
   company: [
     { label: 'About Us',    href: '/about' },
     { label: 'Portfolio',   href: '/portfolio' },
-    { label: 'Case Studies', href: '/case-studies' },
     { label: 'Blog',        href: '/blog' },
     { label: 'Careers',     href: '/careers' },
     { label: 'Contact',     href: '/contact' },

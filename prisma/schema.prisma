@@ -563,31 +563,6 @@ model PageSection {
   @@map("page_sections")
 }
 
-/// Case studies — client success stories with challenge/solution/results
-model CaseStudy {
-  id           String   @id @default(cuid())
-  slug         String   @unique @db.VarChar(100)
-  title        String   @db.VarChar(200)
-  client       String   @db.VarChar(150)
-  industry     String   @db.VarChar(100)
-  service      String?  @db.VarChar(150)
-  summary      String   @db.VarChar(500)
-  challenge    String   @db.Text
-  solution     String   @db.Text
-  results      String   @db.Text
-  metrics      Json?
-  technologies Json?
-  imageUrl     String?  @db.VarChar(512)
-  featured     Boolean  @default(false)
-  published    Boolean  @default(true)
-  sortOrder    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([published])
-  @@map("case_studies")
-}
-
 /// Editable feature/benefit items for the Why Us section
 model SiteFeature {
   id          Int      @id @default(autoincrement())

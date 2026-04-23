@@ -164,6 +164,8 @@ export async function updatePortfolioItem(slug: string, formData: FormData) {
     },
   })
   revalidatePath('/admin/portfolio')
+  revalidatePath('/')
+  revalidatePath('/portfolio')
   redirect('/admin/portfolio')
 }
 

@@ -6,9 +6,22 @@ import { Container, Section, SectionHeader } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
 import { CTA } from '@/components/sections/CTA';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
-import { portfolioItems } from '@/lib/data/portfolio';
+import { portfolioItems as staticPortfolioItems } from '@/lib/data/portfolio';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { SITE_CONFIG } from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
+
+interface PortfolioDisplayItem {
+  slug: string;
+  title: string;
+  client: string;
+  industry: string;
+  service: string;
+  challenge: string;
+  solution: string;
+  metrics: { value: string; label: string }[];
+  technologies: string[];
+}
 
 export const metadata: Metadata = genMeta({
   title: 'Portfolio & Case Studies',
@@ -18,7 +31,27 @@ export const metadata: Metadata = genMeta({
   keywords: ['case studies', 'client success', 'technology portfolio', 'enterprise projects'],
 });
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  let items: PortfolioDisplayItem[] = staticPortfolioItems;
+  try {
+    const rows = await prisma.portfolioItem.findMany({
+      where: { published: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+    });
+    if (rows.length > 0) {
+      items = rows.map((r) => ({
+        slug: r.slug,
+        title: r.title,
+        client: r.client ?? '',
+        industry: r.industry ?? '',
+        service: r.service ?? '',
+        challenge: r.challenge ?? '',
+        solution: r.solution ?? '',
+        metrics: (r.metrics as { value: string; label: string }[]) ?? [],
+        technologies: (r.technologies as string[]) ?? [],
+      }));
+    }
+  } catch { /* fall back to static */ }
   return (
     <>
       <BreadcrumbSchema
@@ -43,7 +76,7 @@ export default function PortfolioPage() {
           />
 
           <div className="space-y-12">
-            {portfolioItems.map((item, index) => (
+            {items.map((item, index) => (
               <article
                 key={item.slug}
                 className={`grid gap-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-soft lg:grid-cols-5 lg:gap-12 ${

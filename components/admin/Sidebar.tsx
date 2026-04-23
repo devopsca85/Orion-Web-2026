@@ -37,7 +37,6 @@ const navGroups: NavGroup[] = [
     title: 'Content',
     items: [
       { href: '/admin/blog',         label: 'Blog Posts',   icon: <FileText size={16} /> },
-      { href: '/admin/case-studies', label: 'Case Studies', icon: <Briefcase size={16} /> },
       { href: '/admin/portfolio',    label: 'Portfolio',    icon: <Layers size={16} /> },
       { href: '/admin/testimonials', label: 'Testimonials', icon: <Quote size={16} /> },
       { href: '/admin/team',         label: 'Team',         icon: <Users size={16} /> },
