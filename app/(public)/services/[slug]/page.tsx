@@ -76,7 +76,6 @@ export default async function ServicePage({ params }: Props) {
         subtext={service?.heroSubtext ?? '12+ Years of Experience | Diverse Expertise | 24×7 Support'}
         description={description}
         stats={heroStats}
-        imageUrl={service?.heroImageUrl ?? undefined}
         serviceName={title}
         breadcrumbs={[
           { label: 'Home', href: '/' },
@@ -85,10 +84,30 @@ export default async function ServicePage({ params }: Props) {
         ]}
       />
 
-      {(service?.description || features.length > 0 || benefits.length > 0 || technologies.length > 0) && (
+      {(service?.heroImageUrl || service?.description || features.length > 0 || benefits.length > 0 || technologies.length > 0) && (
         <Section className="bg-white">
           <Container>
-            {service?.description ? (
+            {/* Image + description side by side when image is present */}
+            {service?.heroImageUrl && service?.description ? (
+              <div className="grid lg:grid-cols-2 gap-10 items-start mb-12">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={service.heroImageUrl}
+                  alt={title}
+                  className="w-full rounded-2xl object-cover shadow-sm"
+                />
+                <div className="prose prose-gray max-w-none" dangerouslySetInnerHTML={{ __html: service.description }} />
+              </div>
+            ) : service?.heroImageUrl ? (
+              <div className="mb-12 flex justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={service.heroImageUrl}
+                  alt={title}
+                  className="w-full max-w-3xl rounded-2xl object-cover shadow-sm"
+                />
+              </div>
+            ) : service?.description ? (
               <div className="prose prose-gray max-w-4xl mx-auto mb-12" dangerouslySetInnerHTML={{ __html: service.description }} />
             ) : (
               <div className="max-w-4xl mx-auto text-center py-12">
