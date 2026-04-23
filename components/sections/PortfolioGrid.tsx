@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Container, Section, SectionHeader } from '@/components/ui/Container';
 import { Badge } from '@/components/ui/Badge';
@@ -16,16 +17,27 @@ interface PortfolioCardData {
   service: string;
   challenge: string;
   metrics: Metric[];
+  imageUrl?: string | null;
 }
 
 function PortfolioCard({ item }: { item: PortfolioCardData }) {
   return (
     <article className="group relative overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover">
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary to-primary-700">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-6xl font-bold text-white/10 select-none">{item.client.charAt(0)}</p>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-6xl font-bold text-white/10 select-none">{item.client?.charAt(0) ?? '?'}</p>
+          </div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-4 left-4">
           <Badge variant="secondary" className="bg-secondary text-white">{item.service}</Badge>
         </div>
@@ -69,7 +81,7 @@ export async function PortfolioGrid({
       where: { published: true, ...(showAll ? {} : { featured: true }) },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
       take: showAll ? undefined : 3,
-      select: { slug: true, title: true, client: true, industry: true, service: true, challenge: true, metrics: true },
+      select: { slug: true, title: true, client: true, industry: true, service: true, challenge: true, metrics: true, imageUrl: true },
     });
     dbItems = rows.map((r) => ({
       ...r,
