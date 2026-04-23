@@ -31,7 +31,7 @@ export async function createBlogPost(formData: FormData) {
 
   const title = formData.get('title') as string
   const slugRaw = formData.get('slug') as string
-  const slug = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const slug = (slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')).slice(0, 200)
   const tagsRaw = formData.get('tags') as string
   const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
   const status = (formData.get('status') as PostStatus) || PostStatus.DRAFT
@@ -49,8 +49,8 @@ export async function createBlogPost(formData: FormData) {
       featured: formData.get('featured') === 'on',
       imageUrl: (formData.get('imageUrl') as string) || null,
       readingTime: parseInt(formData.get('readingTime') as string) || 5,
-      metaTitle: (formData.get('metaTitle') as string) || null,
-      metaDesc: (formData.get('metaDesc') as string) || null,
+      metaTitle: ((formData.get('metaTitle') as string) || '').slice(0, 250) || null,
+      metaDesc: ((formData.get('metaDesc') as string) || '').slice(0, 500) || null,
       publishedAt: status === PostStatus.PUBLISHED ? new Date() : null,
     },
   })
@@ -64,7 +64,7 @@ export async function updateBlogPost(id: string, formData: FormData) {
   const tagsRaw = formData.get('tags') as string
   const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
   const newSlugRaw = (formData.get('slug') as string || '').trim()
-  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : id
+  const newSlug = (newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : id).slice(0, 200)
 
   await prisma.blogPost.update({
     where: { slug: id },
@@ -79,8 +79,8 @@ export async function updateBlogPost(id: string, formData: FormData) {
       featured: formData.get('featured') === 'on',
       imageUrl: (formData.get('imageUrl') as string) || null,
       readingTime: parseInt(formData.get('readingTime') as string) || 5,
-      metaTitle: (formData.get('metaTitle') as string) || null,
-      metaDesc: (formData.get('metaDesc') as string) || null,
+      metaTitle: ((formData.get('metaTitle') as string) || '').slice(0, 250) || null,
+      metaDesc: ((formData.get('metaDesc') as string) || '').slice(0, 500) || null,
       publishedAt: status === PostStatus.PUBLISHED ? new Date() : null,
     },
   })

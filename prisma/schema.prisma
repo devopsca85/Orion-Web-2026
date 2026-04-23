@@ -199,11 +199,11 @@ model Author {
 
 /// Blog posts (replaces lib/data/blog.ts)
 model BlogPost {
-  slug        String     @id @db.VarChar(100)
-  title       String     @db.VarChar(250)
-  excerpt     String     @db.VarChar(500)
+  slug        String     @id @db.VarChar(200)
+  title       String     @db.VarChar(500)
+  excerpt     String     @db.Text
   content     String     @db.LongText
-  category    String     @db.VarChar(80)
+  category    String     @db.VarChar(100)
   /// JSON array of tag strings
   tags        Json
   authorId    String
@@ -212,9 +212,9 @@ model BlogPost {
   featured    Boolean    @default(false)
   publishedAt DateTime?
   readingTime Int        @default(5)
-  imageUrl    String?    @db.VarChar(512)
-  metaTitle   String?    @db.VarChar(70)
-  metaDesc    String?    @db.VarChar(160)
+  imageUrl    String?    @db.VarChar(2048)
+  metaTitle   String?    @db.VarChar(250)
+  metaDesc    String?    @db.VarChar(500)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
