@@ -17,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const page = await prisma.page.findUnique({ where: { slug, status: 'PUBLISHED' } })
+  const page = await prisma.page.findFirst({ where: { slug } })
   if (!page) return {}
   return {
     title: page.metaTitle || page.title,
@@ -31,7 +31,7 @@ export default async function PublicPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const page = await prisma.page.findUnique({ where: { slug, status: 'PUBLISHED' } })
+  const page = await prisma.page.findFirst({ where: { slug } })
   if (!page) notFound()
 
   const containerSize =
@@ -42,14 +42,21 @@ export default async function PublicPage({
       : 'md'
 
   return (
-    <section className="py-16 md:py-24">
-      <Container size={containerSize}>
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">{page.title}</h1>
-        <div
-          className="prose prose-slate prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: page.content }}
-        />
-      </Container>
-    </section>
+    <>
+      {page.status !== 'PUBLISHED' && (
+        <div className="bg-amber-400 text-amber-900 text-sm font-medium text-center py-2 px-4">
+          Preview — this page is <strong>{page.status.toLowerCase()}</strong> and not visible to the public until published.
+        </div>
+      )}
+      <section className="py-16 md:py-24">
+        <Container size={containerSize}>
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">{page.title}</h1>
+          <div
+            className="prose prose-slate prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: page.content }}
+          />
+        </Container>
+      </section>
+    </>
   )
 }
