@@ -24,12 +24,24 @@ const DEFAULT_FEATURES = [
 
 export default async function FeaturesAdminPage() {
   const session = await auth()
-  const features = await prisma.siteFeature.findMany({ orderBy: { sortOrder: 'asc' } })
+  let features: Awaited<ReturnType<typeof prisma.siteFeature.findMany>> = []
+  let dbError = false
+  try {
+    features = await prisma.siteFeature.findMany({ orderBy: { sortOrder: 'asc' } })
+  } catch {
+    dbError = true
+  }
 
   return (
     <>
       <AdminTopBar title="Why Us — Features" user={session!.user} />
       <div className="p-6 max-w-4xl space-y-6">
+
+        {dbError && (
+          <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+            <strong>Database table not ready.</strong> Run <code className="bg-amber-100 px-1 rounded">npm run db:push</code> on the server to create the site_features table.
+          </div>
+        )}
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex gap-2 text-sm text-blue-700">
           <Info size={16} className="shrink-0 mt-0.5" />
