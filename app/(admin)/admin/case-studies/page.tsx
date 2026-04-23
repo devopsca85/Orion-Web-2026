@@ -7,12 +7,23 @@ import { Plus, Pencil, Trash2, Star } from 'lucide-react'
 
 export default async function CaseStudiesPage() {
   const session = await auth()
-  const studies = await prisma.caseStudy.findMany({ orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] })
+  let studies: Awaited<ReturnType<typeof prisma.caseStudy.findMany>> = []
+  let dbError = false
+  try {
+    studies = await prisma.caseStudy.findMany({ orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }] })
+  } catch {
+    dbError = true
+  }
 
   return (
     <>
       <AdminTopBar title="Case Studies" user={session!.user} />
       <div className="p-6">
+        {dbError && (
+          <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+            <strong>Database table not ready.</strong> Run <code className="bg-amber-100 px-1 rounded">npm run db:push</code> on the server to create the case_studies table.
+          </div>
+        )}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-slate-500">{studies.length} case {studies.length === 1 ? 'study' : 'studies'}</p>
           <Link href="/admin/case-studies/new" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">

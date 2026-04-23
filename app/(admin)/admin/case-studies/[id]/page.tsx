@@ -16,7 +16,10 @@ interface Props { params: Promise<{ id: string }> }
 export default async function EditCaseStudyPage({ params }: Props) {
   const session = await auth()
   const { id } = await params
-  const s = await prisma.caseStudy.findUnique({ where: { id } })
+  let s: Awaited<ReturnType<typeof prisma.caseStudy.findUnique>> = null
+  try {
+    s = await prisma.caseStudy.findUnique({ where: { id } })
+  } catch { /* table may not exist yet */ }
   if (!s) notFound()
   const action = updateCaseStudy.bind(null, id)
 
