@@ -3,7 +3,8 @@ import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { prisma } from '@/lib/prisma'
 import { deleteCaseStudy } from '@/lib/admin/case-study-actions'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2, Star } from 'lucide-react'
+import { Plus, Pencil, Star } from 'lucide-react'
+import { DeleteButton } from '@/components/admin/DeleteButton'
 
 export default async function CaseStudiesPage() {
   const session = await auth()
@@ -71,11 +72,7 @@ export default async function CaseStudiesPage() {
                       <Link href={`/admin/case-studies/${s.id}`} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
                         <Pencil size={11} /> Edit
                       </Link>
-                      <form action={deleteCaseStudy.bind(null, s.id)} onSubmit={(e) => { if (!confirm('Delete this case study?')) e.preventDefault() }}>
-                        <button type="submit" className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
-                          <Trash2 size={11} /> Delete
-                        </button>
-                      </form>
+                      <DeleteButton action={deleteCaseStudy.bind(null, s.id)} label="Delete" />
                     </div>
                   </td>
                 </tr>
