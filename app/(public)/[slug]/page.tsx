@@ -7,7 +7,7 @@ export async function generateStaticParams() {
   const pages = await prisma.page.findMany({
     where: { status: 'PUBLISHED' },
     select: { slug: true },
-  })
+  }).catch(() => [])
   return pages.map((p) => ({ slug: p.slug }))
 }
 

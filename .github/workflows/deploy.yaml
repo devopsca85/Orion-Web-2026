@@ -27,6 +27,8 @@ jobs:
           GIT_SSH_COMMAND='ssh -i /home/dev/.ssh/id_rsa' git pull origin develop
           echo "Installing dependencies..."
           npm install
+          echo "Syncing database schema..."
+          npx prisma db push --accept-data-loss
           echo "Building application..."
           npm run build
           echo "Restarting PM2..."
