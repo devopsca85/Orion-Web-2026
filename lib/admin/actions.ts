@@ -22,10 +22,11 @@ export async function createBlogPost(formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR', 'AUTHOR')
   const session = await auth()
 
-  let author = await prisma.author.findFirst({ where: { name: session!.user.name! } })
+  const authorName = (formData.get('authorName') as string)?.trim() || session!.user.name || 'Orion eSolutions'
+  let author = await prisma.author.findFirst({ where: { name: authorName } })
   if (!author) {
     author = await prisma.author.create({
-      data: { name: session!.user.name!, role: session!.user.role },
+      data: { name: authorName, role: session!.user.role },
     })
   }
 
@@ -65,6 +66,12 @@ export async function updateBlogPost(id: string, formData: FormData) {
   const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
   const newSlugRaw = (formData.get('slug') as string || '').trim()
   const newSlug = (newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : id).slice(0, 200)
+
+  const authorName = (formData.get('authorName') as string)?.trim()
+  if (authorName) {
+    const post = await prisma.blogPost.findUnique({ where: { slug: id }, select: { authorId: true } })
+    if (post) await prisma.author.update({ where: { id: post.authorId }, data: { name: authorName } })
+  }
 
   await prisma.blogPost.update({
     where: { slug: id },

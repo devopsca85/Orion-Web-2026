@@ -25,6 +25,20 @@ export default async function NewBlogPostPage() {
             <h2 className="font-semibold text-slate-800 text-lg">Post Details</h2>
 
             <div>
+              <label htmlFor="authorName" className="block text-sm font-medium text-slate-700 mb-1">
+                Author Name
+              </label>
+              <input
+                id="authorName"
+                name="authorName"
+                type="text"
+                placeholder="e.g. Orion eSolutions Team"
+                defaultValue={session!.user.name ?? ''}
+                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
               <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">
                 Title <span className="text-red-500">*</span>
               </label>
