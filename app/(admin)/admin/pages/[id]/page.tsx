@@ -40,7 +40,7 @@ export default async function EditPageAdminPage({ params }: Props) {
           </Link>
           {page.status === 'PUBLISHED' && (
             <Link
-              href={`/pages/${page.slug}`}
+              href={`/${page.slug}`}
               target="_blank"
               className="flex items-center gap-1.5 text-sm text-emerald-600 hover:text-emerald-800 transition-colors"
             >
@@ -75,7 +75,7 @@ export default async function EditPageAdminPage({ params }: Props) {
                 Slug
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-slate-400 text-sm">/pages/</span>
+                <span className="text-slate-400 text-sm">/</span>
                 <input
                   id="slug"
                   name="slug"

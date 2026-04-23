@@ -141,7 +141,7 @@ export default async function PagesAdminPage({ searchParams }: Props) {
                             </Link>
                             {p.status === 'PUBLISHED' && (
                               <Link
-                                href={`/pages/${p.slug}`}
+                                href={`/${p.slug}`}
                                 target="_blank"
                                 className="flex items-center gap-1 text-slate-600 hover:text-emerald-600 px-2.5 py-1.5 rounded-lg text-sm bg-slate-50 hover:bg-emerald-50 transition-colors"
                               >

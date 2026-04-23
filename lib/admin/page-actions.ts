@@ -51,7 +51,7 @@ export async function updatePage(id: string, formData: FormData) {
     },
   })
   revalidatePath('/admin/pages')
-  revalidatePath(`/pages/${formData.get('slug')}`)
+  revalidatePath(`/${formData.get('slug')}`)
   redirect('/admin/pages')
 }
 

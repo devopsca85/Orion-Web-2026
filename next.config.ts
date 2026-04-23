@@ -63,6 +63,7 @@ const nextConfig: NextConfig = {
     return [
       { source: '/case-studies', destination: '/portfolio', permanent: true },
       { source: '/case-studies/:slug*', destination: '/portfolio/:slug*', permanent: true },
+      { source: '/pages/:slug*', destination: '/:slug*', permanent: true },
     ];
   },
 };
