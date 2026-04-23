@@ -23,12 +23,12 @@ export default async function NewAwardPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="issuer" className="block text-sm font-medium text-slate-700 mb-1">Issuer / Organization <span className="text-red-500">*</span></label>
-                <input id="issuer" name="issuer" type="text" required placeholder="Gartner, Forbes..." className={ic} />
+                <label htmlFor="issuer" className="block text-sm font-medium text-slate-700 mb-1">Issuer / Organization</label>
+                <input id="issuer" name="issuer" type="text" placeholder="Gartner, Forbes..." className={ic} />
               </div>
               <div>
-                <label htmlFor="year" className="block text-sm font-medium text-slate-700 mb-1">Year <span className="text-red-500">*</span></label>
-                <input id="year" name="year" type="number" required defaultValue={currentYear} min={2000} max={currentYear + 1} className={ic} />
+                <label htmlFor="year" className="block text-sm font-medium text-slate-700 mb-1">Year</label>
+                <input id="year" name="year" type="number" defaultValue={currentYear} min={2000} max={currentYear + 1} className={ic} />
               </div>
             </div>
             <div>
