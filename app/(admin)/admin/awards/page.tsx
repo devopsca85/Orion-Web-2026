@@ -12,10 +12,10 @@ export default async function AwardsPage({ searchParams }: Props) {
   const session = await auth()
   const { saved } = await searchParams
 
-  let awards: { id: string; title: string; issuer: string; year: number; sortOrder: number; active: boolean }[] = []
+  let awards: { id: string; title: string; issuer: string; year: number | null; sortOrder: number; active: boolean }[] = []
   try {
     awards = await prisma.award.findMany({
-      orderBy: [{ sortOrder: 'asc' }, { year: 'desc' }],
+      orderBy: [{ sortOrder: 'asc' }],
       select: { id: true, title: true, issuer: true, year: true, sortOrder: true, active: true },
     })
   } catch { /* table not yet migrated */ }
