@@ -41,9 +41,12 @@ export async function createCaseStudy(formData: FormData) {
 
 export async function updateCaseStudy(id: string, formData: FormData) {
   await requireAdmin()
+  const newSlugRaw = (formData.get('slug') as string || '').trim()
+  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : undefined
   await prisma.caseStudy.update({
     where: { id },
     data: {
+      ...(newSlug ? { slug: newSlug } : {}),
       title:     String(formData.get('title') ?? ''),
       client:    String(formData.get('client') ?? ''),
       industry:  String(formData.get('industry') ?? ''),

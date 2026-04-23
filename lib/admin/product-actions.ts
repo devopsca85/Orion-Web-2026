@@ -55,9 +55,12 @@ export async function createProduct(formData: FormData) {
 
 export async function updateProduct(slug: string, formData: FormData) {
   await requireAdmin()
+  const newSlugRaw = (formData.get('slug') as string || '').trim()
+  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : slug
   await prisma.product.update({
     where: { slug },
     data: {
+      slug:        newSlug,
       title:       (formData.get('title')       as string).trim(),
       tagline:     (formData.get('tagline')     as string || '').trim(),
       description: (formData.get('description') as string || '').trim(),

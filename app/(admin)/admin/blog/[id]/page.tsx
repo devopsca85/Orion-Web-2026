@@ -57,13 +57,13 @@ export default async function EditBlogPostPage({ params }: Props) {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Slug <span className="text-slate-400 text-xs font-normal">(read-only)</span>
+                Slug <span className="text-slate-400 text-xs font-normal ml-1">— changing this changes the URL</span>
               </label>
               <input
+                name="slug"
                 type="text"
-                value={post.slug}
-                disabled
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-slate-50 text-slate-500"
+                defaultValue={post.slug}
+                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
               />
             </div>
 

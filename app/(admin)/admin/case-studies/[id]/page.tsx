@@ -54,8 +54,8 @@ export default async function EditCaseStudyPage({ params }: Props) {
                 <input name="service" type="text" defaultValue={s.service ?? ''} className={ic} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Slug</label>
-                <input value={s.slug} disabled className={ic + ' bg-slate-50 text-slate-400'} />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Slug <span className="text-slate-400 text-xs font-normal ml-1">— changes the URL</span></label>
+                <input name="slug" type="text" defaultValue={s.slug} className={ic + ' font-mono'} />
               </div>
             </div>
             <div>

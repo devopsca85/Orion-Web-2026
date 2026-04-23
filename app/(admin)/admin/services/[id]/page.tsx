@@ -37,8 +37,8 @@ export default async function EditServicePage({ params }: Props) {
                 <input id="title" name="title" type="text" required defaultValue={service.title} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Slug (read-only)</label>
-                <input type="text" value={service.slug} disabled className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-slate-50 text-slate-500" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Slug <span className="text-slate-400 text-xs font-normal ml-1">— changes the URL</span></label>
+                <input name="slug" type="text" defaultValue={service.slug} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono" />
               </div>
             </div>
 

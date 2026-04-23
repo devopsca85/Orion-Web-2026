@@ -63,10 +63,13 @@ export async function updateBlogPost(id: string, formData: FormData) {
   const status = (formData.get('status') as PostStatus) || PostStatus.DRAFT
   const tagsRaw = formData.get('tags') as string
   const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : []
+  const newSlugRaw = (formData.get('slug') as string || '').trim()
+  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : id
 
   await prisma.blogPost.update({
     where: { slug: id },
     data: {
+      slug: newSlug,
       title: formData.get('title') as string,
       excerpt: formData.get('excerpt') as string,
       content: formData.get('content') as string,
@@ -139,10 +142,13 @@ export async function updatePortfolioItem(slug: string, formData: FormData) {
   } catch {
     metrics = []
   }
+  const newSlugRaw = (formData.get('slug') as string || '').trim()
+  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : slug
 
   await prisma.portfolioItem.update({
     where: { slug },
     data: {
+      slug: newSlug,
       title: formData.get('title') as string,
       client: formData.get('client') as string,
       industry: formData.get('industry') as string,
@@ -255,10 +261,13 @@ export async function createService(formData: FormData) {
 
 export async function updateService(slug: string, formData: FormData) {
   await requireRole('SUPER_ADMIN', 'ADMIN', 'EDITOR')
+  const newSlugRaw = (formData.get('slug') as string || '').trim()
+  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : slug
 
   await prisma.service.update({
     where: { slug },
     data: {
+      slug:          newSlug,
       title:         formData.get('title') as string,
       shortDesc:     formData.get('shortDesc') as string,
       description:   formData.get('description') as string,
