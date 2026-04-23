@@ -1,10 +1,11 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { MetricsEditor } from '@/components/admin/MetricsEditor'
 import { updatePortfolioItem } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Info } from 'lucide-react'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -19,7 +20,9 @@ export default async function EditPortfolioItemPage({ params }: Props) {
 
   const updateWithSlug = updatePortfolioItem.bind(null, item.slug)
   const techString = Array.isArray(item.technologies) ? (item.technologies as string[]).join(', ') : ''
-  const metricsString = JSON.stringify(item.metrics, null, 2)
+  const existingMetrics = Array.isArray(item.metrics)
+    ? (item.metrics as { value: string; label: string }[])
+    : []
 
   return (
     <>
@@ -136,16 +139,12 @@ export default async function EditPortfolioItemPage({ params }: Props) {
             <h2 className="font-semibold text-slate-800 text-lg">Additional Details</h2>
 
             <div>
-              <label htmlFor="metrics" className="block text-sm font-medium text-slate-700 mb-1">
-                Metrics <span className="text-slate-400 text-xs font-normal">(JSON array)</span>
-              </label>
-              <textarea
-                id="metrics"
-                name="metrics"
-                rows={4}
-                defaultValue={metricsString}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-2">Key Metrics</label>
+              <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mb-3 text-xs text-blue-700">
+                <Info size={13} className="shrink-0 mt-0.5" />
+                Up to 4 stats shown on the card — e.g. &ldquo;10x faster&rdquo; / &ldquo;Deployment Frequency&rdquo;
+              </div>
+              <MetricsEditor defaultMetrics={existingMetrics} />
             </div>
 
             <div>

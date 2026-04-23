@@ -120,9 +120,12 @@ export async function createPortfolioItem(formData: FormData) {
       technologies,
       imageUrl: (formData.get('imageUrl') as string) || null,
       featured: formData.get('featured') === 'on',
+      published: formData.get('published') === 'on',
+      sortOrder: parseInt((formData.get('sortOrder') as string) || '0') || 0,
     },
   })
   revalidatePath('/admin/portfolio')
+  revalidatePath('/')
   redirect('/admin/portfolio')
 }
 
