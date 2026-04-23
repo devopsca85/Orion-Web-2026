@@ -411,9 +411,10 @@ model EngagementModel {
 model Product {
   slug        String   @id @db.VarChar(100)
   title       String   @db.VarChar(150)
-  tagline     String   @db.VarChar(300)
-  description String   @db.Text
+  tagline     String   @default("") @db.VarChar(300)
+  description String   @default("") @db.Text
   logoUrl     String?  @db.VarChar(512)
+  redirectUrl String?  @db.VarChar(512)
   features    Json
   metaTitle   String?  @db.VarChar(70)
   metaDesc    String?  @db.VarChar(160)

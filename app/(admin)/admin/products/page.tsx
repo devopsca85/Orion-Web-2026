@@ -30,7 +30,7 @@ export default async function ProductsAdminPage() {
               <thead>
                 <tr className="bg-slate-50 text-xs text-slate-500 uppercase tracking-wider border-b border-slate-100">
                   <th className="text-left px-5 py-3 font-medium">Title</th>
-                  <th className="text-left px-5 py-3 font-medium">Slug</th>
+                  <th className="text-left px-5 py-3 font-medium">Redirect URL</th>
                   <th className="text-left px-5 py-3 font-medium">Sort</th>
                   <th className="text-left px-5 py-3 font-medium">Status</th>
                   <th className="text-left px-5 py-3 font-medium">Actions</th>
@@ -50,7 +50,7 @@ export default async function ProductsAdminPage() {
                     return (
                       <tr key={product.slug} className="hover:bg-slate-50">
                         <td className="px-5 py-3 font-medium text-slate-800">{product.title}</td>
-                        <td className="px-5 py-3 text-slate-500 font-mono text-xs">{product.slug}</td>
+                        <td className="px-5 py-3 text-slate-500 text-xs truncate max-w-xs">{product.redirectUrl || <span className="text-slate-300 italic">not set</span>}</td>
                         <td className="px-5 py-3 text-slate-500">{product.sortOrder}</td>
                         <td className="px-5 py-3">
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${product.published ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>

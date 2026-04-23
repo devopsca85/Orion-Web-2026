@@ -12,11 +12,11 @@ async function getPublishedProducts(): Promise<NavLinkProductMega['items']> {
     const rows = await prisma.product.findMany({
       where: { published: true },
       orderBy: { sortOrder: 'asc' },
-      select: { slug: true, title: true, tagline: true, logoUrl: true },
+      select: { slug: true, title: true, tagline: true, logoUrl: true, redirectUrl: true },
     })
     return rows.map((p) => ({
       label: p.title,
-      href: `/products/${p.slug}`,
+      href: p.redirectUrl || `/products/${p.slug}`,
       description: p.tagline ?? '',
       logoUrl: p.logoUrl ?? '/assets/images/logo.png',
     }))

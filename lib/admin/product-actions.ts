@@ -31,18 +31,15 @@ function slugify(str: string) {
 export async function createProduct(formData: FormData) {
   await requireAdmin()
   const title = (formData.get('title') as string).trim()
-  const slug  = ((formData.get('slug') as string) || '').trim() || slugify(title)
+  const slug  = slugify(title)
 
   await prisma.product.create({
     data: {
       slug,
       title,
-      tagline:     (formData.get('tagline')     as string || '').trim(),
-      description: (formData.get('description') as string || '').trim(),
       logoUrl:     (formData.get('logoUrl')     as string || '').trim() || null,
-      features:    parseJson(formData.get('features') as string || '[]'),
-      metaTitle:   (formData.get('metaTitle')   as string || '').trim() || null,
-      metaDesc:    (formData.get('metaDesc')    as string || '').trim() || null,
+      redirectUrl: (formData.get('redirectUrl') as string || '').trim() || null,
+      features:    [],
       published:   formData.get('published') === 'on',
       sortOrder:   parseInt(formData.get('sortOrder') as string || '0'),
     },
@@ -55,19 +52,15 @@ export async function createProduct(formData: FormData) {
 
 export async function updateProduct(slug: string, formData: FormData) {
   await requireAdmin()
-  const newSlugRaw = (formData.get('slug') as string || '').trim()
-  const newSlug = newSlugRaw ? newSlugRaw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : slug
+  const title = (formData.get('title') as string).trim()
+  const newSlug = slugify(title) || slug
   await prisma.product.update({
     where: { slug },
     data: {
       slug:        newSlug,
-      title:       (formData.get('title')       as string).trim(),
-      tagline:     (formData.get('tagline')     as string || '').trim(),
-      description: (formData.get('description') as string || '').trim(),
+      title,
       logoUrl:     (formData.get('logoUrl')     as string || '').trim() || null,
-      features:    parseJson(formData.get('features') as string || '[]'),
-      metaTitle:   (formData.get('metaTitle')   as string || '').trim() || null,
-      metaDesc:    (formData.get('metaDesc')    as string || '').trim() || null,
+      redirectUrl: (formData.get('redirectUrl') as string || '').trim() || null,
       published:   formData.get('published') === 'on',
       sortOrder:   parseInt(formData.get('sortOrder') as string || '0'),
     },
