@@ -6,9 +6,10 @@ import { Container, Section } from '@/components/ui/Container';
 import { Card, CardIcon } from '@/components/ui/Card';
 import { CTA } from '@/components/sections/CTA';
 import { BreadcrumbSchema } from '@/components/seo/JsonLd';
-import { services } from '@/lib/data/services';
+import { services as staticServices } from '@/lib/data/services';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { SITE_CONFIG } from '@/lib/constants';
+import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = genMeta({
   title: 'Services',
@@ -30,7 +31,40 @@ const processSteps = [
   { step: '05', title: 'Evolve', description: 'Post-launch optimization, performance monitoring, and ongoing support to ensure your solution continues to deliver value.' },
 ];
 
-export default function ServicesPage() {
+interface ServiceCard {
+  slug: string;
+  title: string;
+  shortDesc: string;
+  icon: string;
+  features: string[];
+}
+
+export default async function ServicesPage() {
+  let services: ServiceCard[] = staticServices.map((s) => ({
+    slug: s.slug,
+    title: s.title,
+    shortDesc: s.shortDescription,
+    icon: s.icon,
+    features: s.features,
+  }));
+
+  try {
+    const dbServices = await prisma.service.findMany({
+      where: { published: true },
+      orderBy: [{ sortOrder: 'asc' }],
+      select: { slug: true, title: true, shortDesc: true, icon: true, features: true },
+    });
+    if (dbServices.length > 0) {
+      services = dbServices.map((s) => ({
+        slug: s.slug,
+        title: s.title,
+        shortDesc: s.shortDesc,
+        icon: s.icon,
+        features: Array.isArray(s.features) ? (s.features as string[]) : [],
+      }));
+    }
+  } catch { /* fall back to static */ }
+
   return (
     <>
       <BreadcrumbSchema
@@ -62,7 +96,7 @@ export default function ServicesPage() {
                     <h2 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
                       {service.title}
                     </h2>
-                    <p className="mb-4 leading-relaxed text-gray-600">{service.shortDescription}</p>
+                    <p className="mb-4 leading-relaxed text-gray-600">{service.shortDesc}</p>
                     <ul className="mb-5 space-y-2">
                       {service.features.slice(0, 3).map((feat) => (
                         <li key={feat} className="flex items-start gap-2 text-sm text-gray-600">

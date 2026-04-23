@@ -10,17 +10,11 @@ import { CheckCircle2 } from 'lucide-react'
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const slugs = [
-    'artificial-intelligence','application-development','cloud-services','technology-development',
-    'ai-development','generative-ai-development','llm-development','hire-machine-learning-developers',
-    'nlp-services','ai-consulting','software-development','custom-application-development',
-    'web-development','mobile-application-development','it-staff-augmentation','qa-services',
-    'erp-development','devops-consulting','cloud-managed-services','cloud-migration-services',
-    'crm-development','cybersecurity','managed-it-services','react-js-development',
-    'react-native-development','ionic-app-development','dot-net-development',
-    'codeigniter-development','api-web-services','zend-web-development',
-  ]
-  return slugs.map((slug) => ({ slug }))
+  const rows = await prisma.service.findMany({
+    where: { published: true },
+    select: { slug: true },
+  }).catch(() => [])
+  return rows.map((r) => ({ slug: r.slug }))
 }
 
 interface Props { params: Promise<{ slug: string }> }
@@ -49,7 +43,7 @@ export default async function ServicePage({ params }: Props) {
   } | null = null
 
   try {
-    service = await prisma.service.findUnique({
+    service = await prisma.service.findFirst({
       where: { slug, published: true },
       select: {
         title: true, shortDesc: true, description: true,
