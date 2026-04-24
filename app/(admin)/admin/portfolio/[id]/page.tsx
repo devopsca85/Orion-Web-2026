@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { MetricsEditor } from '@/components/admin/MetricsEditor'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { updatePortfolioItem } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -102,36 +103,18 @@ export default async function EditPortfolioItemPage({ params }: Props) {
             <h2 className="font-semibold text-slate-800 text-lg">Case Study</h2>
 
             <div>
-              <label htmlFor="challenge" className="block text-sm font-medium text-slate-700 mb-1">Challenge</label>
-              <textarea
-                id="challenge"
-                name="challenge"
-                rows={4}
-                defaultValue={item.challenge}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Challenge</label>
+              <RichTextEditor name="challenge" content={item.challenge ?? ''} minHeight="200px" />
             </div>
 
             <div>
-              <label htmlFor="solution" className="block text-sm font-medium text-slate-700 mb-1">Solution</label>
-              <textarea
-                id="solution"
-                name="solution"
-                rows={4}
-                defaultValue={item.solution}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Solution</label>
+              <RichTextEditor name="solution" content={item.solution ?? ''} minHeight="200px" />
             </div>
 
             <div>
-              <label htmlFor="outcome" className="block text-sm font-medium text-slate-700 mb-1">Outcome</label>
-              <textarea
-                id="outcome"
-                name="outcome"
-                rows={4}
-                defaultValue={item.outcome}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Outcome</label>
+              <RichTextEditor name="outcome" content={item.outcome ?? ''} minHeight="200px" />
             </div>
           </div>
 

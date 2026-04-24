@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { updateFAQ } from '@/lib/admin/faq-actions'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
@@ -32,8 +33,8 @@ export default async function EditFAQPage({ params }: Props) {
               <input id="question" name="question" type="text" required defaultValue={faq.question} className={ic} />
             </div>
             <div>
-              <label htmlFor="answer" className="block text-sm font-medium text-slate-700 mb-1">Answer <span className="text-red-500">*</span></label>
-              <textarea id="answer" name="answer" rows={6} required defaultValue={faq.answer} className={ic + ' resize-y'} />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Answer <span className="text-red-500">*</span></label>
+              <RichTextEditor name="answer" content={faq.answer ?? ''} minHeight="220px" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

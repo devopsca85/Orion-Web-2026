@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createJobOpening } from '@/lib/admin/job-opening-actions'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
@@ -59,7 +60,7 @@ export default async function NewJobOpeningPage() {
 
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-              <textarea name="description" rows={6} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y" placeholder="Role overview, responsibilities, what we're looking for…" />
+              <RichTextEditor name="description" content="" placeholder="Role overview, responsibilities, what we're looking for…" minHeight="250px" />
             </div>
 
             <div className="sm:col-span-2">

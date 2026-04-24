@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { MetricsEditor } from '@/components/admin/MetricsEditor'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createPortfolioItem } from '@/lib/admin/actions'
 import Link from 'next/link'
 import { ChevronLeft, Info } from 'lucide-react'
@@ -66,15 +67,15 @@ export default async function NewPortfolioItemPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Challenge <span className="text-red-500">*</span></label>
-              <textarea name="challenge" required rows={4} placeholder="What problem did the client face before working with Orion eSolutions?" className={ta} />
+              <RichTextEditor name="challenge" content="" placeholder="What problem did the client face before working with Orion eSolutions?" minHeight="200px" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Solution <span className="text-red-500">*</span></label>
-              <textarea name="solution" required rows={4} placeholder="How did Orion eSolutions solve it? What technologies and approach were used?" className={ta} />
+              <RichTextEditor name="solution" content="" placeholder="How did Orion eSolutions solve it? What technologies and approach were used?" minHeight="200px" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Outcome / Results <span className="text-red-500">*</span></label>
-              <textarea name="outcome" required rows={4} placeholder="What were the measurable business results?" className={ta} />
+              <RichTextEditor name="outcome" content="" placeholder="What were the measurable business results?" minHeight="200px" />
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createEngagementModel } from '@/lib/admin/engagement-model-actions'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
@@ -21,8 +22,8 @@ export default async function NewEngagementModelPage() {
               <input id="title" name="title" type="text" required placeholder="Fixed Price, Time & Material..." className={ic} />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">Description <span className="text-red-500">*</span></label>
-              <textarea id="description" name="description" rows={3} required placeholder="Best for..." className={ic + ' resize-y'} />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Description <span className="text-red-500">*</span></label>
+              <RichTextEditor name="description" content="" placeholder="Best for..." minHeight="180px" />
             </div>
             <div>
               <label htmlFor="features" className="block text-sm font-medium text-slate-700 mb-1">Features <span className="text-slate-400 text-xs font-normal">(one per line)</span></label>

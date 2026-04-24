@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { updateService } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -48,8 +49,8 @@ export default async function EditServicePage({ params }: Props) {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
-              <textarea id="description" name="description" rows={6} defaultValue={service.description} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
+              <RichTextEditor name="description" content={service.description ?? ''} minHeight="280px" />
             </div>
 
             <div>

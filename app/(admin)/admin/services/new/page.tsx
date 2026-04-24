@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createService } from '@/lib/admin/actions'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
@@ -41,8 +42,8 @@ export default async function NewServicePage() {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
-              <textarea id="description" name="description" rows={6} className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Full Description</label>
+              <RichTextEditor name="description" content="" minHeight="280px" />
             </div>
 
             <div>

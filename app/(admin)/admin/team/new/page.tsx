@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createTeamMember } from '@/lib/admin/actions'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
@@ -52,14 +53,8 @@ export default async function NewTeamMemberPage() {
             </div>
 
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
-              <textarea
-                id="bio"
-                name="bio"
-                rows={4}
-                placeholder="Short biography..."
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
+              <RichTextEditor name="bio" content="" placeholder="Short biography..." minHeight="200px" />
             </div>
 
             <div>

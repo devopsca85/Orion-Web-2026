@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { updateTeamMember } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -64,14 +65,8 @@ export default async function EditTeamMemberPage({ params }: Props) {
             </div>
 
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
-              <textarea
-                id="bio"
-                name="bio"
-                rows={4}
-                defaultValue={member.bio}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
+              <RichTextEditor name="bio" content={member.bio ?? ''} minHeight="200px" />
             </div>
 
             <div>

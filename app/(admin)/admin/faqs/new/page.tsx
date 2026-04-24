@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { createFAQ } from '@/lib/admin/faq-actions'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
@@ -23,8 +24,8 @@ export default async function NewFAQPage() {
               <input id="question" name="question" type="text" required placeholder="What services do you offer?" className={ic} />
             </div>
             <div>
-              <label htmlFor="answer" className="block text-sm font-medium text-slate-700 mb-1">Answer <span className="text-red-500">*</span></label>
-              <textarea id="answer" name="answer" rows={6} required placeholder="We offer..." className={ic + ' resize-y'} />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Answer <span className="text-red-500">*</span></label>
+              <RichTextEditor name="answer" content="" placeholder="We offer..." minHeight="220px" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
