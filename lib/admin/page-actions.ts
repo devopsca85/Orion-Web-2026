@@ -60,7 +60,7 @@ function revalidateAll(slug: string, parentSlug: string | null) {
 
 export async function createPage(formData: FormData) {
   await requireEditor()
-  const data = buildPageData(formData, true)
+  const data = buildPageData(formData)
   await prisma.page.create({ data })
   revalidateAll(data.slug, data.parentSlug)
   redirect('/admin/pages')
