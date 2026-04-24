@@ -365,6 +365,8 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
                       <Link
                         key={product.href}
                         href={product.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         onClick={() => setActiveDropdown(null)}
                         className="group/prod flex flex-col rounded-2xl border border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-250 overflow-hidden"
                       >
@@ -382,14 +384,8 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
                         </div>
                         {/* content */}
                         <div className="flex flex-col flex-1 p-5 bg-white">
-                          <p className="text-base font-bold text-gray-900 group-hover/prod:text-blue-700 transition-colors mb-2">
+                          <p className="text-base font-bold text-gray-900 group-hover/prod:text-blue-700 transition-colors">
                             {product.label}
-                          </p>
-                          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
-                            {product.description}
-                          </p>
-                          <p className={cn('mt-4 text-xs font-semibold flex items-center gap-1 transition-colors', 'text-blue-600 group-hover/prod:text-blue-800')}>
-                            Learn more <ArrowRight className="h-3 w-3" />
                           </p>
                         </div>
                       </Link>
@@ -406,6 +402,8 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
                         <Link
                           key={product.href}
                           href={product.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           onClick={() => setActiveDropdown(null)}
                           className="group/prod flex items-stretch rounded-2xl border border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-250 overflow-hidden"
                         >
@@ -500,7 +498,7 @@ export function Header({ branding, navLinks }: HeaderProps = {}) {
                         ))
                       : isProductMega(link)
                         ? link.items.map((product) => (
-                            <Link key={product.href} href={product.href} className="flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                            <Link key={product.href} href={product.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={product.logoUrl} alt={product.label} className="h-6 w-auto object-contain opacity-90 brightness-0 invert" onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
                               <span className="text-sm font-medium text-white/80">{product.label}</span>
