@@ -1,0 +1,13 @@
+{
+  "_readme": "Rename this file to manifest.json. Keys are the HTML filename without .html extension.",
+  "about-us": {
+    "title": "About Us",
+    "template": "default",
+    "status": "PUBLISHED"
+  },
+  "privacy-policy": {
+    "title": "Privacy Policy",
+    "template": "narrow",
+    "status": "PUBLISHED"
+  }
+}

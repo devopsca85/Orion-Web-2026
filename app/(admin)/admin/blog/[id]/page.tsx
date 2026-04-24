@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 import { updateBlogPost } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -103,16 +104,10 @@ export default async function EditBlogPostPage({ params }: Props) {
             </div>
 
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-slate-700 mb-1">
-                Content <span className="text-slate-400 text-xs font-normal">(HTML supported)</span>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Content
               </label>
-              <textarea
-                id="content"
-                name="content"
-                rows={16}
-                defaultValue={post.content}
-                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono"
-              />
+              <RichTextEditor name="content" content={post.content} minHeight="500px" />
             </div>
           </div>
 
