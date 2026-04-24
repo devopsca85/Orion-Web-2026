@@ -139,15 +139,13 @@ export default async function PagesAdminPage({ searchParams }: Props) {
                             >
                               <Pencil size={13} /> Edit
                             </Link>
-                            {p.status === 'PUBLISHED' && (
-                              <Link
-                                href={`/${p.slug}`}
-                                target="_blank"
-                                className="flex items-center gap-1 text-slate-600 hover:text-emerald-600 px-2.5 py-1.5 rounded-lg text-sm bg-slate-50 hover:bg-emerald-50 transition-colors"
-                              >
-                                <Eye size={13} /> Preview
-                              </Link>
-                            )}
+                            <Link
+                              href={`/${p.slug}`}
+                              target="_blank"
+                              className="flex items-center gap-1 text-slate-600 hover:text-emerald-600 px-2.5 py-1.5 rounded-lg text-sm bg-slate-50 hover:bg-emerald-50 transition-colors"
+                            >
+                              <Eye size={13} /> Preview
+                            </Link>
                             <DeleteForm action={deleteAction} />
                           </div>
                         </td>

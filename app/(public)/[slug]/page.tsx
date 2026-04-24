@@ -3,13 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { Container } from '@/components/ui/Container'
 import type { Metadata } from 'next'
 
-export async function generateStaticParams() {
-  const pages = await prisma.page.findMany({
-    where: { status: 'PUBLISHED' },
-    select: { slug: true },
-  }).catch(() => [])
-  return pages.map((p) => ({ slug: p.slug }))
-}
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({
   params,
@@ -17,12 +11,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const page = await prisma.page.findFirst({ where: { slug } })
-  if (!page) return {}
-  return {
-    title: page.metaTitle || page.title,
-    description: page.metaDesc || page.excerpt || undefined,
-  }
+  try {
+    const page = await prisma.page.findFirst({ where: { slug } })
+    if (!page) return {}
+    return {
+      title: page.metaTitle || page.title,
+      description: page.metaDesc || page.excerpt || undefined,
+    }
+  } catch { return {} }
 }
 
 export default async function PublicPage({
@@ -31,7 +27,10 @@ export default async function PublicPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const page = await prisma.page.findFirst({ where: { slug } })
+  let page = null
+  try {
+    page = await prisma.page.findFirst({ where: { slug } })
+  } catch { notFound() }
   if (!page) notFound()
 
   const containerSize =

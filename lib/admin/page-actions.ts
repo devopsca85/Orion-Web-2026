@@ -31,6 +31,7 @@ export async function createPage(formData: FormData) {
     },
   })
   revalidatePath('/admin/pages')
+  revalidatePath(`/${slug}`)
   redirect('/admin/pages')
 }
 
