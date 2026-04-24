@@ -79,7 +79,7 @@ interface BlogGridProps {
 }
 
 export async function BlogGrid({
-  limit = 3,
+  limit = 9,
   eyebrow = 'Insights',
   title = 'Technology Insights & Expertise',
   description = 'Practical insights from our engineers and consultants on cloud, AI, security, and digital transformation.',
