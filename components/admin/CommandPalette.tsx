@@ -33,7 +33,7 @@ export function CommandPalette() {
   const [selected, setSelected] = useState(0)
   const router  = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
-  const timer    = useRef<ReturnType<typeof setTimeout>>()
+  const timer    = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // Open on Cmd+K / Ctrl+K
   useEffect(() => {
