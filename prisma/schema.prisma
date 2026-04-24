@@ -564,6 +564,21 @@ model PageSection {
   @@map("page_sections")
 }
 
+/// Custom HTML sections for any page — assembled in sort order on the public page
+model HtmlSection {
+  id        String   @id @default(cuid())
+  pageSlug  String   @db.VarChar(100)
+  name      String   @db.VarChar(150)
+  html      String   @db.LongText
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pageSlug, sortOrder])
+  @@map("html_sections")
+}
+
 /// Editable feature/benefit items for the Why Us section
 model SiteFeature {
   id          Int      @id @default(autoincrement())

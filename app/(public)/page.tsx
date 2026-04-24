@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { HtmlSections } from '@/components/sections/HtmlSections';
 import { Hero } from '@/components/sections/Hero';
 import { ClientLogos } from '@/components/sections/ClientLogos';
 import { ServicesGrid } from '@/components/sections/ServicesGrid';
@@ -126,6 +127,7 @@ export default async function HomePage() {
         const node = sectionMap[key as keyof typeof sectionMap];
         return node ? <div key={key}>{node}</div> : null;
       })}
+      <HtmlSections pageSlug="home" />
     </>
   );
 }
