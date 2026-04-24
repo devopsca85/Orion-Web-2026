@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { HtmlSections } from '@/components/sections/HtmlSections';
 import { Hero } from '@/components/sections/Hero';
 import { ClientLogos } from '@/components/sections/ClientLogos';
 import { ServicesGrid } from '@/components/sections/ServicesGrid';
@@ -17,6 +16,24 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { getSettings } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
 import { getPageSections, type SectionConfig } from '@/lib/page-sections';
+
+async function PageSections({ parentSlug }: { parentSlug: string }) {
+  try {
+    const sections = await prisma.page.findMany({
+      where: { parentSlug, status: 'PUBLISHED' },
+      orderBy: { sortOrder: 'asc' },
+      select: { id: true, title: true, content: true },
+    })
+    if (sections.length === 0) return null
+    return (
+      <>
+        {sections.map((s: { id: string; title: string; content: string }) => (
+          <div key={s.id} data-section={s.title} dangerouslySetInnerHTML={{ __html: s.content }} />
+        ))}
+      </>
+    )
+  } catch { return null }
+}
 
 export const metadata: Metadata = genMeta({
   path: '/',
@@ -127,7 +144,7 @@ export default async function HomePage() {
         const node = sectionMap[key as keyof typeof sectionMap];
         return node ? <div key={key}>{node}</div> : null;
       })}
-      <HtmlSections pageSlug="home" />
+      <PageSections parentSlug="home" />
     </>
   );
 }

@@ -292,20 +292,33 @@ model SiteStat {
 }
 
 model Page {
-  id        String     @id @default(cuid())
-  title     String     @db.VarChar(250)
-  slug      String     @unique @db.VarChar(150)
-  content   String     @db.LongText
-  excerpt   String?    @db.VarChar(500)
-  status    PostStatus @default(DRAFT)
-  template  String     @default("default") @db.VarChar(50)
-  metaTitle String?    @db.VarChar(70)
-  metaDesc  String?    @db.VarChar(160)
-  sortOrder Int        @default(0)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id          String     @id @default(cuid())
+  title       String     @db.VarChar(250)
+  slug        String     @unique @db.VarChar(150)
+  content     String     @db.LongText
+  excerpt     String?    @db.VarChar(500)
+  status      PostStatus @default(DRAFT)
+  template    String     @default("default") @db.VarChar(50)
+  sortOrder   Int        @default(0)
+
+  // Section mode — when set this page is a block inside parentSlug page
+  parentSlug  String?    @db.VarChar(150)
+
+  // SEO
+  metaTitle       String?  @db.VarChar(70)
+  metaDesc        String?  @db.VarChar(160)
+  ogTitle         String?  @db.VarChar(70)
+  ogDescription   String?  @db.VarChar(200)
+  ogImage         String?  @db.VarChar(500)
+  canonicalUrl    String?  @db.VarChar(500)
+  noIndex         Boolean  @default(false)
+  structuredData  String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
+  @@index([parentSlug, sortOrder])
   @@map("pages")
 }
 
@@ -562,21 +575,6 @@ model PageSection {
   @@unique([page, sectionKey])
   @@index([page, sortOrder])
   @@map("page_sections")
-}
-
-/// Custom HTML sections for any page — assembled in sort order on the public page
-model HtmlSection {
-  id        String   @id @default(cuid())
-  pageSlug  String   @db.VarChar(100)
-  name      String   @db.VarChar(150)
-  html      String   @db.LongText
-  sortOrder Int      @default(0)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([pageSlug, sortOrder])
-  @@map("html_sections")
 }
 
 /// Editable feature/benefit items for the Why Us section

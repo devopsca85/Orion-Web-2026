@@ -12,11 +12,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   try {
-    const page = await prisma.page.findFirst({ where: { slug } })
+    const page = await prisma.page.findFirst({ where: { slug, parentSlug: null } })
     if (!page) return {}
     return {
       title: page.metaTitle || page.title,
       description: page.metaDesc || page.excerpt || undefined,
+      robots: page.noIndex ? { index: false, follow: true } : undefined,
+      alternates: page.canonicalUrl ? { canonical: page.canonicalUrl } : undefined,
+      openGraph: {
+        title: page.ogTitle || page.metaTitle || page.title,
+        description: page.ogDescription || page.metaDesc || page.excerpt || undefined,
+        images: page.ogImage ? [page.ogImage] : undefined,
+      },
     }
   } catch { return {} }
 }
@@ -34,7 +41,7 @@ export default async function PublicPage({
   const { slug } = await params
   let page = null
   try {
-    page = await prisma.page.findFirst({ where: { slug } })
+    page = await prisma.page.findFirst({ where: { slug, parentSlug: null } })
   } catch { notFound() }
   if (!page) notFound()
 
@@ -74,6 +81,10 @@ export default async function PublicPage({
             />
           </Container>
         </section>
+      )}
+
+      {page.structuredData && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: page.structuredData }} />
       )}
 
       {fullHtml && (
