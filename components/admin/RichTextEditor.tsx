@@ -39,6 +39,7 @@ interface RichTextEditorProps {
   name: string
   placeholder?: string
   minHeight?: string
+  defaultSourceMode?: boolean
 }
 
 function Divider() {
@@ -74,8 +75,9 @@ export function RichTextEditor({
   name,
   placeholder = 'Start writing…',
   minHeight = '400px',
+  defaultSourceMode = false,
 }: RichTextEditorProps) {
-  const [sourceMode, setSourceMode] = useState(false)
+  const [sourceMode, setSourceMode] = useState(defaultSourceMode)
   const [rawHtml, setRawHtml] = useState(content)
 
   const editor = useEditor({

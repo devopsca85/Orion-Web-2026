@@ -109,8 +109,9 @@ export default async function EditPageAdminPage({ params }: Props) {
               <RichTextEditor
                 name="content"
                 content={page.content}
-                placeholder="Write your page content..."
-                minHeight="500px"
+                placeholder="Paste your full HTML here…"
+                minHeight="600px"
+                defaultSourceMode
               />
             </div>
           </div>

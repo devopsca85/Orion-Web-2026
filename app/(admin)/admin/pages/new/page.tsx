@@ -104,8 +104,10 @@ export default async function NewPageAdminPage() {
               </label>
               <RichTextEditor
                 name="content"
-                placeholder="Write your page content..."
-                minHeight="500px"
+                content=""
+                placeholder="Paste your full HTML here…"
+                minHeight="600px"
+                defaultSourceMode
               />
             </div>
           </div>
