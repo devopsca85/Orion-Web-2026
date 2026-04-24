@@ -1,6 +1,8 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { getIp, isBlockedIp } from '@/lib/spam-guard'
+import { canAccess } from '@/lib/role-permissions'
+import type { Role } from '@/lib/role-permissions'
 
 export const runtime = 'nodejs'
 
@@ -23,6 +25,15 @@ export default auth(async (req) => {
   if (isLoginPage && req.auth) {
     return NextResponse.redirect(new URL('/admin', req.url))
   }
+
+  // Role-based access control for authenticated admin users
+  if (isAdminPath && !isLoginPage && req.auth) {
+    const role = (req.auth as { user?: { role?: string } }).user?.role as Role | undefined
+    if (role && !canAccess(role, pathname)) {
+      return NextResponse.redirect(new URL('/admin', req.url))
+    }
+  }
+
   return NextResponse.next()
 })
 

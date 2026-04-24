@@ -6,6 +6,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { PostStatus, SubmissionStatus, Role } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { saveRevision } from './revision-actions'
 
 // ── Auth helper ──────────────────────────────────────────────────────────────
 async function requireRole(...roles: string[]) {
@@ -74,6 +75,14 @@ export async function updateBlogPost(id: string, formData: FormData) {
     if (post) await prisma.author.update({ where: { id: post.authorId }, data: { name: authorName } })
   }
 
+  // Save revision of current content before overwriting
+  const existing = await prisma.blogPost.findUnique({ where: { slug: id }, select: { title: true, content: true } })
+  if (existing) await saveRevision('blog_post', id, existing.title, existing.content)
+
+  // Parse scheduledAt — only store if status is DRAFT
+  const scheduledAtRaw = (formData.get('scheduledAt') as string | null)?.trim()
+  const scheduledAt = (status === PostStatus.DRAFT && scheduledAtRaw) ? new Date(scheduledAtRaw) : null
+
   await prisma.blogPost.update({
     where: { slug: id },
     data: {
@@ -90,6 +99,7 @@ export async function updateBlogPost(id: string, formData: FormData) {
       metaTitle: ((formData.get('metaTitle') as string) || '').slice(0, 250) || null,
       metaDesc: ((formData.get('metaDesc') as string) || '').slice(0, 500) || null,
       publishedAt: status === PostStatus.PUBLISHED ? new Date() : null,
+      scheduledAt,
     },
   })
   revalidatePath('/admin/blog')

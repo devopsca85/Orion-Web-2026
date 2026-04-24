@@ -10,6 +10,8 @@ import {
   Trophy, HelpCircle, Code2, GraduationCap, FormInput, Settings,
   BarChart2, ShieldCheck, Send, Lightbulb,
 } from 'lucide-react'
+import { filterNavItems } from '@/lib/role-permissions'
+import type { Role } from '@/lib/role-permissions'
 
 interface NavItem  { href: string; label: string; icon: React.ReactNode }
 interface NavGroup { title: string; items: NavItem[] }
@@ -186,6 +188,7 @@ interface SidebarProps {
 
 export function Sidebar({ user, signOutAction }: SidebarProps) {
   const pathname = usePathname()
+  const role = (user.role ?? 'AUTHOR') as Role
 
   function isActive(href: string) {
     if (href === '/admin') return pathname === '/admin'
@@ -195,6 +198,11 @@ export function Sidebar({ user, signOutAction }: SidebarProps) {
   function groupHasActive(group: NavGroup) {
     return group.items.some(i => isActive(i.href))
   }
+
+  // Filter nav items the current role can see
+  const visibleGroups = navGroups
+    .map((g) => ({ ...g, items: filterNavItems(role, g.items) }))
+    .filter((g) => g.items.length > 0)
 
   return (
     <aside className="flex flex-col w-64 min-h-screen bg-slate-900 border-r border-slate-800 shrink-0">
@@ -207,7 +215,7 @@ export function Sidebar({ user, signOutAction }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 px-2">
-        {navGroups.map((group) => (
+        {visibleGroups.map((group) => (
           <NavGroupSection
             key={group.title}
             group={group}

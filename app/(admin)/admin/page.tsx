@@ -12,6 +12,8 @@ import {
   Plus,
   ShieldCheck,
   BarChart2,
+  Clock,
+  History,
 } from 'lucide-react'
 import { ClearVisitorsButton } from '@/components/admin/ClearVisitorsButton'
 
@@ -37,8 +39,11 @@ export default async function AdminDashboard() {
     newContacts,
     totalSubscribers,
     todayVisitors,
+    scheduledCount,
+    draftCount,
     recentContacts,
     recentPosts,
+    recentRevisions,
     topCountries,
   ] = await Promise.all([
     prisma.blogPost.count(),
@@ -46,15 +51,19 @@ export default async function AdminDashboard() {
     prisma.contactSubmission.count({ where: { status: 'NEW' } }),
     prisma.newsletterSubscriber.count({ where: { unsubscribed: false } }),
     prisma.pageView.count({ where: { createdAt: { gte: todayStart }, bot: false } }),
-    prisma.contactSubmission.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-    }),
+    prisma.blogPost.count({ where: { status: 'DRAFT', scheduledAt: { not: null } } }).catch(() => 0),
+    prisma.blogPost.count({ where: { status: 'DRAFT' } }).catch(() => 0),
+    prisma.contactSubmission.findMany({ take: 5, orderBy: { createdAt: 'desc' } }),
     prisma.blogPost.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { author: { select: { name: true } } },
     }),
+    prisma.revision.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { entityType: true, entityId: true, title: true, editedBy: true, createdAt: true },
+    }).catch(() => [] as never[]),
     prisma.pageView.groupBy({
       by: ['country'],
       where: { createdAt: { gte: since30d }, bot: false, country: { not: null } },
@@ -131,6 +140,48 @@ export default async function AdminDashboard() {
             </Link>
           ))}
         </div>
+
+        {/* Scheduled + Draft status row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center gap-4">
+            <span className="bg-amber-50 text-amber-600 p-2 rounded-lg shrink-0"><Clock size={20} /></span>
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Scheduled Posts</p>
+              <p className="text-3xl font-bold text-slate-800">{scheduledCount}</p>
+              <p className="text-xs text-slate-400 mt-0.5">auto-publish pending</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center gap-4">
+            <span className="bg-slate-100 text-slate-500 p-2 rounded-lg shrink-0"><FileText size={20} /></span>
+            <div>
+              <p className="text-sm text-slate-500 font-medium">Draft Posts</p>
+              <p className="text-3xl font-bold text-slate-800">{draftCount}</p>
+              <p className="text-xs text-slate-400 mt-0.5">unpublished blog posts</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Revisions */}
+        {recentRevisions.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="flex items-center gap-2 p-5 border-b border-slate-100">
+              <History size={16} className="text-slate-400" />
+              <h3 className="font-semibold text-slate-800">Recent Edits</h3>
+            </div>
+            <ul className="divide-y divide-slate-100">
+              {recentRevisions.map((rev, i) => (
+                <li key={i} className="flex items-center justify-between px-5 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 truncate max-w-xs">{rev.title}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {rev.entityType === 'blog_post' ? 'Blog' : 'Page'} &middot; {rev.editedBy} &middot; {rev.createdAt.toLocaleDateString()}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Security + Analytics overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

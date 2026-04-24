@@ -211,6 +211,7 @@ model BlogPost {
   status      PostStatus @default(DRAFT)
   featured    Boolean    @default(false)
   publishedAt DateTime?
+  scheduledAt DateTime?
   readingTime Int        @default(5)
   imageUrl    String?    @db.VarChar(2048)
   metaTitle   String?    @db.VarChar(250)
@@ -219,6 +220,7 @@ model BlogPost {
   updatedAt   DateTime   @updatedAt
 
   @@index([status, publishedAt])
+  @@index([scheduledAt])
   @@index([authorId])
   @@index([category])
   @@index([featured])
@@ -298,6 +300,7 @@ model Page {
   content     String     @db.LongText
   excerpt     String?    @db.VarChar(500)
   status      PostStatus @default(DRAFT)
+  scheduledAt DateTime?
   template    String     @default("default") @db.VarChar(50)
   sortOrder   Int        @default(0)
 
@@ -320,6 +323,20 @@ model Page {
   @@index([status])
   @@index([parentSlug, sortOrder])
   @@map("pages")
+}
+
+model Revision {
+  id         String   @id @default(cuid())
+  entityType String   @db.VarChar(50)   // "blog_post" | "page"
+  entityId   String   @db.VarChar(250)  // slug (blog) or id (page)
+  title      String   @db.VarChar(500)
+  content    String   @db.LongText
+  editedBy   String   @db.VarChar(100)
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("revisions")
 }
 
 model SiteSetting {

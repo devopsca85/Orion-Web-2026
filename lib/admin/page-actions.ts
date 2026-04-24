@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { PostStatus } from '@prisma/client'
+import { saveRevision } from './revision-actions'
 
 async function requireEditor() {
   const session = await auth()
@@ -17,18 +18,22 @@ function str(fd: FormData, key: string): string | null {
   return v || null
 }
 
-function buildPageData(formData: FormData, isNew = false) {
+function buildPageData(formData: FormData) {
   const title = formData.get('title') as string
   const slugRaw = str(formData, 'slug')
   const slug = slugRaw || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   const parentSlug = str(formData, 'parentSlug')
+  const status = (str(formData, 'status') as PostStatus) || PostStatus.DRAFT
+  const scheduledAtRaw = (formData.get('scheduledAt') as string | null)?.trim()
+  const scheduledAt = (status === PostStatus.DRAFT && scheduledAtRaw) ? new Date(scheduledAtRaw) : null
 
   return {
     title,
     slug,
     content: (formData.get('content') as string) || '',
     excerpt: str(formData, 'excerpt'),
-    status: (str(formData, 'status') as PostStatus) || PostStatus.DRAFT,
+    status,
+    scheduledAt,
     template: str(formData, 'template') || 'default',
     sortOrder: parseInt(formData.get('sortOrder') as string) || 0,
     parentSlug,
@@ -63,6 +68,9 @@ export async function createPage(formData: FormData) {
 
 export async function updatePage(id: string, formData: FormData) {
   await requireEditor()
+  // Save revision of current content before overwriting
+  const existing = await prisma.page.findUnique({ where: { id }, select: { title: true, content: true } })
+  if (existing) await saveRevision('page', id, existing.title, existing.content)
   const data = buildPageData(formData)
   await prisma.page.update({ where: { id }, data })
   revalidateAll(data.slug, data.parentSlug)

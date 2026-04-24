@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/admin/Sidebar'
+import { CommandPalette } from '@/components/admin/CommandPalette'
 import { signOutAction } from '@/lib/admin/auth-actions'
 
 export const metadata = {
@@ -17,6 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <main className="flex-1 flex flex-col overflow-y-auto">
         {children}
       </main>
+      <CommandPalette />
     </div>
   )
 }

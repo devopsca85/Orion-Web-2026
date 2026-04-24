@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { RichTextEditor } from '@/components/admin/RichTextEditor'
+import { RevisionPanel } from '@/components/admin/RevisionPanel'
 import { updateBlogPost } from '@/lib/admin/actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -149,6 +150,19 @@ export default async function EditBlogPostPage({ params }: Props) {
             </div>
 
             <div>
+              <label htmlFor="scheduledAt" className="block text-sm font-medium text-slate-700 mb-1">
+                Schedule Publish <span className="text-slate-400 text-xs font-normal">(optional — auto-publishes when this time is reached, only when status is Draft)</span>
+              </label>
+              <input
+                id="scheduledAt"
+                name="scheduledAt"
+                type="datetime-local"
+                defaultValue={post.scheduledAt ? new Date(post.scheduledAt.getTime() - post.scheduledAt.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
+                className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
               <label htmlFor="tags" className="block text-sm font-medium text-slate-700 mb-1">
                 Tags <span className="text-slate-400 text-xs font-normal">(comma separated)</span>
               </label>
@@ -251,6 +265,8 @@ export default async function EditBlogPostPage({ params }: Props) {
             </Link>
           </div>
         </form>
+
+        <RevisionPanel entityType="blog_post" entityId={post.slug} />
       </div>
     </>
   )

@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import { RichTextEditor } from '@/components/admin/RichTextEditor'
+import { RevisionPanel } from '@/components/admin/RevisionPanel'
 import { updatePage } from '@/lib/admin/page-actions'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -94,6 +95,17 @@ export default async function EditPageAdminPage({ params }: Props) {
                   <option value="PUBLISHED">Published</option>
                   <option value="ARCHIVED">Archived</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Schedule Publish <span className="text-slate-400 text-xs font-normal">(Draft only)</span>
+                </label>
+                <input
+                  name="scheduledAt"
+                  type="datetime-local"
+                  defaultValue={page.scheduledAt ? new Date(page.scheduledAt.getTime() - page.scheduledAt.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
+                  className={ic}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Template</label>
@@ -195,6 +207,8 @@ export default async function EditPageAdminPage({ params }: Props) {
             </Link>
           </div>
         </form>
+
+        <RevisionPanel entityType="page" entityId={page.id} />
       </div>
     </>
   )
