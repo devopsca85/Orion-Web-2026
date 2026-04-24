@@ -1,15 +1,14 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Check, Copy, Folder, FolderOpen, ChevronRight, ZoomIn, X, Search, Upload, FolderPlus, Loader2 } from 'lucide-react'
+import {
+  Check, Copy, Folder, FolderOpen, ChevronRight, ZoomIn, X,
+  Search, Upload, FolderPlus, Loader2, Trash2, Pencil, ImageIcon,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import type { MediaFile } from '@/lib/media-types'
 
-interface MediaFile {
-  name: string
-  path: string
-  folder: string
-  ext: string
-}
+export type { MediaFile }
 
 const imageExts = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.ico'])
 
@@ -27,14 +26,32 @@ const extBadge: Record<string, string> = {
   mov:  'bg-indigo-50 text-indigo-600',
 }
 
-export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allFolders?: string[] }) {
+function fmtSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+function fmtDate(iso: string) {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+interface Props {
+  files: MediaFile[]
+  allFolders?: string[]
+  mode?: 'browse' | 'picker'
+  onSelect?: (url: string) => void
+}
+
+export function MediaGrid({ files, allFolders = [], mode = 'browse', onSelect }: Props) {
   const router = useRouter()
-  const [expanded, setExpanded]         = useState<Set<string>>(new Set())
-  const [copied, setCopied]             = useState<string | null>(null)
-  const [preview, setPreview]           = useState<MediaFile | null>(null)
-  const [search, setSearch]             = useState('')
-  const [uploadingFor, setUploadingFor] = useState<string | null>(null)
-  const [newFolderFor, setNewFolderFor] = useState<string | null>(null)
+  const [expanded, setExpanded]           = useState<Set<string>>(new Set())
+  const [copied, setCopied]               = useState<string | null>(null)
+  const [preview, setPreview]             = useState<MediaFile | null>(null)
+  const [search, setSearch]               = useState('')
+  const [uploadingFor, setUploadingFor]   = useState<string | null>(null)
+  const [newFolderFor, setNewFolderFor]   = useState<string | null>(null)
   const [newFolderName, setNewFolderName] = useState('')
   const [creatingFolder, setCreatingFolder] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -44,7 +61,7 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
     ...allFolders,
     ...files.map((f) => f.folder).filter(Boolean),
   ])).sort()
-  const query   = search.trim().toLowerCase()
+  const query    = search.trim().toLowerCase()
   const filtered = query
     ? files.filter((f) => f.name.toLowerCase().includes(query) || f.path.toLowerCase().includes(query))
     : null
@@ -74,11 +91,9 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
     if (!file) return
     const folder = activeUploadFolder.current
     setUploadingFor(folder)
-
     const fd = new FormData()
     fd.append('folder', folder)
     fd.append('file', file)
-
     try {
       const res = await fetch('/api/admin/media/upload', { method: 'POST', body: fd })
       if (!res.ok) {
@@ -86,15 +101,10 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
         alert(j.message || 'Upload failed')
       } else {
         router.refresh()
-        // Ensure the folder stays open
         setExpanded((prev) => new Set([...prev, folder]))
       }
-    } catch {
-      alert('Upload failed. Please try again.')
-    } finally {
-      setUploadingFor(null)
-      e.target.value = ''
-    }
+    } catch { alert('Upload failed. Please try again.') }
+    finally { setUploadingFor(null); e.target.value = '' }
   }
 
   async function handleCreateFolder(parent: string) {
@@ -114,65 +124,191 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
         router.refresh()
         setExpanded((prev) => new Set([...prev, j.folder]))
       }
-    } catch {
-      alert('Failed to create folder.')
-    } finally {
-      setCreatingFolder(false)
-      setNewFolderFor(null)
-      setNewFolderName('')
-    }
+    } catch { alert('Failed to create folder.') }
+    finally { setCreatingFolder(false); setNewFolderFor(null); setNewFolderName('') }
   }
 
+  // ── FileRow ──────────────────────────────────────────────────────────────
   function FileRow({ file }: { file: MediaFile }) {
-    const isCopied   = copied === file.path
-    const canPreview = imageExts.has(file.ext.toLowerCase())
-    const extKey     = file.ext.replace('.', '').toLowerCase()
-    const badge      = extBadge[extKey] ?? 'bg-slate-100 text-slate-500'
+    const [renaming, setRenaming]     = useState(false)
+    const [newName, setNewName]       = useState(file.name)
+    const [confirmDel, setConfirmDel] = useState(false)
+    const [busy, setBusy]             = useState(false)
 
+    const isCopied    = copied === file.path
+    const canPreview  = imageExts.has(file.ext.toLowerCase())
+    const extKey      = file.ext.replace('.', '').toLowerCase()
+    const badge       = extBadge[extKey] ?? 'bg-slate-100 text-slate-500'
+
+    async function doDelete() {
+      setBusy(true)
+      try {
+        const res = await fetch('/api/admin/media/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: file.path }),
+        })
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}))
+          alert(j.message || 'Delete failed')
+        } else {
+          router.refresh()
+        }
+      } catch { alert('Delete failed') }
+      finally { setBusy(false); setConfirmDel(false) }
+    }
+
+    async function doRename() {
+      const trimmed = newName.trim()
+      if (!trimmed || trimmed === file.name) { setRenaming(false); return }
+      setBusy(true)
+      try {
+        const res = await fetch('/api/admin/media/rename', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: file.path, newName: trimmed }),
+        })
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}))
+          alert(j.message || 'Rename failed')
+        } else {
+          router.refresh()
+        }
+      } catch { alert('Rename failed') }
+      finally { setBusy(false); setRenaming(false) }
+    }
+
+    // Picker mode — whole row is clickable
+    if (mode === 'picker') {
+      return (
+        <tr
+          className="hover:bg-indigo-50 cursor-pointer transition-colors group"
+          onClick={() => onSelect?.(`${window.location.origin}${file.path}`)}
+        >
+          <td className="px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              {canPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={file.path} alt={file.name} className="w-8 h-8 object-cover rounded border border-slate-200 shrink-0" />
+              ) : (
+                <span className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded border border-slate-200 shrink-0">
+                  <ImageIcon size={14} className="text-slate-400" />
+                </span>
+              )}
+              <span className="text-sm font-medium text-slate-800 truncate group-hover:text-indigo-700">{file.name}</span>
+            </div>
+          </td>
+          <td className="px-4 py-2.5">
+            <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-semibold uppercase ${badge}`}>{extKey}</span>
+          </td>
+          <td className="px-4 py-2.5 text-slate-400 text-xs">{fmtSize(file.size)}</td>
+          <td className="px-4 py-2.5 text-slate-400 font-mono text-xs truncate max-w-xs">{file.path}</td>
+        </tr>
+      )
+    }
+
+    // Browse mode
     return (
       <tr className="hover:bg-slate-50/80 group transition-colors">
         <td className="px-4 py-2.5 font-medium text-slate-800 max-w-xs">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="truncate text-sm" title={file.name}>{file.name}</span>
-            {canPreview && (
-              <button onClick={() => setPreview(file)} title="Preview" className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-indigo-500">
-                <ZoomIn size={14} />
+          {renaming ? (
+            <div className="flex items-center gap-1.5">
+              <input
+                autoFocus
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') doRename(); if (e.key === 'Escape') { setRenaming(false); setNewName(file.name) } }}
+                className="flex-1 border border-indigo-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 min-w-0"
+              />
+              <button onClick={doRename} disabled={busy} className="text-indigo-600 hover:text-indigo-800 text-xs font-medium shrink-0">
+                {busy ? <Loader2 size={12} className="animate-spin" /> : 'Save'}
               </button>
-            )}
-          </div>
+              <button onClick={() => { setRenaming(false); setNewName(file.name) }} className="text-slate-400 hover:text-slate-600 shrink-0"><X size={12} /></button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="truncate text-sm" title={file.name}>{file.name}</span>
+              {canPreview && (
+                <button onClick={() => setPreview(file)} title="Preview" className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-indigo-500">
+                  <ZoomIn size={14} />
+                </button>
+              )}
+            </div>
+          )}
         </td>
         <td className="px-4 py-2.5">
           <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-semibold uppercase ${badge}`}>{extKey}</span>
         </td>
+        <td className="px-4 py-2.5 text-slate-400 text-xs whitespace-nowrap">{fmtSize(file.size)}</td>
+        <td className="px-4 py-2.5 text-slate-400 text-xs whitespace-nowrap">{fmtDate(file.uploadedAt)}</td>
         <td className="px-4 py-2.5 text-slate-400 font-mono text-xs max-w-sm">
           <span className="truncate block" title={file.path}>{file.path}</span>
         </td>
-        <td className="px-4 py-2.5 text-center">
-          <button onClick={() => copyPath(file.path)} title={isCopied ? 'Copied!' : 'Copy full URL'} className="inline-flex items-center gap-1 text-slate-400 hover:text-indigo-600 transition-colors">
-            {isCopied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
-          </button>
+        <td className="px-4 py-2.5">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Copy */}
+            <button onClick={() => copyPath(file.path)} title={isCopied ? 'Copied!' : 'Copy full URL'} className="p-1.5 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+              {isCopied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+            </button>
+            {/* Rename */}
+            <button onClick={() => { setRenaming(true); setNewName(file.name) }} title="Rename" className="p-1.5 rounded text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+              <Pencil size={13} />
+            </button>
+            {/* Delete */}
+            {confirmDel ? (
+              <div className="flex items-center gap-1">
+                <button onClick={doDelete} disabled={busy} className="px-2 py-0.5 rounded bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors disabled:opacity-60">
+                  {busy ? <Loader2 size={11} className="animate-spin" /> : 'Delete'}
+                </button>
+                <button onClick={() => setConfirmDel(false)} className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs hover:bg-slate-200 transition-colors">No</button>
+              </div>
+            ) : (
+              <button onClick={() => setConfirmDel(true)} title="Delete" className="p-1.5 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                <Trash2 size={13} />
+              </button>
+            )}
+          </div>
         </td>
       </tr>
     )
   }
 
   function TableHead() {
+    if (mode === 'picker') {
+      return (
+        <thead>
+          <tr className="bg-slate-50 text-xs text-slate-400 uppercase tracking-wider border-b border-slate-100">
+            <th className="text-left px-4 py-2.5 font-medium">File</th>
+            <th className="text-left px-4 py-2.5 font-medium">Type</th>
+            <th className="text-left px-4 py-2.5 font-medium">Size</th>
+            <th className="text-left px-4 py-2.5 font-medium">Path</th>
+          </tr>
+        </thead>
+      )
+    }
     return (
       <thead>
         <tr className="bg-slate-50 text-xs text-slate-400 uppercase tracking-wider border-b border-slate-100">
           <th className="text-left px-4 py-2.5 font-medium">File</th>
           <th className="text-left px-4 py-2.5 font-medium">Type</th>
+          <th className="text-left px-4 py-2.5 font-medium">Size</th>
+          <th className="text-left px-4 py-2.5 font-medium">Uploaded</th>
           <th className="text-left px-4 py-2.5 font-medium">Public Path</th>
-          <th className="px-4 py-2.5 font-medium">Copy</th>
+          <th className="px-4 py-2.5 font-medium">Actions</th>
         </tr>
       </thead>
     )
   }
 
+  const isPicker = mode === 'picker'
+
   return (
     <>
-      {/* Hidden file input */}
-      <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.avif,.ico,.pdf,.mp4,.mov" />
+      {/* Hidden file input (browse mode only) */}
+      {!isPicker && (
+        <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange}
+          accept=".jpg,.jpeg,.png,.gif,.webp,.svg,.avif,.ico,.pdf,.mp4,.mov" />
+      )}
 
       {/* Search */}
       <div className="relative mb-5">
@@ -185,7 +321,7 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
           className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
         />
         {search && (
-          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
             <X size={14} />
           </button>
         )}
@@ -198,7 +334,7 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
             <TableHead />
             <tbody className="divide-y divide-slate-100">
               {filtered.length === 0 ? (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-slate-400">No files match &ldquo;{search}&rdquo;</td></tr>
+                <tr><td colSpan={isPicker ? 4 : 6} className="px-4 py-10 text-center text-slate-400">No files match &ldquo;{search}&rdquo;</td></tr>
               ) : (
                 filtered.map((f) => <FileRow key={f.path} file={f} />)
               )}
@@ -208,33 +344,24 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
       ) : (
         /* Folder accordion */
         <div className="space-y-2">
-          {/* Root-level new folder button */}
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-400">All folders</span>
-            <button
-              onClick={() => { setNewFolderFor('__root__'); setNewFolderName('') }}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors"
-            >
-              <FolderPlus size={14} /> New folder
-            </button>
-          </div>
+          {!isPicker && (
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-slate-400">All folders</span>
+              <button onClick={() => { setNewFolderFor('__root__'); setNewFolderName('') }}
+                className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-600 transition-colors">
+                <FolderPlus size={14} /> New folder
+              </button>
+            </div>
+          )}
 
-          {/* Root-level new folder form */}
-          {newFolderFor === '__root__' && (
+          {!isPicker && newFolderFor === '__root__' && (
             <div className="flex items-center gap-2 mb-2">
-              <input
-                autoFocus
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
+              <input autoFocus value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCreateFolder(''); if (e.key === 'Escape') setNewFolderFor(null) }}
                 placeholder="folder-name"
-                className="flex-1 border border-indigo-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                onClick={() => handleCreateFolder('')}
-                disabled={creatingFolder}
-                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
-              >
+                className="flex-1 border border-indigo-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <button onClick={() => handleCreateFolder('')} disabled={creatingFolder}
+                className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-60">
                 {creatingFolder ? <Loader2 size={13} className="animate-spin" /> : 'Create'}
               </button>
               <button onClick={() => setNewFolderFor(null)} className="text-slate-400 hover:text-slate-600"><X size={16} /></button>
@@ -242,14 +369,14 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
           )}
 
           {files.length === 0 && folders.length === 0 && (
-            <p className="text-slate-400 text-center py-12">No files found in public/assets/images. Upload your first file above.</p>
+            <p className="text-slate-400 text-center py-12">No files found in public/assets/images.</p>
           )}
 
           {folders.map((folder) => {
-            const folderFiles  = files.filter((f) => f.folder === folder)
-            const isOpen       = expanded.has(folder)
-            const imageCount   = folderFiles.filter((f) => imageExts.has(f.ext.toLowerCase())).length
-            const isUploading  = uploadingFor === folder
+            const folderFiles = files.filter((f) => f.folder === folder)
+            const isOpen      = expanded.has(folder)
+            const imageCount  = folderFiles.filter((f) => imageExts.has(f.ext.toLowerCase())).length
+            const isUploading = uploadingFor === folder
 
             return (
               <div key={folder} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -269,43 +396,31 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
                     </span>
                   </button>
 
-                  {/* Folder actions */}
-                  <div className="flex items-center gap-1 shrink-0 pr-2">
-                    <button
-                      onClick={() => { setNewFolderFor(folder); setNewFolderName('') }}
-                      title="Create subfolder"
-                      className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
-                    >
-                      <FolderPlus size={15} />
-                    </button>
-                    <button
-                      onClick={() => triggerUpload(folder)}
-                      disabled={isUploading}
-                      title="Upload file to this folder"
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-60"
-                    >
-                      {isUploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
-                      <span>{isUploading ? 'Uploading…' : 'Upload'}</span>
-                    </button>
-                  </div>
+                  {/* Folder actions (browse mode only) */}
+                  {!isPicker && (
+                    <div className="flex items-center gap-1 shrink-0 pr-2">
+                      <button onClick={() => { setNewFolderFor(folder); setNewFolderName('') }} title="Create subfolder"
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors">
+                        <FolderPlus size={15} />
+                      </button>
+                      <button onClick={() => triggerUpload(folder)} disabled={isUploading} title="Upload file to this folder"
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-60">
+                        {isUploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                        <span>{isUploading ? 'Uploading…' : 'Upload'}</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Subfolder create form */}
-                {newFolderFor === folder && (
+                {!isPicker && newFolderFor === folder && (
                   <div className="flex items-center gap-2 px-4 py-2 border-t border-slate-100 bg-indigo-50/40">
-                    <input
-                      autoFocus
-                      value={newFolderName}
-                      onChange={(e) => setNewFolderName(e.target.value)}
+                    <input autoFocus value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleCreateFolder(folder); if (e.key === 'Escape') setNewFolderFor(null) }}
                       placeholder="subfolder-name"
-                      className="flex-1 border border-indigo-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <button
-                      onClick={() => handleCreateFolder(folder)}
-                      disabled={creatingFolder}
-                      className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
-                    >
+                      className="flex-1 border border-indigo-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <button onClick={() => handleCreateFolder(folder)} disabled={creatingFolder}
+                      className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-60">
                       {creatingFolder ? <Loader2 size={13} className="animate-spin" /> : 'Create'}
                     </button>
                     <button onClick={() => setNewFolderFor(null)} className="text-slate-400 hover:text-slate-600"><X size={16} /></button>
@@ -314,12 +429,14 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
 
                 {/* File table */}
                 {isOpen && (
-                  <div className="border-t border-slate-100">
+                  <div className="border-t border-slate-100 overflow-x-auto">
                     <table className="w-full text-sm">
                       <TableHead />
                       <tbody className="divide-y divide-slate-100">
                         {folderFiles.length === 0 ? (
-                          <tr><td colSpan={4} className="px-4 py-6 text-center text-slate-400 text-sm">No files. Click Upload to add files here.</td></tr>
+                          <tr><td colSpan={isPicker ? 4 : 6} className="px-4 py-6 text-center text-slate-400 text-sm">
+                            {isPicker ? 'No files in this folder.' : 'No files. Click Upload to add files here.'}
+                          </td></tr>
                         ) : (
                           folderFiles.map((f) => <FileRow key={f.path} file={f} />)
                         )}
@@ -333,8 +450,8 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
         </div>
       )}
 
-      {/* Preview Modal */}
-      {preview && (
+      {/* Preview Modal (browse mode only) */}
+      {!isPicker && preview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm" onClick={() => setPreview(null)}>
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
@@ -342,39 +459,39 @@ export function MediaGrid({ files, allFolders = [] }: { files: MediaFile[]; allF
                 <p className="font-semibold text-slate-800 truncate text-sm">{preview.name}</p>
                 <p className="text-xs text-slate-400 font-mono truncate mt-0.5">{window.location.origin}{preview.path}</p>
               </div>
+              <span className="text-xs text-slate-400 shrink-0">{fmtSize(preview.size)}</span>
               <a href={preview.path} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0">
                 Open
               </a>
-              <button onClick={() => copyPath(preview.path)} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors shrink-0">
+              <button onClick={() => copyPath(preview.path)}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors shrink-0">
                 {copied === preview.path ? <><Check size={12} className="text-green-500" /> Copied</> : <><Copy size={12} /> Copy URL</>}
               </button>
-              <button onClick={() => setPreview(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"><X size={18} /></button>
+              <button onClick={() => setPreview(null)} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0">
+                <X size={18} />
+              </button>
             </div>
             <div className="flex-1 flex items-center justify-center p-6 bg-[#f8f8f8] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${preview.path}?v=${Date.now()}`}
-                alt={preview.name}
+              <img src={`${preview.path}?v=${Date.now()}`} alt={preview.name}
                 className="max-w-full max-h-[60vh] object-contain rounded-lg shadow-md"
                 onError={(e) => {
                   const img = e.currentTarget
                   img.style.display = 'none'
                   const msg = img.nextElementSibling as HTMLElement | null
                   if (msg) msg.style.display = 'flex'
-                }}
-              />
+                }} />
               <div style={{ display: 'none' }} className="flex-col items-center gap-3 text-slate-500 text-sm">
                 <p>Preview unavailable.</p>
-                <a href={preview.path} target="_blank" rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline text-xs">
-                  Open file directly →
-                </a>
+                <a href={preview.path} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline text-xs">Open file directly →</a>
               </div>
             </div>
             <div className="px-5 py-2.5 border-t border-slate-100 flex items-center justify-between">
-              <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-semibold uppercase ${extBadge[preview.ext.replace('.','').toLowerCase()] ?? 'bg-slate-100 text-slate-500'}`}>{preview.ext.replace('.', '')}</span>
-              <span className="text-xs text-slate-400">Click outside or press ESC to close</span>
+              <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-semibold uppercase ${extBadge[preview.ext.replace('.','').toLowerCase()] ?? 'bg-slate-100 text-slate-500'}`}>
+                {preview.ext.replace('.', '')}
+              </span>
+              <span className="text-xs text-slate-400">{fmtDate(preview.uploadedAt)} · Click outside or press ESC to close</span>
             </div>
           </div>
         </div>
