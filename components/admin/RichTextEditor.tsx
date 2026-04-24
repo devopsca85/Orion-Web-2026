@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
@@ -30,6 +31,7 @@ import {
   Image as ImageIcon,
   Undo2,
   Redo2,
+  FileCode,
 } from 'lucide-react'
 
 interface RichTextEditorProps {
@@ -73,6 +75,9 @@ export function RichTextEditor({
   placeholder = 'Start writing…',
   minHeight = '400px',
 }: RichTextEditorProps) {
+  const [sourceMode, setSourceMode] = useState(false)
+  const [rawHtml, setRawHtml] = useState(content)
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -272,15 +277,46 @@ export function RichTextEditor({
         >
           <Redo2 size={14} />
         </ToolbarButton>
+
+        <Divider />
+
+        {/* Source HTML toggle */}
+        <ToolbarButton
+          onClick={() => {
+            if (sourceMode) {
+              // switching source → visual: load raw HTML into TipTap
+              editor.commands.setContent(rawHtml, false)
+              setSourceMode(false)
+            } else {
+              // switching visual → source: capture current HTML
+              setRawHtml(editor.getHTML())
+              setSourceMode(true)
+            }
+          }}
+          active={sourceMode}
+          title="Edit HTML Source"
+        >
+          <FileCode size={14} />
+        </ToolbarButton>
       </div>
 
       {/* Editor content area */}
-      <div style={{ minHeight }}>
-        <EditorContent editor={editor} style={{ minHeight }} />
-      </div>
+      {sourceMode ? (
+        <textarea
+          value={rawHtml}
+          onChange={(e) => setRawHtml(e.target.value)}
+          className="w-full font-mono text-xs text-slate-700 bg-slate-950 text-green-400 p-4 focus:outline-none resize-none"
+          style={{ minHeight }}
+          spellCheck={false}
+        />
+      ) : (
+        <div style={{ minHeight }}>
+          <EditorContent editor={editor} style={{ minHeight }} />
+        </div>
+      )}
 
       {/* Hidden input for form submission */}
-      <input type="hidden" name={name} value={editor.getHTML()} />
+      <input type="hidden" name={name} value={sourceMode ? rawHtml : editor.getHTML()} />
 
       <style>{`
         .tiptap p.is-editor-empty:first-child::before {
