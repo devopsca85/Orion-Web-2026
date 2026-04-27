@@ -120,9 +120,14 @@ const nextConfig: NextConfig = {
       { source: '/mobile-app-development-company-:city',      destination: '/services/mobile-application-development', permanent: true },
 
       // ── 9. Other legacy slugs without a Page row ──
-      { source: '/web-app-development',                       destination: '/services/web-development',                permanent: true },
       { source: '/legacy-software-modernization',             destination: '/services/software-development',           permanent: true },
       { source: '/sitemap',                                   destination: '/sitemap.xml',                             permanent: false },
+
+      // ── 10. WP author archive pages — collapse onto /blog ──
+      { source: '/author/:slug*',                             destination: '/blog',                                    permanent: true },
+
+      // ── 11. /technology hub page (WP page is empty) → /services ──
+      { source: '/technology',                                destination: '/services',                                permanent: true },
     ];
   },
 };
