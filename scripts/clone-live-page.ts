@@ -275,6 +275,10 @@ async function main() {
   await clonePage(url, slug)
 }
 
-main()
-  .catch((e) => { console.error(e); process.exit(1) })
-  .finally(() => prisma.$disconnect())
+// Only run main() when invoked directly via CLI, not when imported by another
+// script (e.g. scripts/audit-live-site.ts re-uses clonePage).
+if (require.main === module) {
+  main()
+    .catch((e) => { console.error(e); process.exit(1) })
+    .finally(() => prisma.$disconnect())
+}
