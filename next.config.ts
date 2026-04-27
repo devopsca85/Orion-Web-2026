@@ -77,6 +77,13 @@ const nextConfig: NextConfig = {
 
       // ── 4. Internal /pages prefix some old links use ──
       { source: '/pages/:slug*', destination: '/:slug*',    permanent: true },
+
+      // ── 5. Legacy WP utility URLs that no longer have a home ──
+      { source: '/we-are-hiring',      destination: '/careers', permanent: true },
+      { source: '/human-resources',    destination: '/careers', permanent: true },
+      { source: '/mission-and-vision', destination: '/about',   permanent: true },
+      { source: '/thank-you',          destination: '/',        permanent: true },
+      { source: '/rssfeed',            destination: '/blog',    permanent: true },
     ];
   },
 };
