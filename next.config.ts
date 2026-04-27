@@ -84,6 +84,17 @@ const nextConfig: NextConfig = {
       { source: '/mission-and-vision', destination: '/about',   permanent: true },
       { source: '/thank-you',          destination: '/',        permanent: true },
       { source: '/rssfeed',            destination: '/blog',    permanent: true },
+
+      // ── 6. WP service slugs renamed in the new CMS ──
+      // Three are pure renames; five collapse onto the closest existing service page.
+      { source: '/services/mobile-app-development',       destination: '/services/mobile-application-development', permanent: true },
+      { source: '/services/custom-app-development',       destination: '/services/custom-application-development', permanent: true },
+      { source: '/services/devops-service-providers',     destination: '/services/devops-consulting',              permanent: true },
+      { source: '/services/cloud-consulting-services',    destination: '/services/cloud-services',                 permanent: true },
+      { source: '/services/server-management',            destination: '/services/cloud-managed-services',         permanent: true },
+      { source: '/services/24-7-server-administration',   destination: '/services/cloud-managed-services',         permanent: true },
+      { source: '/services/azure-consulting-services',    destination: '/services/cloud-services',                 permanent: true },
+      { source: '/services/aws-cloud-consulting',         destination: '/services/cloud-services',                 permanent: true },
     ];
   },
 };
