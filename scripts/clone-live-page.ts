@@ -47,14 +47,32 @@ function ensureLeadingSlash(p: string) {
   return p.startsWith('/') ? p : '/' + p
 }
 
-/** Strip query string + fragment for filesystem safety, keep extension. */
+/**
+ * Convert a URL to a safe on-disk path. Two collision-avoidance rules:
+ *  1. Trailing slash → append index.html (`/foo/` → `foo/index.html`)
+ *  2. Extension-less leaf → treat as directory and append index.html
+ *     (`/foo` → `foo/index.html`). This prevents `/foo` and `/foo/bar.png`
+ *     from fighting over whether `foo` is a file or a directory.
+ *
+ * Each segment is also capped to 150 chars so a stray junk URL can't trigger
+ * ENAMETOOLONG and abort the whole clone.
+ */
 function urlToLocalPath(u: URL): string {
   let pathname = u.pathname
   if (pathname.endsWith('/')) pathname += 'index.html'
-  return pathname.replace(/^\/+/, '')
+  const last = pathname.slice(pathname.lastIndexOf('/') + 1)
+  if (!last.includes('.')) pathname += '/index.html'
+  return pathname
+    .replace(/^\/+/, '')
+    .split('/')
+    .map(seg => (seg.length > 150 ? seg.slice(0, 150) : seg))
+    .join('/')
 }
 
-/** Resolve a possibly-relative URL against a base. Returns null if invalid. */
+/**
+ * Resolve a possibly-relative URL against a base. Returns null if invalid or
+ * if the value clearly isn't a URL (spaces, unreasonable length).
+ */
 function resolveUrl(raw: string, base: string): URL | null {
   try {
     const cleaned = raw.trim()
@@ -62,6 +80,12 @@ function resolveUrl(raw: string, base: string): URL | null {
     if (cleaned.startsWith('data:')) return null
     if (cleaned.startsWith('javascript:')) return null
     if (cleaned.startsWith('#')) return null
+    if (cleaned.startsWith('mailto:')) return null
+    if (cleaned.startsWith('tel:')) return null
+    // Real URLs don't contain unencoded whitespace. Filters out meta-tag text
+    // accidentally captured by attribute regexes.
+    if (/\s/.test(cleaned)) return null
+    if (cleaned.length > 500) return null
     return new URL(cleaned, base)
   } catch { return null }
 }
@@ -85,9 +109,50 @@ async function fetchBuffer(url: string): Promise<{ buf: Buffer; contentType: str
   }
 }
 
-async function writeFile(absPath: string, data: Buffer | string) {
-  await fs.mkdir(path.dirname(absPath), { recursive: true })
-  await fs.writeFile(absPath, data)
+/**
+ * Write a file under a mirror tree. If the parent path collides with an
+ * existing file (because a previous URL saved as `assets/foo` and now we want
+ * `assets/foo/bar.png`), promote the file to `assets/foo/index.html` and
+ * retry. Returns true on success, false if the asset had to be skipped.
+ */
+async function writeFile(absPath: string, data: Buffer | string): Promise<boolean> {
+  try {
+    await fs.mkdir(path.dirname(absPath), { recursive: true })
+    await fs.writeFile(absPath, data)
+    return true
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code
+    if (code === 'EEXIST' || code === 'ENOTDIR') {
+      // Walk up: find the segment that's a file, rename it to <segment>/index.html
+      let parent = path.dirname(absPath)
+      while (parent && parent !== path.dirname(parent)) {
+        try {
+          const st = await fs.stat(parent)
+          if (st.isFile()) {
+            const tmp = parent + '.__promote__'
+            await fs.rename(parent, tmp)
+            await fs.mkdir(parent, { recursive: true })
+            await fs.rename(tmp, path.join(parent, 'index.html'))
+            break
+          }
+        } catch { /* parent doesn't exist yet — keep walking */ }
+        parent = path.dirname(parent)
+      }
+      try {
+        await fs.mkdir(path.dirname(absPath), { recursive: true })
+        await fs.writeFile(absPath, data)
+        return true
+      } catch (e2) {
+        console.warn(`     ⚠ skip ${absPath}: ${(e2 as Error).message}`)
+        return false
+      }
+    }
+    if (code === 'ENAMETOOLONG') {
+      console.warn(`     ⚠ skip (path too long): ${absPath.slice(0, 120)}…`)
+      return false
+    }
+    throw e
+  }
 }
 
 async function fileExists(p: string): Promise<boolean> {
@@ -112,10 +177,17 @@ async function pool<T>(items: T[], limit: number, worker: (item: T) => Promise<v
 function extractHtmlUrls(html: string): string[] {
   const out: string[] = []
 
-  // attr="url" or attr='url'
-  const ATTR = /(?:href|src|data-src|data-href|content|poster)\s*=\s*["']([^"']+)["']/gi
+  // attr="url" or attr='url'.  NOTE: `content` is intentionally excluded —
+  // <meta name="description" content="long text"> would otherwise be parsed
+  // as a relative URL and produce an ENAMETOOLONG filesystem write.
+  const ATTR = /(?:href|src|data-src|data-href|poster)\s*=\s*["']([^"']+)["']/gi
   let m: RegExpExecArray | null
   while ((m = ATTR.exec(html))) out.push(m[1])
+
+  // Only meta tags with explicitly URL-bearing properties get their content
+  // attribute scraped (og:image, twitter:image, og:url, canonical link, etc.)
+  const META = /<meta[^>]+(?:property|name)\s*=\s*["'](?:og:image|og:url|twitter:image)["'][^>]*content\s*=\s*["']([^"']+)["']/gi
+  while ((m = META.exec(html))) out.push(m[1])
 
   // srcset has comma-separated URLs with optional descriptors
   const SRCSET = /srcset\s*=\s*["']([^"']+)["']/gi
@@ -182,7 +254,8 @@ export async function clonePage(pageUrl: string, slug: string) {
     }
     const got = await fetchBuffer(u.href)
     if (!got) return
-    await writeFile(abs, got.buf)
+    const ok = await writeFile(abs, got.buf)
+    if (!ok) return
     downloaded.set(u.href, webPath)
     if (got.contentType.includes('text/css') || rel.endsWith('.css')) {
       cssToProcess.push({ url: u, css: got.buf.toString('utf-8') })
@@ -207,7 +280,8 @@ export async function clonePage(pageUrl: string, slug: string) {
       if (!(await fileExists(abs))) {
         const got = await fetchBuffer(u.href)
         if (!got) return
-        await writeFile(abs, got.buf)
+        const ok = await writeFile(abs, got.buf)
+        if (!ok) return
         cssSubAssets++
       }
       subMap.set(raw, webPath)
