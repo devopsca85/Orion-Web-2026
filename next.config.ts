@@ -61,9 +61,16 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      { source: '/case-studies', destination: '/portfolio', permanent: true },
-      { source: '/case-studies/:slug*', destination: '/portfolio/:slug*', permanent: true },
-      { source: '/pages/:slug*', destination: '/:slug*', permanent: true },
+      // Legacy WP slug differences
+      { source: '/about-us',      destination: '/about',     permanent: true },
+      { source: '/contact-us',    destination: '/contact',   permanent: true },
+
+      // Old case-studies URL structure → unified /portfolio
+      { source: '/case-studies',                destination: '/portfolio', permanent: true },
+      { source: '/case-studies/:slug*',         destination: '/portfolio', permanent: true },
+
+      // Internal /pages prefix some old links use
+      { source: '/pages/:slug*',  destination: '/:slug*',    permanent: true },
     ];
   },
 };
