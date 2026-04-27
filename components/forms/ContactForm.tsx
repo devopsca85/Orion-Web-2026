@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle, AlertCircle, Send, Calendar } from 'lucide-react';
@@ -238,7 +239,7 @@ export function ContactForm({ calendlyUrl, recaptchaSiteKey }: ContactFormProps)
 
       <p className="text-xs text-gray-500">
         By submitting this form you agree to our{' '}
-        <a href="/privacy-policy" className="underline hover:text-primary">Privacy Policy</a>.
+        <Link href="/privacy-policy" className="underline hover:text-primary">Privacy Policy</Link>.
         We never sell your data. Protected by reCAPTCHA.
       </p>
 

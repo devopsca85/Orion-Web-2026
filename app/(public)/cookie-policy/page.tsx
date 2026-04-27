@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Container, Section } from '@/components/ui/Container';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { SITE_CONFIG } from '@/lib/constants';
@@ -22,7 +23,7 @@ export default function CookiePolicyPage() {
         <Container size="md">
           <div className="prose prose-gray max-w-none">
             <p className="lead text-lg text-gray-600">
-              This Cookie Policy explains how {SITE_CONFIG.name} (&ldquo;Orion eSolutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) uses cookies and similar tracking technologies on {SITE_CONFIG.url}. It should be read alongside our <a href="/privacy-policy">Privacy Policy</a>.
+              This Cookie Policy explains how {SITE_CONFIG.name} (&ldquo;Orion eSolutions,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) uses cookies and similar tracking technologies on {SITE_CONFIG.url}. It should be read alongside our <Link href="/privacy-policy">Privacy Policy</Link>.
             </p>
             <h2>What Are Cookies?</h2>
             <p>Cookies are small text files placed on your device when you visit a website. They help websites remember your preferences, understand how you use the site, and deliver relevant content. Cookies are not malicious — they cannot access other files on your computer or install software.</p>
