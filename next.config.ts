@@ -128,6 +128,9 @@ const nextConfig: NextConfig = {
 
       // ── 11. /technology hub page (WP page is empty) → /services ──
       { source: '/technology',                                destination: '/services',                                permanent: true },
+
+      // ── 12. WP duplicate homepage slug → real homepage ──
+      { source: '/home',                                      destination: '/',                                        permanent: true },
     ];
   },
 };
