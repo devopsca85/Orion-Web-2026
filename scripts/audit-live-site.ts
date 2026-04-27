@@ -53,7 +53,7 @@ const REDIRECT_MAP: Record<string, string> = {
   'case-studies':   '/portfolio',
 }
 
-type Classification = 'COVERED' | 'REDIRECT' | 'PAGE-EMPTY' | 'DYNAMIC' | 'MISSING'
+type Classification = 'COVERED' | 'REDIRECT' | 'PAGE-EMPTY' | 'DYNAMIC' | 'BLOG-POST' | 'MISSING'
 
 interface AuditRow {
   url:     string
@@ -62,6 +62,26 @@ interface AuditRow {
   segments:string[]       // every segment
   status:  Classification
   hint:    string
+}
+
+// Pre-loaded DB indexes to avoid 400+ point lookups during classification
+interface DbIndex {
+  pageBySlug:    Map<string, { id: string; content: string }>
+  blogPostSlugs: Set<string>
+}
+
+async function loadDb(): Promise<DbIndex> {
+  const [pages, posts] = await Promise.all([
+    prisma.page.findMany({
+      where:  { parentSlug: null },
+      select: { id: true, slug: true, content: true },
+    }),
+    prisma.blogPost.findMany({ select: { slug: true } }),
+  ])
+  return {
+    pageBySlug:    new Map(pages.map(p => [p.slug, { id: p.id, content: p.content }])),
+    blogPostSlugs: new Set(posts.map(p => p.slug)),
+  }
 }
 
 // ── XML helpers (no deps) ────────────────────────────────────────────────
@@ -109,7 +129,7 @@ async function gatherSitemapUrls(): Promise<string[]> {
 
 // ── Classification ───────────────────────────────────────────────────────
 
-async function classify(url: string): Promise<AuditRow> {
+function classify(url: string, db: DbIndex): AuditRow {
   const u        = new URL(url)
   const pathname = u.pathname.replace(/\/+$/, '') || '/'
   const segments = pathname === '/' ? [] : pathname.slice(1).split('/')
@@ -137,20 +157,25 @@ async function classify(url: string): Promise<AuditRow> {
     return { url, pathname, slug, segments, status: 'COVERED', hint: `app/(public)/${slug}/page.tsx` }
   }
 
-  // Single-segment, no matching route — check Page table
+  // Single-segment, no matching route — check Page table, then BlogPost
   if (segments.length === 1) {
-    try {
-      const page = await prisma.page.findFirst({ where: { slug, parentSlug: null } })
-      if (page) {
-        const empty = !page.content || page.content.trim().length < 50
-        return {
-          url, pathname, slug, segments,
-          status: empty ? 'PAGE-EMPTY' : 'COVERED',
-          hint:   empty ? `Page row exists but content is empty/short` : `Page row id=${page.id}`,
-        }
+    const page = db.pageBySlug.get(slug)
+    if (page) {
+      const empty = !page.content || page.content.trim().length < 50
+      return {
+        url, pathname, slug, segments,
+        status: empty ? 'PAGE-EMPTY' : 'COVERED',
+        hint:   empty ? `Page row exists but content is empty/short` : `Page row id=${page.id}`,
       }
-    } catch { /* ignore */ }
-    return { url, pathname, slug, segments, status: 'MISSING', hint: 'No route, no Page row' }
+    }
+    if (db.blogPostSlugs.has(slug)) {
+      return {
+        url, pathname, slug, segments,
+        status: 'BLOG-POST',
+        hint:   `BlogPost imported — served at /blog/${slug}; root URL 301s via wpBlogRedirects`,
+      }
+    }
+    return { url, pathname, slug, segments, status: 'MISSING', hint: 'No route, no Page row, no BlogPost' }
   }
 
   // Deep URL (e.g. /wp-content/...) — usually irrelevant, mark missing
@@ -164,6 +189,7 @@ function fmt(rows: AuditRow[]) {
     'COVERED':    [],
     'REDIRECT':   [],
     'DYNAMIC':    [],
+    'BLOG-POST':  [],
     'PAGE-EMPTY': [],
     'MISSING':    [],
   }
@@ -173,6 +199,7 @@ function fmt(rows: AuditRow[]) {
     'COVERED':    '✅',
     'REDIRECT':   '🔁',
     'DYNAMIC':    '⚙️ ',
+    'BLOG-POST':  '📰',
     'PAGE-EMPTY': '📄',
     'MISSING':    '❌',
   }
@@ -227,21 +254,25 @@ async function cloneMissing(rows: AuditRow[]) {
 async function main() {
   const cloneFlag = process.argv.includes('--clone-missing')
 
+  console.log(`🗄️  Loading DB indexes…`)
+  const db = await loadDb()
+  console.log(`   ↳ ${db.pageBySlug.size} Page rows, ${db.blogPostSlugs.size} BlogPost rows`)
+
   const urls = await gatherSitemapUrls()
   console.log(`   ↳ ${urls.length} URLs in sitemap\n`)
 
   console.log(`🔍 Classifying…`)
-  const rows: AuditRow[] = []
-  for (const u of urls) rows.push(await classify(u))
+  const rows: AuditRow[] = urls.map(u => classify(u, db))
 
   const groups = fmt(rows)
   printRedirectBlock(rows)
 
   console.log('💡 Next moves:')
   console.log(`   • ${groups.COVERED.length}    URLs already work — verify visually`)
+  console.log(`   • ${groups['BLOG-POST'].length}  URLs covered by imported BlogPost rows (301 to /blog/<slug>)`)
   console.log(`   • ${groups.REDIRECT.length}   URLs need a 301 (paste block above into next.config.ts)`)
   console.log(`   • ${groups.DYNAMIC.length}    URLs go through dynamic routes — check the matching DB table has a row`)
-  console.log(`   • ${groups['PAGE-EMPTY'].length} Page rows exist but are empty — open /admin/pages and fill them`)
+  console.log(`   • ${groups['PAGE-EMPTY'].length}    Page rows exist but are empty — open /admin/pages and fill them`)
   console.log(`   • ${groups.MISSING.length}    URLs have no home — re-run with --clone-missing to import`)
 
   if (cloneFlag) await cloneMissing(rows)
