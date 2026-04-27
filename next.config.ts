@@ -95,6 +95,34 @@ const nextConfig: NextConfig = {
       { source: '/services/24-7-server-administration',   destination: '/services/cloud-managed-services',         permanent: true },
       { source: '/services/azure-consulting-services',    destination: '/services/cloud-services',                 permanent: true },
       { source: '/services/aws-cloud-consulting',         destination: '/services/cloud-services',                 permanent: true },
+
+      // ── 7. Legacy "hire <tech> developers" pages → matching service ──
+      // The WP site published these under /technology/hire-<tech>-developers as
+      // SEO landing pages. Each maps to the closest existing service slug.
+      { source: '/technology/hire-react-developers',          destination: '/services/react-js-development',           permanent: true },
+      { source: '/technology/hire-react-native-developers',   destination: '/services/react-native-development',       permanent: true },
+      { source: '/technology/hire-ionic-developers',          destination: '/services/ionic-app-development',          permanent: true },
+      { source: '/technology/hire-dot-net-developer',         destination: '/services/dot-net-development',            permanent: true },
+      { source: '/technology/hire-machine-learning-developers', destination: '/services/hire-machine-learning-developers', permanent: true },
+      { source: '/technology/hire-mobile-app-developers',     destination: '/services/mobile-application-development', permanent: true },
+      { source: '/technology/hire-android-developers',        destination: '/services/mobile-application-development', permanent: true },
+      { source: '/technology/hire-ios-developers',            destination: '/services/mobile-application-development', permanent: true },
+      { source: '/technology/hire-devops-engineers',          destination: '/services/devops-consulting',              permanent: true },
+      // Catch-all for any remaining /technology/* URLs (mern, mean, full-stack, php, java, node, laravel, blockchain, angular)
+      { source: '/technology/:slug*',                         destination: '/services',                                permanent: true },
+
+      // ── 8. Geo-targeted landing pages → relevant service ──
+      // The WP site has dozens of /software-development-company-<city> pages.
+      // Rather than clone each, send them to the canonical service. Post-launch
+      // we can clone individually if SEO traffic warrants it.
+      { source: '/software-development-company-:city',        destination: '/services/software-development',           permanent: true },
+      { source: '/web-development-company-:city',             destination: '/services/web-development',                permanent: true },
+      { source: '/mobile-app-development-company-:city',      destination: '/services/mobile-application-development', permanent: true },
+
+      // ── 9. Other legacy slugs without a Page row ──
+      { source: '/web-app-development',                       destination: '/services/web-development',                permanent: true },
+      { source: '/legacy-software-modernization',             destination: '/services/software-development',           permanent: true },
+      { source: '/sitemap',                                   destination: '/sitemap.xml',                             permanent: false },
     ];
   },
 };
