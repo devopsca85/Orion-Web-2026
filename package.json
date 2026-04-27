@@ -15,12 +15,12 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
-    "migrate:wp": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/migrate-from-wp.ts",
-    "seed:services": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/seed-services.ts",
-    "seed:homepage": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/seed-homepage.ts"
+    "migrate:wp": "ts-node --project tsconfig.scripts.json scripts/migrate-from-wp.ts",
+    "seed:services": "ts-node --project tsconfig.scripts.json scripts/seed-services.ts",
+    "seed:homepage": "ts-node --project tsconfig.scripts.json scripts/seed-homepage.ts"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --project tsconfig.scripts.json prisma/seed.ts"
   },
   "dependencies": {
     "@tiptap/react": "^2.11.0",
