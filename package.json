@@ -17,7 +17,8 @@
     "db:reset": "prisma migrate reset",
     "migrate:wp": "ts-node --project tsconfig.scripts.json scripts/migrate-from-wp.ts",
     "seed:services": "ts-node --project tsconfig.scripts.json scripts/seed-services.ts",
-    "seed:homepage": "ts-node --project tsconfig.scripts.json scripts/seed-homepage.ts"
+    "seed:homepage": "ts-node --project tsconfig.scripts.json scripts/seed-homepage.ts",
+    "clone:page": "ts-node --project tsconfig.scripts.json scripts/clone-live-page.ts"
   },
   "prisma": {
     "seed": "ts-node --project tsconfig.scripts.json prisma/seed.ts"
