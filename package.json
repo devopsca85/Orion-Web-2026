@@ -20,6 +20,7 @@
     "seed:homepage": "ts-node --project tsconfig.scripts.json scripts/seed-homepage.ts",
     "clone:page": "ts-node --project tsconfig.scripts.json scripts/clone-live-page.ts",
     "audit:live": "ts-node --project tsconfig.scripts.json scripts/audit-live-site.ts",
+    "verify:services": "ts-node --project tsconfig.scripts.json scripts/verify-services.ts",
     "import:blog": "ts-node --project tsconfig.scripts.json scripts/import-wp-blog.ts"
   },
   "prisma": {
