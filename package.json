@@ -18,10 +18,11 @@
     "migrate:wp": "ts-node --project tsconfig.scripts.json scripts/migrate-from-wp.ts",
     "seed:services": "ts-node --project tsconfig.scripts.json scripts/seed-services.ts",
     "seed:homepage": "ts-node --project tsconfig.scripts.json scripts/seed-homepage.ts",
-    "clone:page": "ts-node --project tsconfig.scripts.json scripts/clone-live-page.ts",
     "audit:live": "ts-node --project tsconfig.scripts.json scripts/audit-live-site.ts",
     "verify:services": "ts-node --project tsconfig.scripts.json scripts/verify-services.ts",
-    "import:blog": "ts-node --project tsconfig.scripts.json scripts/import-wp-blog.ts"
+    "import:blog":     "ts-node --project tsconfig.scripts.json scripts/import-wp-blog.ts",
+    "import:wp-pages": "ts-node --project tsconfig.scripts.json scripts/import-wp-pages.ts",
+    "cleanup:cloned":  "ts-node --project tsconfig.scripts.json scripts/cleanup-cloned-pages.ts"
   },
   "prisma": {
     "seed": "ts-node --project tsconfig.scripts.json prisma/seed.ts"

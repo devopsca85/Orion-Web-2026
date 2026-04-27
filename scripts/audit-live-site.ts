@@ -8,19 +8,15 @@
  *   🔁  REDIRECT      — slug differs (e.g. /about-us → /about); needs a 301
  *   📄  PAGE-EMPTY    — route exists but no Page row / no content yet
  *   ⚙️  DYNAMIC       — handled by [slug] route; data-row presence not checked
- *   ❌  MISSING       — no route, no Page row; needs cloning or a new component
+ *   📰  BLOG-POST     — covered by an imported BlogPost row
+ *   ❌  MISSING       — no route, no Page row; needs a redirect or a proper import
  *
  * Run on a server with network access to orionesolutions.com:
  *
  *   npm run audit:live
- *
- * Add  --clone-missing  to also clone every MISSING URL into Page rows.
- *
- *   npm run audit:live -- --clone-missing
  */
 
 import { PrismaClient } from '@prisma/client'
-import { clonePage } from './clone-live-page'
 
 const prisma = new PrismaClient()
 
@@ -229,31 +225,9 @@ function printRedirectBlock(rows: AuditRow[]) {
   console.log('')
 }
 
-// ── Optional clone of MISSING URLs ───────────────────────────────────────
-
-async function cloneMissing(rows: AuditRow[]) {
-  const candidates = rows.filter(r =>
-    r.status === 'MISSING' &&
-    r.segments.length === 1 &&
-    !r.slug.startsWith('wp-') &&
-    !r.slug.startsWith('feed') &&
-    !r.slug.startsWith('comments')
-  )
-  console.log(`\n🧬 Cloning ${candidates.length} MISSING single-segment URLs as Page rows…\n`)
-  for (const r of candidates) {
-    try {
-      await clonePage(r.url, r.slug)
-    } catch (e) {
-      console.warn(`   ⚠ ${r.url}: ${(e as Error).message}`)
-    }
-  }
-}
-
 // ── Main ─────────────────────────────────────────────────────────────────
 
 async function main() {
-  const cloneFlag = process.argv.includes('--clone-missing')
-
   console.log(`🗄️  Loading DB indexes…`)
   const db = await loadDb()
   console.log(`   ↳ ${db.pageBySlug.size} Page rows, ${db.blogPostSlugs.size} BlogPost rows`)
@@ -273,9 +247,7 @@ async function main() {
   console.log(`   • ${groups.REDIRECT.length}   URLs need a 301 (paste block above into next.config.ts)`)
   console.log(`   • ${groups.DYNAMIC.length}    URLs go through dynamic routes — check the matching DB table has a row`)
   console.log(`   • ${groups['PAGE-EMPTY'].length}    Page rows exist but are empty — open /admin/pages and fill them`)
-  console.log(`   • ${groups.MISSING.length}    URLs have no home — re-run with --clone-missing to import`)
-
-  if (cloneFlag) await cloneMissing(rows)
+  console.log(`   • ${groups.MISSING.length}    URLs have no home — add a redirect in next.config.ts or import via npm run import:wp-pages`)
 }
 
 main()
