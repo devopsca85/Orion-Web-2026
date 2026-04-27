@@ -144,7 +144,7 @@ function extractCssUrls(css: string): string[] {
 
 // ── Main clone routine ───────────────────────────────────────────────────
 
-async function clonePage(pageUrl: string, slug: string) {
+export async function clonePage(pageUrl: string, slug: string) {
   const startUrl    = new URL(pageUrl)
   const sameOrigin  = startUrl.origin
   const publicRoot  = path.join(process.cwd(), 'public', 'cloned', slug)
