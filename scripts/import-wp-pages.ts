@@ -95,9 +95,28 @@ function cleanPageHtml(raw: string): string {
   // WP / Gutenberg block markers and any other HTML comments
   html = html.replace(/<!--[\s\S]*?-->/g, '')
 
-  // Strip class / id / style / data-* attributes
-  html = html.replace(/\s+(?:class|id|style|data-[\w-]+)\s*=\s*"[^"]*"/gi, '')
-  html = html.replace(/\s+(?:class|id|style|data-[\w-]+)\s*=\s*'[^']*'/gi, '')
+  // Strip class / id / style / data-* / aria-* / role attributes
+  html = html.replace(/\s+(?:class|id|style|data-[\w-]+|aria-[\w-]+|role)\s*=\s*"[^"]*"/gi, '')
+  html = html.replace(/\s+(?:class|id|style|data-[\w-]+|aria-[\w-]+|role)\s*=\s*'[^']*'/gi, '')
+
+  // Strip fixed pixel sizes from images so they shrink to fit their column
+  html = html.replace(/(<img[^>]*?)\s+(?:width|height)\s*=\s*"[^"]*"/gi, '$1')
+  html = html.replace(/(<img[^>]*?)\s+(?:width|height)\s*=\s*'[^']*'/gi, '$1')
+
+  // Unwrap layout containers — once their classes are stripped they only
+  // contribute dead whitespace and odd nesting. Keep their children.
+  html = html.replace(/<\/?(?:section|article|aside|figure|figcaption|main)\b[^>]*>/gi, '')
+
+  // Iteratively collapse empty containers until stable. WP / Elementor
+  // produces deeply nested empties from decorative columns + icon spots.
+  let prev: string
+  do {
+    prev = html
+    html = html.replace(/<(div|span|p)[^>]*>\s*(?:&nbsp;|&#160;|\s)*<\/\1>/gi, '')
+  } while (html !== prev)
+
+  // Collapse runs of <br>
+  html = html.replace(/(?:<br\s*\/?>\s*){2,}/gi, '<br>')
 
   // Empty paragraphs (possibly with non-breaking spaces) and excessive blank lines
   html = html.replace(/<p>\s*(?:&nbsp;| |\s)*<\/p>/gi, '')
